@@ -1,3 +1,7 @@
+/**
+ * Configures the root Expo Router stack and app theme provider.
+ */
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -6,7 +10,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: 'tabs',
 };
 
 export default function RootLayout() {
@@ -15,8 +19,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="tabs" options={{ headerShown: false }} />
+        <Stack.Screen name="movie/[id]" options={{ title: 'Movie' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
