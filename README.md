@@ -1,5 +1,8 @@
 # Spekta
 
+> ⚠️ **Warning**
+> Spekta is currently under active development. Features may be incomplete, changed, or missing.
+
 Expo Router + React Native + Supabase starter structured around feature-local code.
 
 ## Stack
