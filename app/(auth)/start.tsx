@@ -1,47 +1,51 @@
-import AppButton from '@/components/ui/app-button';
-import { Colors } from '@/themes/colors';
 import { router } from 'expo-router';
-import { Dimensions, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function StartScreen() {
-    // Get the current color scheme (light or dark) and corresponding theme colors
-    const colorScheme = useColorScheme();
-    const themeColors = Colors[colorScheme ?? 'light'];
-
-    return (
-        // SafeAreaView to ensure the content is displayed within the safe area of the device
-        <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
-
-            {/* Hero title */}
-            <Text style={styles.herotitle}>Spekta</Text>
-
-            <View>
-                {/* Navigate to the login screen when the button is pressed */}
-                <AppButton onPress={() => router.push("/(auth)/login")} label="Login"/>
-
-                {/* Navigate to the signup screen when the button is pressed */}
-                <AppButton onPress={() => router.push("/(auth)/signup")} label="Create Account"/>
-            </View>
-        </SafeAreaView>
-    )
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Auth placeholder</Text>
+      <View style={styles.actions}>
+        <Pressable style={styles.button} onPress={() => router.push('/(auth)/login')}>
+          <Text style={styles.buttonText}>Login</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => router.push('/(auth)/signup')}>
+          <Text style={styles.buttonText}>Sign up</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
 }
 
-// Get the dimensions of the device screen for responsive styling
-const { width, height } = Dimensions.get('window');
-
-// Styles for the start screen
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    herotitle: {
-        fontSize: width * 0.10,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 15,
-    },
-})
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: '#ffffff',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 20,
+  },
+  actions: {
+    width: '100%',
+    maxWidth: 320,
+    gap: 12,
+  },
+  button: {
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#111827',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

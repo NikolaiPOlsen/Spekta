@@ -1,5 +1,5 @@
 import { Dimensions, Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
-import { Colors } from '../constants/theme';
+import { Colors } from '@/themes/colors';
 
 // Type definition for the props of the AppButton component
 type Props = {

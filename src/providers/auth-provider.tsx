@@ -1,5 +1,5 @@
 import { AuthContext } from '@/hooks/use-auth-context'
-import { supabase } from '@/utils/supabase'
+import { supabase } from '@/lib/supabase'
 import { PropsWithChildren, useEffect, useState } from 'react'
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -66,7 +66,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         claims,
         isLoading,
         profile,
-        isLoggedIn: claims != undefined,
+        isLoggedIn: claims !== undefined,
       }}
     >
       {children}

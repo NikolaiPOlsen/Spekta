@@ -1,31 +1,12 @@
-import { Colors } from '@/themes/colors';
-import { useAuthContext } from '@/hooks/use-auth-context';
-import AuthProvider from '@/providers/auth-provider';
-import { Redirect, Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { Tabs } from 'expo-router';
 
-export function RootNavigation() {
-  const { isLoggedIn, isLoading } = useAuthContext();
-
-  if (isLoading) return null;
-
-  if (!isLoggedIn) {
-    return <Redirect href={"/(auth)/start"}/>;
-  }
-  if (isLoggedIn) {
-    //return <Redirect href={"/(tabs)/home"}/>;
-  }
-}
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme ?? 'light'];
+export default function TabsLayout() {
   return (
-    <AuthProvider>
-        <Stack>
-          <Stack.Screen name='(auth)' options={{ headerShown: false }}/>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }}/>
-        </Stack>
-        <RootNavigation/>
-    </AuthProvider>
+    <Tabs screenOptions={{ headerTitleAlign: 'center' }}>
+      <Tabs.Screen name="home" options={{ title: 'Home' }} />
+      <Tabs.Screen name="swipe" options={{ title: 'Swipe' }} />
+      <Tabs.Screen name="recommendations" options={{ title: 'Recommendations' }} />
+      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+    </Tabs>
   );
 }

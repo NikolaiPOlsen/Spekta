@@ -1,12 +1,5 @@
-/**
- * Redirects the root route into the main tab navigator.
- */
+import { Redirect } from 'expo-router';
 
-import { Redirect } from "expo-router";
-const app = () => {
-  return (
-    <Redirect href="/(auth)/start" />
-  );
+export default function IndexRoute() {
+  return <Redirect href="/(tabs)/home" />;
 }
-
-export default app;
