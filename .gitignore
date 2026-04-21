@@ -45,3 +45,5 @@ app-example
 
 #Visual studio code
 .vscode
+
+google-services.json

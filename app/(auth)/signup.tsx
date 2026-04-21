@@ -36,7 +36,10 @@ export default function SignUpScreen() {
     }
 
     return (
-            <KeyboardAvoidingView style={{ flex: 1, backgroundColor: themeColors.background }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+            <KeyboardAvoidingView style={{ flex: 1, backgroundColor: themeColors.background }} 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={80}
+            >
 
                 <View style={styles.container}>
                         <Text style={[TextStyles.sectionTitle, { color: themeColors.primary }]}>Sign up</Text>
