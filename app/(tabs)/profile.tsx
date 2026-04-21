@@ -1,9 +1,14 @@
 import { InputField, PasswordField } from "@/components/ui/input-field";
 import { useState } from "react";
 import { View, StyleSheet, Text, useWindowDimensions, KeyboardAvoidingView, Platform } from 'react-native';
-import { TextStyles } from '@/constants/text-style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppButton, DeleteButton } from "@/components/ui/app-button";
+import { TextStyles } from '@/constants/text-style';
+import { AppButton } from "@/components/ui/app-button";
+import { supabase } from '@/utils/supabase';
+
+async function signOut() {
+        await supabase.auth.signOut();
+    }
 
 export default function ProfileRoute() {
   const { width, height } = useWindowDimensions();
@@ -39,8 +44,8 @@ export default function ProfileRoute() {
           {(username || email || password || confirmpassword) && (
             <AppButton label='Save changes' onPress={() => false}/>
           )}
-          
-          <AppButton label='Logout' onPress={() => false}/>
+
+          <AppButton label='Signout' onPress={signOut}/>
         </View>
       </KeyboardAvoidingView>
   )
