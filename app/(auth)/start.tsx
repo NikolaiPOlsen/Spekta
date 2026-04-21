@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function StartScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Auth placeholder</Text>
+      <Text style={styles.title}>Get started!</Text>
       <View style={styles.actions}>
         <Pressable style={styles.button} onPress={() => router.push('/(auth)/login')}>
           <Text style={styles.buttonText}>Login</Text>
