@@ -1,32 +1,66 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-// Setup type definitions for built-in Supabase Runtime APIs
-import "@supabase/functions-js/edge-runtime.d.ts"
+serve(async (_req) => {
+  try {
+    const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 
-console.log("Hello from Functions!")
+    if (!tmdbApiKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing TMDB_API_KEY" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
-Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+    const tmdbRes = await fetch(
+      "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
+      {
+        headers: {
+          Authorization: `Bearer ${tmdbApiKey}`,
+          accept: "application/json",
+        },
+      }
+    );
+
+    if (!tmdbRes.ok) {
+      return new Response(
+        JSON.stringify({ error: `TMDb request failed: ${tmdbRes.status}` }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const tmdbJson = await tmdbRes.json();
+
+    const movies = (tmdbJson.results ?? []).map((movie: any) => ({
+      tmdb_id: movie.id,
+      media_type: "movie",
+      name: movie.title,
+      overview: movie.overview,
+      poster_path: movie.poster_path,
+      first_air_or_release_date: movie.release_date ?? null,
+      vote_average: movie.vote_average,
+      vote_count: movie.vote_count,
+      popularity: movie.popularity,
+    }));
+
+    return new Response(JSON.stringify({ movies }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
-
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/get-recommendations' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+});
