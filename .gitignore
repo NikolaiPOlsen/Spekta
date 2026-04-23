@@ -46,4 +46,8 @@ app-example
 #Visual studio code
 .vscode
 
+#Supabase
+supabase/.temp/
+
+# Firebase
 google-services.json
