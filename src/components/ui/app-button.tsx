@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         paddingHorizontal: 12,
         borderRadius: 12,
-        maxWidth: 350,
+        // maxWidth: 350,
     },
     deleteButton: {
         textAlign: 'center',

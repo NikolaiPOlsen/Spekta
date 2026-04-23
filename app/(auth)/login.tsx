@@ -1,7 +1,7 @@
 import { AppButton } from '@/components/ui/app-button';
 import { Colors } from '@/themes/colors';
 import { TextStyles } from '@/constants/text-style';
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { InputField, PasswordField } from '@/components/ui/input-field'

@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, useWindowDimensions, KeyboardAvoidingView, Plat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextStyles } from '@/constants/text-style';
 import { AppButton } from "@/components/ui/app-button";
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/lib/supabase';
 
 async function signOut() {
         await supabase.auth.signOut();
