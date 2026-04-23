@@ -5,6 +5,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 export default function AuthLayout() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
+  console.log(`COLOR THEME: ${colorScheme}`);
 
   return (
     <Stack initialRouteName="start" screenOptions={{ headerShown: false }}>
