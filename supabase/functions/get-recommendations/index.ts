@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-serve(async (_req) => {
+serve(async () => {
   try {
     const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
+    const tmdbBaseUrl = Deno.env.get("TMDB_BASE_URL");
 
     if (!tmdbApiKey) {
       return new Response(
@@ -14,19 +15,9 @@ serve(async (_req) => {
       );
     }
 
-    const tmdbRes = await fetch(
-      "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1",
-      {
-        headers: {
-          Authorization: `Bearer ${tmdbApiKey}`,
-          accept: "application/json",
-        },
-      }
-    );
-
-    if (!tmdbRes.ok) {
+    if (!tmdbBaseUrl) {
       return new Response(
-        JSON.stringify({ error: `TMDb request failed: ${tmdbRes.status}` }),
+        JSON.stringify({ error: "Missing TMDB_BASE_URL" }),
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
@@ -34,9 +25,31 @@ serve(async (_req) => {
       );
     }
 
-    const tmdbJson = await tmdbRes.json();
+    const response = await fetch(
+      `${tmdbBaseUrl}/movie/popular?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1`,
+      {
+        headers: {
+          accept: "application/json",
+        },
+      }
+    );
 
-    const movies = (tmdbJson.results ?? []).map((movie: any) => ({
+    const data = await response.json();
+
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({
+          error: `TMDb request failed: ${response.status}`,
+          details: data,
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const movies = (data.results ?? []).map((movie: any) => ({
       tmdb_id: movie.id,
       media_type: "movie",
       name: movie.title,
