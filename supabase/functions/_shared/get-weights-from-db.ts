@@ -55,3 +55,5 @@ const getUserWeights = async ({ userId }: UsesUserId) => {
 
     return parameters;
 }
+
+export default getUserWeights;
