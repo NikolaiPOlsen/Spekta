@@ -48,10 +48,10 @@ const getUserWeights = async (userId: string) => {
 
     const parameters: UserParameterWeight[][] = [];
 
-    parameterTypeNames.forEach(async parameterType => {
+    for (const parameterType of parameterTypeNames) {
         const parameter: UserParameterWeight[] = await getWeightsFromDb(SupabaseClient, userId, parameterType);
         parameters.push(parameter);
-    });
+    }
 
     return parameters;
 }

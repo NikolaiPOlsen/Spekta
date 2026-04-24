@@ -8,13 +8,13 @@ const getAPIRequestWithParameters = async ({ userId, addRandomness }: getAPIRequ
     const resultParams = [];
     
     parameters.forEach(parameter => {
-        if (!useRandom) {
-            const sortedWeights = parameter.sort((a, b) => b.weight - a.weight);
-            // const reverseSortedWeights = [...sortedWeights].reverse();
-
-
-
+        if (useRandom) {
+            // loop through and add randomness to weights
         }
+
+        const sortedWeights = parameter.sort((a, b) => b.weight - a.weight);
+        // const reverseSortedWeights = [...sortedWeights].reverse();
+
     });
 
 }
