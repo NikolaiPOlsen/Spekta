@@ -44,7 +44,6 @@ export async function getWeightsFromDb(
 }
 
 const getUserWeights = async (supabase: SupabaseClient, userId: string) => {
-
     const parameters: UserParameterWeight[][] = [];
 
     for (const parameterType of parameterTypeNames) {
