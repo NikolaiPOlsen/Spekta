@@ -1,6 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { UserParameterWeight, UsesUserId } from "../_shared/properties";
-import { parameterTypeNames } from "../_shared/parameters-type-names";
+import { UserParameterWeight, UsesUserId } from "../_shared/properties.ts";
+import { parameterTypeNames } from "../_shared/parameters-type-names.ts";
 
 // Type for raw supabase query result
 type UserParameterWeightRow = {
@@ -43,7 +43,7 @@ export async function getWeightsFromDb(
     }));
 }
 
-const getUserWeights = async ({ userId }: UsesUserId) => {
+const getUserWeights = async (userId: string) => {
     // TODO: add supabase client and pass to getWeightsFromDb
 
     const parameters: UserParameterWeight[][] = [];

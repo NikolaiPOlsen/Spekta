@@ -1,12 +1,11 @@
-import { getAPIRequestProperties } from "../_shared/properties";
+import getUserWeights from "../_shared/get-weights-from-db.ts";
+import { getAPIRequestProperties } from "../_shared/properties.ts";
 
 const getAPIRequestWithParameters = async ({ userId, addRandomness }: getAPIRequestProperties) => {
     const useRandom = addRandomness ? true : false;
-    const parameters
-
+    const parameters = await getUserWeights(userId);
+    // const parameterAmount = parameters.length;
     const resultParams = [];
-
-    const parameterAmount = parameters.length;
     
     parameters.forEach(parameter => {
         if (!useRandom) {

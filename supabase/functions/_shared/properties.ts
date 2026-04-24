@@ -11,6 +11,6 @@ export interface getAPIRequestProperties {
     addRandomness?: boolean;
 };
 
-export interface UsesUserId {
-    userId: string;
-};
+// export interface UsesUserId {
+//     userId: string;
+// };
