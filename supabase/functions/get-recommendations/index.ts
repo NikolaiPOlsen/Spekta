@@ -59,6 +59,7 @@ serve(async () => {
       vote_average: movie.vote_average,
       vote_count: movie.vote_count,
       popularity: movie.popularity,
+      genre_ids: movie.genre_ids ?? [],
     }));
 
     return new Response(JSON.stringify({ movies }), {
