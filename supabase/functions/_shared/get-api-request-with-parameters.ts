@@ -1,8 +1,14 @@
 import getUserWeights from "../_shared/get-weights-from-db.ts";
-import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter } from "../_shared/properties.ts";
+import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
 import { APIRequestParameterAmount } from "../_shared/constants.js";
 
-const getAPIRequestWithParameters = async ({ supabaseClientInstance, userId, addRandomness }: getAPIRequestProperties) => {
+const buildAPIRequestURLFromParameters = ({ parameters }: BuildAPIRequestURLSpecification) => {
+    // `https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1&sort_by=popularity.desc&with_cast=297`,
+    let APIRequestURL = "https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}";
+    APIRequestURL += "&language=en-US";
+}
+
+const getAPIRequestWithParameters = async ({ supabaseClientInstance, userId, addRandomness = false }: getAPIRequestProperties) => {
     const withRandomness = addRandomness ? true : false;
 
     const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
