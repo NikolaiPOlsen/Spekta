@@ -1,7 +1,6 @@
 /**
  * Defines the shared color and font tokens used throughout the app theme.
  */
-
 import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
@@ -18,6 +17,9 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
     primary: tintColorLight,
+    star: '#ffce47',
+    mute: '#cfcfcf',
+    white: '#fff'
   },
   dark: {
     text: '#ECEDEE',
@@ -29,6 +31,9 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     primary: tintColorDark,
+    star: '#ffce47',
+    mute: '#cfcfcf',
+    white: '#fff'
   },
 };
 
