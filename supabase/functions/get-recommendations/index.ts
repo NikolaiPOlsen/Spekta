@@ -1,7 +1,9 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createUserClient } from "../_shared/supabase-create-client.ts";
 
-serve(async () => {
+serve(async (req) => {
 	try {
+		const supabase = createUserClient(req);
 		const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 		const tmdbBaseUrl = Deno.env.get("TMDB_BASE_URL");
 
