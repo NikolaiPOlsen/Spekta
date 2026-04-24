@@ -1,11 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { MovieCard } from '@/features/swipe/components';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeRoute() {
+const { width, height } = useWindowDimensions();
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Spekta test screen</Text>
-      <Text style={styles.copy}>The app now boots into a simple visible screen for Android emulator testing.</Text>
-    </View>
+    <SafeAreaView style={[styles.container, { height: height, width: width }]}>
+      <MovieCard title='Interstellar' subtitle='ahahahahahahhahahahahahhahahaahahahahahahhahahahahahhahahaahahahahahahhahahahahahhahahaahahahahahahhahahahaahahaha' type='Movie' voteavg='4.7' poster='https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bAY4deknql9Ph7Fk.jpg'/>
+    </SafeAreaView>
   );
 }
 
@@ -15,18 +18,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
-    backgroundColor: '#ffffff',
     gap: 12,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  copy: {
-    textAlign: 'center',
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#4b5563',
-  },
+    },
+
 });
