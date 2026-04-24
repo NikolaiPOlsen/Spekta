@@ -26,7 +26,7 @@ serve(async () => {
     }
 
     const response = await fetch(
-      `${tmdbBaseUrl}/movie/popular?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1`,
+      `https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1&sort_by=vote_average.desc`,
       {
         headers: {
           accept: "application/json",
@@ -51,15 +51,15 @@ serve(async () => {
 
     const movies = (data.results ?? []).map((movie: any) => ({
       tmdb_id: movie.id,
-      media_type: "movie",
-      name: movie.title,
-      overview: movie.overview,
-      poster_path: movie.poster_path,
-      first_air_or_release_date: movie.release_date ?? null,
+      genre_ids: movie.genre_ids,
+      release_date: movie.release_date ?? null,
+      popularity: movie.popularity,
       vote_average: movie.vote_average,
       vote_count: movie.vote_count,
-      popularity: movie.popularity,
-      genre_ids: movie.genre_ids ?? [],
+      adult: movie.adult,
+      name: movie.title,
+      poster_path: movie.poster_path,
+      overview: movie.overview
     }));
 
     return new Response(JSON.stringify({ movies }), {
