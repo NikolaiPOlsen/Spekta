@@ -17,4 +17,22 @@ export const TextStyles = StyleSheet.create ({
         marginBottom: 6,
         marginLeft: 2,
     },
+    cardTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    cardType: {
+        fontSize: 16,
+        marginBottom: 5,
+    },
+    cardRating: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    cardInfo: {
+        fontSize: 16,
+        marginBottom: 5,
+    }
 })
