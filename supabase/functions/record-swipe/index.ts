@@ -1,32 +1,86 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createUserClient } from "../_shared/supabase-create-client.ts";
+import { validateRecordSwipeBody } from "./validate-body.ts";
+import { saveSeenMedia } from "./save-seen-media.ts";
+import { findParameters } from "./find-parameters.ts";
+import { updateUserWeights } from "./update-user-weights.ts";
 
-// Setup type definitions for built-in Supabase Runtime APIs
-import "@supabase/functions-js/edge-runtime.d.ts"
+serve(async (req) => {
+  try {
+    const supabase = createUserClient(req);
 
-console.log("Hello from Functions!")
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = validateRecordSwipeBody(await req.json());
+    const tmdbId = Number(body.tmdb_id);
+
+    if (!Number.isInteger(tmdbId)) {
+      return new Response(
+        JSON.stringify({ error: "tmdb_id must be a valid integer" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    await saveSeenMedia({
+      supabase,
+      userId: user.id,
+      tmdbId,
+    });
+
+    const matchingParameters = await findParameters({
+      supabase,
+      requestedParameters: body.parameters,
+    });
+
+    const parameterIds = matchingParameters.map((parameter) => parameter.id);
+
+    const updatedWeights = await updateUserWeights({
+      supabase,
+      userId: user.id,
+      parameterIds,
+      liked: body.liked,
+    });
+
+    return new Response(
+      JSON.stringify({
+        message: "Swipe recorded",
+        tmdb_id: tmdbId,
+        liked: body.liked,
+        matched_parameters: matchingParameters.length,
+        updated_parameters: updatedWeights.length,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+
+    const status =
+      message.startsWith("Invalid body") ? 400 : 500;
+
+    return new Response(
+      JSON.stringify({
+        error: message,
+      }),
+      {
+        status,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
-
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/record-swipe' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+});

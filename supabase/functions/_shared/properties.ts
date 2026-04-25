@@ -73,6 +73,23 @@ export interface BuildAPIRequestURLSpecification {
     userCast?: string[];
 }
 
+export type SwipeParameter = {
+    parameter_type: string;
+    parameter_value: string;
+};
+
+export type RecordSwipeBody = {
+    tmdb_id: string;
+    liked: boolean;
+    parameters: SwipeParameter[];
+};
+
+export type ParameterRow = {
+  id: string;
+  parameter_type: string;
+  parameter_value: string;
+};
+
 // export interface UsesUserId {
 //     userId: string;
 // };
