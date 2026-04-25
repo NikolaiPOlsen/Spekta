@@ -11,3 +11,27 @@
  * @default 5
  */
 export const APIRequestParameterAmount = 5;
+
+/**
+ * The min page number to fetch from API.
+ * 
+ * @constant {number} APIRequestParameterAmount
+ * @default 1
+ */
+export const APIRequestRandomPageMin = 1;
+
+/**
+ * The max page number to fetch from API.
+ * 
+ * @constant {number} APIRequestParameterAmount
+ * @default 1
+ */
+export const APIRequestRandomPageMax = 50;
+
+/**
+ * Default sorting. Results in the most popular results on page 1.
+ * 
+ * @constant {number} APIRequestParameterAmount
+ * @default "popularity.desc"
+ */
+export const APIRequestDefaultSortingMethod = "popularity.desc";

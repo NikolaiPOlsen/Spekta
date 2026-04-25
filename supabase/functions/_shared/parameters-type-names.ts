@@ -1,4 +1,5 @@
 export const parameterTypeNames = [
     "genre",
-    "actor"
+    "actor",
+    ""
 ];

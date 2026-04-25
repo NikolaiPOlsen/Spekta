@@ -8,7 +8,13 @@ export type UserParameterWeight = {
     interaction_count: number;
 };
 
+export interface tmdbData {
+    APIKey: string;
+    baseURL: string;
+}
+
 export interface getAPIRequestProperties {
+    tmdbData: tmdbData;
     supabaseClientInstance: SupabaseClient
     userId: string;
     addRandomness?: boolean;
@@ -20,14 +26,19 @@ export interface getAPIRequestProperties {
 
 export interface APIRequestTypeParameter {
     positive: boolean;
-    with_type: string;
+    type: string;
     parameters: string[];
 };
+
+
 
 
 /**
  * Parameters used to build a TMDb API request URL for fetching movies with optional filtering
  * and randomization behavior.
+ *
+ * @property tmdbAPIKey - API key
+ * @property tmdbBaseURL - API base URL
  *
  * @property includeAdult - Include adult content in results.
  * @property parameters - Array of API filter parameters (e.g. genres, dates, ratings).
@@ -43,17 +54,23 @@ export interface APIRequestTypeParameter {
  * @property randomWithCast
  * @property randomWithoutGenres
  * @property randomWithoutCast
+ *
+ * @property userGenres - Must be present if `randomWithGenres` or `randomWithoutGenres` are set
+ * @property userCast - Must be present if `randomWithCast` or `randomWithoutCast` are set
  */
 export interface BuildAPIRequestURLSpecification {
-    includeAdult: boolean;
+    tmdbData: tmdbData;
     parameters: APIRequestTypeParameter[];
     languagePreference?: string;
+    includeAdult?: boolean;
     randomPage?: boolean | [number, number];
     randomSorting?: boolean;
     randomWithGenres?: boolean | number;
     randomWithCast?: boolean | number;
     randomWithoutGenres?: boolean | number;
     randomWithoutCast?: boolean | number;
+    userGenres?: string[];
+    userCast?: string[];
 }
 
 // export interface UsesUserId {
