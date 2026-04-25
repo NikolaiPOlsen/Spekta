@@ -5,3 +5,5 @@ export enum ParameterTypeName {
     ReleaseDate = "release_date",
     Revenue = "revenue",
 }
+
+export const parameterTypeNames = Object.values(ParameterTypeName);
