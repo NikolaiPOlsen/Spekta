@@ -1,6 +1,7 @@
 import getUserWeights from "../_shared/get-weights-from-db.ts";
 import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
+import { ParameterTypeName } from "./parameter-type-names.js";
 
 const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting, randomWithGenres, randomWithCast, randomWithoutGenres, randomWithoutCast, userGenres, userCast }: BuildAPIRequestURLSpecification) => {
     if ((randomWithGenres || randomWithoutGenres) && (!userGenres || userGenres.length < APIRequestParameterAmount)) {
@@ -89,11 +90,17 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         const type = parameter.type;
 
         switch (type) {
-            case "genre":
+            case ParameterTypeName.Genre:
                 handleGenreParameters(parameter);
                 
-            case "actor":
+            case ParameterTypeName.Actor:
                 handleActorParameters(parameter);
+
+            case ParameterTypeName.Runtime:
+
+            case ParameterTypeName.ReleaseDate:
+
+            case ParameterTypeName.Revenue:
 
         }
     });
