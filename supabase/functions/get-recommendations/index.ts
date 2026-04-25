@@ -28,7 +28,7 @@ serve(async (req) => {
 		}
 		//       `${tmdbBaseUrl}/movie/popular?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1`,
 		const response = await fetch(
-			`https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1&sort_by=popularity.desc&with_cast=297`,
+			`https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1&sort_by=popularity.desc`,
 			{
 				headers: {
 					accept: "application/json",

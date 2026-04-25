@@ -69,6 +69,38 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
 
         return concatenatedParameters;
     }
+
+    const findMinMaxValuesInRange = (array: string[]) => {
+        let maxValue = 0;
+        let minValue = 9.2E18;
+
+        array.forEach(element => {
+            const numbers = element.split("-");
+            const rangeMin = parseInt(numbers[0]);
+            const rangeMax = parseInt(numbers[1]);
+
+            if (Number.isNaN(rangeMin) || Number.isNaN(rangeMax)) {
+                throw new Error("Cannot convert string to valid number");
+            }
+
+            if (rangeMin < minValue) {
+                minValue = rangeMin;
+            }
+
+            if (rangeMax > maxValue) {
+                maxValue = rangeMax;
+            }
+        });
+
+        return {
+            min: minValue,
+            max: maxValue,
+        };
+    }
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split("T")[0];
+    }
     
     const handleGenreParameters = (parameter: APIRequestTypeParameter) => {
         const positive = parameter.positive;
@@ -86,22 +118,74 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         queryParams.append(URLKey, URLArgument);
     }
 
+    const handleRuntimeParameters = (parameter: APIRequestTypeParameter) => {
+        const positive = parameter.positive;
+        if (!positive) return;
+
+        const URLKey = { lower: "with_runtime.gte", upper: "with_runtime.lte" };
+        const runtimes = parameter.parameters;
+
+        const { min, max } = findMinMaxValuesInRange(runtimes);
+
+        queryParams.append(URLKey.lower, String(min));
+        queryParams.append(URLKey.upper, String(max));
+
+    }
+
+    const handleReleaseDateParameters = (parameter: APIRequestTypeParameter) => {
+        const positive = parameter.positive;
+        if (!positive) return;
+
+        const URLKey = { lower: "primary_release_date.gte", upper: "primary_release_date.lte" };
+        const dateRanges = parameter.parameters;
+
+        const { min, max } = findMinMaxValuesInRange(dateRanges);
+
+        const startDate = new Date(min, 0, 1, 0, 0, 0); // first time of a year
+        const endDate = new Date(max, 11, 31, 23, 59, 59); // last time of a year
+
+        queryParams.append(URLKey.lower, formatDate(startDate));
+        queryParams.append(URLKey.upper, formatDate(endDate));
+    }
+
+    const handleRevenueParameters = (parameter: APIRequestTypeParameter) => {
+        const positive = parameter.positive;
+        if (!positive) return;
+
+        const URLKey = { lower: "primary_release_date.gte", upper: "primary_release_date.lte" };
+        const dateRanges = parameter.parameters;
+
+        const { min, max } = findMinMaxValuesInRange(dateRanges);
+
+        const startDate = new Date(min, 0, 1, 0, 0, 0); // first time of a year
+        const endDate = new Date(max, 11, 31, 23, 59, 59); // last time of a year
+
+        queryParams.append(URLKey.lower, formatDate(startDate));
+        queryParams.append(URLKey.upper, formatDate(endDate));
+    }
+
     parameters.forEach(parameter => {
         const type = parameter.type;
 
         switch (type) {
             case ParameterTypeName.Genre:
                 handleGenreParameters(parameter);
-                
+                break;
+
             case ParameterTypeName.Actor:
                 handleActorParameters(parameter);
+                break;
 
             case ParameterTypeName.Runtime:
+                handleRuntimeParameters(parameter);
+                break;
 
             case ParameterTypeName.ReleaseDate:
+                handleReleaseDateParameters(parameter);
+                break;
 
-            case ParameterTypeName.Revenue:
-
+            default:
+                break;
         }
     });
 
