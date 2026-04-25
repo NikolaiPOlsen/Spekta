@@ -2,7 +2,8 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import { validateRecordSwipeBody } from "./validate-body.ts";
 import { saveSeenMedia } from "./save-seen-media.ts";
-import { findParameters } from "./find-parameters.ts";
+import { ensureParameters } from "./ensure-parameters.ts";
+import { ensureUserWeights } from "./ensure-user-weights.ts";
 import { updateUserWeights } from "./update-user-weights.ts";
 
 serve(async (req) => {
@@ -40,12 +41,18 @@ serve(async (req) => {
       tmdbId,
     });
 
-    const matchingParameters = await findParameters({
+    const matchingParameters = await ensureParameters({
       supabase,
       requestedParameters: body.parameters,
     });
 
     const parameterIds = matchingParameters.map((parameter) => parameter.id);
+
+    await ensureUserWeights({
+      supabase,
+      userId: user.id,
+      parameterIds,
+    });
 
     const updatedWeights = await updateUserWeights({
       supabase,

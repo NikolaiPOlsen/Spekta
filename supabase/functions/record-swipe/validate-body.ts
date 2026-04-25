@@ -1,5 +1,21 @@
 import { RecordSwipeBody } from "../_shared/properties.ts";
 
+/**
+ * Validates the request body for the record-swipe Edge Function.
+ *
+ * Expected body:
+ * {
+ *   tmdb_id: string;
+ *   liked: boolean;
+ *   parameters: SwipeParameter[];
+ * }
+ *
+ * @property body - Unknown request body parsed from JSON.
+ *
+ * @returns A validated RecordSwipeBody object.
+ *
+ * @throws Error if the body is missing required fields or has invalid types.
+ */
 export function validateRecordSwipeBody(body: unknown): RecordSwipeBody {
   const parsed = body as Partial<RecordSwipeBody>;
 
