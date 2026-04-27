@@ -17,7 +17,8 @@ export interface getAPIRequestProperties {
     tmdbData: tmdbData;
     supabaseClientInstance: SupabaseClient
     userId: string;
-    addRandomness?: boolean;
+    randomWeightOffset?: boolean;
+    randomizeURLParameters?: boolean;
 };
 
 // export interface APIRequestParameter {
@@ -85,18 +86,18 @@ export type RecordSwipeBody = {
 };
 
 export type ParameterRow = {
-  id: string;
-  parameter_type: string;
-  parameter_value: string;
+    id: string;
+    parameter_type: string;
+    parameter_value: string;
 };
 
 export type UserSettings = {
-  user_id: string;
-  preferred_media_type: string;
-  include_adult: boolean;
-  preferred_language: string | null;
-  preferred_region: string | null;
-  recommendations_per_batch: number;
+    user_id: string;
+    preferred_media_type: string;
+    include_adult: boolean;
+    preferred_language: string | null;
+    preferred_region: string | null;
+    recommendations_per_batch: number;
 };
 
 // export interface UsesUserId {

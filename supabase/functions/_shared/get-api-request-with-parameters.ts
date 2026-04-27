@@ -1,7 +1,8 @@
 import getUserWeights from "../_shared/get-weights-from-db.ts";
-import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
+import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.ts";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
 import { ParameterTypeName } from "./parameter-type-names.js";
+import { getUserSettingsFromDb } from "./get-user-settings.js";
 
 const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting, randomWithGenres, randomWithCast, randomWithoutGenres, randomWithoutCast, userGenres, userCast }: BuildAPIRequestURLSpecification) => {
     if ((randomWithGenres || randomWithoutGenres) && (!userGenres || userGenres.length < APIRequestParameterAmount)) {
@@ -101,7 +102,7 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
     const formatDate = (date: Date) => {
         return date.toISOString().split("T")[0];
     }
-    
+
     const handleGenreParameters = (parameter: APIRequestTypeParameter) => {
         const positive = parameter.positive;
         const genres = parameter.parameters;
@@ -169,11 +170,17 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
 
         switch (type) {
             case ParameterTypeName.Genre:
-                handleGenreParameters(parameter);
+                // Check if randomWithGenres is set to false or not specified
+                if ((!randomWithGenres || randomWithGenres != undefined)) {
+                    handleGenreParameters(parameter);
+                }
                 break;
 
             case ParameterTypeName.Actor:
-                handleActorParameters(parameter);
+                // Check if randomWithCast is set to false or not specified
+                if (!randomWithCast || randomWithCast != undefined) {
+                    handleActorParameters(parameter);
+                }
                 break;
 
             case ParameterTypeName.Runtime:
@@ -189,68 +196,128 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         }
     });
 
-    // custom params
-    parameters.forEach((paramGroup) => {
-        const { positive, type, parameters } = paramGroup;
+    const getRandomElements = (original: string[], returnCount: number) => {
+        const shuffled = [...original];
 
-        if (!parameters.length) return;
-
-        const tmdbKey = positive ? `with_${type}` : `without_${type}`;
-        queryParams.append(tmdbKey, parameters.join(","));
-    });
-
-    // randomized params
-    const appendRandomParam = (
-        key: string,
-        value: boolean | number | undefined
-    ) => {
-        if (!value) return;
-
-        let count: number;
-
-        if (typeof value === "boolean") {
-            count = APIRequestParameterAmount;
-        } else {
-            count = value;
+        // Fisher-Yates shuffle (Knuth shuffle)
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap
         }
 
-        // collect matching parameters from existing list
-        const pool: string[] = [];
+        // first elements
+        return shuffled.slice(0, returnCount);
+    }
 
-        parameters.forEach((group) => {
-            if (group.type === key.replace("with_", "").replace("without_", "")) {
-                pool.push(...group.parameters);
-            }
-        });
+    const getParameterAmount = (randomAmount: number | boolean) => {
+        if (typeof randomAmount == "number") {
+            return randomAmount;
+        }
 
-        if (!pool.length) return;
+        const amount = Math.floor(Math.random() * 10) + Math.ceil(APIRequestParameterAmount / 2);
+        return amount;
+    }
 
-        const shuffled = pool.sort(() => Math.random() - 0.5);
-        const selected = shuffled.slice(0, count);
+    // random with_genres
+    if (randomWithGenres && userGenres != undefined) {
+        const URLKey = "with_genres";
+        const amount = getParameterAmount(randomWithGenres);
+        const randomGenreIds = getRandomElements(userGenres, amount);
+        const concatenatedParameters = concatenateParameters(randomGenreIds);
+        queryParams.append(URLKey, concatenatedParameters);
+    }
 
-        if (!selected.length) return;
-        queryParams.append(key, selected.join(","));
-    };
+    // random without_genres
+    if (randomWithoutGenres && userGenres != undefined) {
+        const URLKey = "without_genres";
+        const amount = getParameterAmount(randomWithoutGenres);
+        const randomGenreIds = getRandomElements(userGenres, amount);
+        const concatenatedParameters = concatenateParameters(randomGenreIds);
+        queryParams.append(URLKey, concatenatedParameters);
+    }
+
+    // random with_cast
+    if (randomWithCast && userCast != undefined) {
+        const URLKey = "with_genres";
+        const amount = getParameterAmount(randomWithCast);
+        const randomGenreIds = getRandomElements(userCast, amount);
+        const concatenatedParameters = concatenateParameters(randomGenreIds);
+        queryParams.append(URLKey, concatenatedParameters);
+    }
+
+    // random without_cast
+    if (randomWithCast && userCast != undefined) {
+        const URLKey = "without_genres";
+        const amount = getParameterAmount(randomWithCast);
+
+        const randomGenreIds = getRandomElements(userCast, amount);
+        const concatenatedParameters = concatenateParameters(randomGenreIds);
+        queryParams.append(URLKey, concatenatedParameters);
+    }
+
+    // // custom params
+    // parameters.forEach((paramGroup) => {
+    //     const { positive, type, parameters } = paramGroup;
+
+    //     if (!parameters.length) return;
+
+    //     const tmdbKey = positive ? `with_${type}` : `without_${type}`;
+    //     queryParams.append(tmdbKey, parameters.join(","));
+    // });
+
+    // randomized params
+    // const appendRandomParam = (
+    //     key: string,
+    //     value: boolean | number | undefined
+    // ) => {
+    //     if (!value) return;
+
+    //     let count: number;
+
+    //     if (typeof value === "boolean") {
+    //         count = APIRequestParameterAmount;
+    //     } else {
+    //         count = value;
+    //     }
+
+    //     // collect matching parameters from existing list
+    //     const pool: string[] = [];
+
+    //     parameters.forEach((group) => {
+    //         if (group.type === key.replace("with_", "").replace("without_", "")) {
+    //             pool.push(...group.parameters);
+    //         }
+    //     });
+
+    //     if (!pool.length) return;
+
+    //     const shuffled = pool.sort(() => Math.random() - 0.5);
+    //     const selected = shuffled.slice(0, count);
+
+    //     if (!selected.length) return;
+    //     queryParams.append(key, selected.join(","));
+    // };
 
 
 
-    appendRandomParam("with_genres", randomWithGenres);
-    appendRandomParam("with_cast", randomWithCast);
-    appendRandomParam("without_genres", randomWithoutGenres);
-    appendRandomParam("without_cast", randomWithoutCast);
+    // appendRandomParam("with_genres", randomWithGenres);
+    // appendRandomParam("with_cast", randomWithCast);
+    // appendRandomParam("without_genres", randomWithoutGenres);
+    // appendRandomParam("without_cast", randomWithoutCast);
 
     return `${baseURL}?${queryParams.toString()}`;
 }
 
-const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, userId, addRandomness = false }: getAPIRequestProperties) => {
-    const withRandomness = addRandomness ? true : false;
+const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, userId, randomWeightOffset = false, randomizeURLParameters = false }: getAPIRequestProperties) => {
+    const useRandomWeightOffset = randomWeightOffset ? true : false;
+    const useRandomURLParameters = randomizeURLParameters ? true : false;
 
     const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
     // const parameterAmount = parameters.length;
     const resultParams: APIRequestTypeParameter[] = [];
 
     parameters.forEach(parameterWeights => {
-        if (withRandomness) {
+        if (useRandomWeightOffset) {
             // loop through and add randomness to weights
         }
 
@@ -296,6 +363,50 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             resultParams.push(resultParametersNegative);
         }
     });
+
+    const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
+    const preferredLanguage = userPreferences.preferred_language;
+
+    let buildAPIRequestURLOptions: BuildAPIRequestURLSpecification = {
+        tmdbData: tmdbData,
+        parameters: resultParams,
+        includeAdult: userPreferences.include_adult
+    };
+
+    if (preferredLanguage != null) {
+        buildAPIRequestURLOptions.languagePreference = preferredLanguage;
+    }
+
+    if (useRandomURLParameters) {
+        const userGenres: string[] = [];
+        const userCast: string[] = [];
+
+        resultParams.forEach(paramType => {
+            if (paramType.type == ParameterTypeName.Genre && paramType.positive) {
+                for (let i = 0; i < paramType.parameters.length; i++) {
+                    userGenres.push(paramType.parameters[i]);
+                }
+            }
+
+            if (paramType.type == ParameterTypeName.Actor && paramType.positive) {
+                for (let i = 0; i < paramType.parameters.length; i++) {
+                    userCast.push(paramType.parameters[i]);
+                }
+            }
+        });
+
+        buildAPIRequestURLOptions.randomPage = true;
+        buildAPIRequestURLOptions.randomSorting = true;
+        buildAPIRequestURLOptions.randomWithGenres = true;
+        buildAPIRequestURLOptions.randomWithCast = true;
+        buildAPIRequestURLOptions.randomWithoutGenres = true;
+        buildAPIRequestURLOptions.randomWithoutCast = true;
+        buildAPIRequestURLOptions.userGenres = userCast,
+        buildAPIRequestURLOptions.userCast = userCast
+    }
+
+    const APIRequestURL = buildAPIRequestURLFromParameters(buildAPIRequestURLOptions);
+    return APIRequestURL;
 }
 
 export default getAPIRequestWithParameters;
