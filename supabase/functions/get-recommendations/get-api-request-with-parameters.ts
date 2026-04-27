@@ -1,8 +1,8 @@
-import getUserWeights from "../_shared/get-weights-from-db.ts";
-import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.ts";
+import getUserWeights from "../_shared/get-weights-from-db.js";
+import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.js";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
-import { ParameterTypeName } from "./parameter-type-names.js";
-import { getUserSettingsFromDb } from "./get-user-settings.js";
+import { ParameterTypeName } from "../_shared/parameter-type-names.js";
+import { getUserSettingsFromDb } from "../_shared/get-user-settings.js";
 
 const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting, randomWithGenres, randomWithCast, randomWithoutGenres, randomWithoutCast, userGenres, userCast }: BuildAPIRequestURLSpecification) => {
     if ((randomWithGenres || randomWithoutGenres) && (!userGenres || userGenres.length < APIRequestParameterAmount)) {
