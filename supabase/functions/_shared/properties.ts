@@ -90,6 +90,15 @@ export type ParameterRow = {
   parameter_value: string;
 };
 
+export type UserSettings = {
+  user_id: string;
+  preferred_media_type: string;
+  include_adult: boolean;
+  preferred_language: string | null;
+  preferred_region: string | null;
+  recommendations_per_batch: number;
+};
+
 // export interface UsesUserId {
 //     userId: string;
 // };
