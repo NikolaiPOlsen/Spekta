@@ -31,7 +31,15 @@ export const APIRequestRandomPageMax = 500;
 /**
  * Default sorting. Results in the most popular results on page 1.
  * 
- * @constant {number} APIRequestParameterAmount
+ * @constant {string} APIRequestParameterAmount
  * @default "popularity.desc"
  */
 export const APIRequestDefaultSortingMethod = "popularity.desc";
+
+/**
+ * Defines how many movies of the array of 20 movies (from /details) that should have extra details fetched
+ * 
+ * @constant {number} APIRequestParameterAmount
+ * @default 5
+ */
+export const APIDetailsMovieAmount = 5;

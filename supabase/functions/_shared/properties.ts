@@ -135,8 +135,8 @@ export interface GenericMovie {
 }
 
 export interface DetailedMovie extends GenericMovie {
-    actorIds: number[];
-    runtime: number;
+    actorIds?: number[];
+    runtime?: number;
 }
 
 // export interface UsesUserId {
