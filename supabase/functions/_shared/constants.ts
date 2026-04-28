@@ -21,12 +21,12 @@ export const APIRequestParameterAmount = 5;
 export const APIRequestRandomPageMin = 1;
 
 /**
- * The max page number to fetch from API.
+ * The max page number to fetch from API. TMDB valid range [1, 500]
  * 
  * @constant {number} APIRequestParameterAmount
  * @default 1
  */
-export const APIRequestRandomPageMax = 50;
+export const APIRequestRandomPageMax = 500;
 
 /**
  * Default sorting. Results in the most popular results on page 1.

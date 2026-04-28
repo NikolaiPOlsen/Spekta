@@ -100,6 +100,45 @@ export type UserSettings = {
     recommendations_per_batch: number;
 };
 
+export interface GenericMovieAPIFetch {
+    adult: boolean;
+    backdrop_path: string;
+    genre_ids: number[];
+    id: number;
+    title: string;
+    original_language: string;
+    original_title: string;
+    overview: string;
+    popularity: number;
+    poster_path: string;
+    release_date: string;
+    video: boolean;
+    vote_average: number;
+    vote_count: number;
+}
+
+export interface GenericMovie {
+    adult: boolean;
+    backdropPath: string;
+    genreIds: number[];
+    id: number;
+    title: string;
+    originalLanguage: string;
+    originalTitle: string;
+    overview: string;
+    popularity: number;
+    posterPath: string;
+    releaseDate: string;
+    video: boolean;
+    voteAverage: number;
+    voteCount: number;
+}
+
+export interface DetailedMovie extends GenericMovie {
+    actorIds: number[];
+    runtime: number;
+}
+
 // export interface UsesUserId {
 //     userId: string;
 // };

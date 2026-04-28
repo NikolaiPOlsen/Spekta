@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import getAPIRequestWithParameters from "./get-api-request-with-parameters.ts";
-import { APIRequestTypeParameter, getAPIRequestProperties, tmdbData } from "../_shared/properties.ts";
+import { APIRequestTypeParameter, getAPIRequestProperties, tmdbData, GenericMovieAPIFetch, GenericMovie, DetailedMovie } from "../_shared/properties.ts";
 
 serve(async (req) => {
 	try {
@@ -84,18 +84,41 @@ serve(async (req) => {
 			);
 		}
 
-		const movies = (data.results ?? []).map((movie: any) => ({
-			tmdb_id: movie.id,
-			genre_ids: movie.genre_ids,
-			release_date: movie.release_date ?? null,
-			popularity: movie.popularity,
-			vote_average: movie.vote_average,
-			vote_count: movie.vote_count,
-			adult: movie.adult,
-			name: movie.title,
-			poster_path: movie.poster_path,
-			overview: movie.overview
-		}));
+		const movies: GenericMovie[] = [];
+
+		data.results.forEach((movie: GenericMovieAPIFetch) => {
+			const genericMovie: GenericMovie = {
+				adult: movie.adult,
+				backdropPath: movie.backdrop_path,
+				genreIds: movie.genre_ids,
+				id: movie.id,
+				title: movie.title,
+				originalLanguage: movie.original_language,
+				originalTitle: movie.original_title,
+				overview: movie.overview,
+				popularity: movie.popularity,
+				posterPath: movie.poster_path,
+				releaseDate: movie.release_date,
+				video: movie.video,
+				voteAverage: movie.vote_average,
+				voteCount: movie.vote_count
+			}
+
+			movies.push(genericMovie);
+		});
+
+		// const movies = (data.results ?? []).map((movie: any) => ({
+		// 	tmdb_id: movie.id,
+		// 	genre_ids: movie.genre_ids,
+		// 	release_date: movie.release_date ?? null,
+		// 	popularity: movie.popularity,
+		// 	vote_average: movie.vote_average,
+		// 	vote_count: movie.vote_count,
+		// 	adult: movie.adult,
+		// 	name: movie.title,
+		// 	poster_path: movie.poster_path,
+		// 	overview: movie.overview
+		// }));
 
 		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "{APIKEY}"), movies }), {
 			status: 200,
