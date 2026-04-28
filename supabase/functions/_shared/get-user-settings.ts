@@ -38,10 +38,20 @@ export async function getUserSettingsFromDb(
       recommendations_per_batch
     `)
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Failed to fetch user settings: ${error.message}`);
+  }
+
+  if (!data) {
+    return { user_id:userId,
+             preferred_media_type:'both', 
+             include_adult:false, 
+             preferred_language:null, 
+             preferred_region: null,
+             recommendations_per_batch: 20,
+            };
   }
 
   const row = data as UserSettingsRow;
