@@ -2,12 +2,12 @@
  * Renders a simple reusable movie card for movie-related UI.
  */
 
-import { StyleSheet, View, Text, ImageBackground, Dimensions, useColorScheme, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, useWindowDimensions, useColorScheme, Pressable } from 'react-native';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-type MovieCardProps = {
+export type MovieCardProps = {
   title: string;
   subtitle: string;
   poster?: string;
@@ -29,14 +29,11 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
       >
         <View style={styles.overlay}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-
             <Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
-
             <View style={{ flexDirection: 'row', gap: 5 }}>
               <MaterialIcons name="star-rate" size={24} color={themeColors.star} />
               <Text style={[TextStyles.cardRating, { color: themeColors.star }]}>{voteavg}</Text>
             </View>
-            
           </View>
           <Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
           <Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
@@ -45,20 +42,14 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
         <Pressable style={styles.infoButton} onPress={() => false}>
           <MaterialIcons name='info' size={24} color={themeColors.white} />
         </Pressable>
-
       </ImageBackground>
     </View>
   );
 }
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = Math.min(width - 48, 600);
-const CARD_HEIGHT = CARD_WIDTH * 1.5;
-
 const styles = StyleSheet.create({
   shadow: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
+    flex: 1,
     borderRadius: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
