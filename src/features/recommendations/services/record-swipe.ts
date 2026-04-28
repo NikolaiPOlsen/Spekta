@@ -9,7 +9,7 @@ type RecordSwipePayload = {
 };
 
 function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
-  return movie.genre_ids.map((genreId) => ({
+  return movie.genreIds.map((genreId) => ({
     parameter_type: 'genre',
     parameter_value: String(genreId),
   }));
@@ -17,7 +17,7 @@ function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 
 export async function recordSwipe(movie: RecommendationMovie, liked: boolean): Promise<void> {
   const payload: RecordSwipePayload = {
-    tmdb_id: String(movie.tmdb_id),
+    tmdb_id: String(movie.id),
     liked,
     parameters: buildSwipeParameters(movie),
   };

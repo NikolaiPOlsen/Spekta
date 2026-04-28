@@ -13,6 +13,6 @@ export async function fetchRecommendations(): Promise<RecommendationResponse> {
 
   return {
     apiRequest: data?.apiRequest,
-    movies: data?.movies ?? [],
+    recommendations: data?.recommendations ?? [],
   };
 }

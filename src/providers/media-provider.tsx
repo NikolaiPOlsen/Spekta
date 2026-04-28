@@ -37,7 +37,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 
     try {
       const response = await fetchRecommendations();
-      setRecommendations(response.movies);
+      setRecommendations(response.recommendations);
       setHasLoaded(true);
     } catch (loadError) {
       setError(
@@ -58,7 +58,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
     async (movie: RecommendationMovie, liked: boolean) => {
       await saveSwipe(movie, liked);
       setRecommendations((current) =>
-        current.filter((currentMovie) => currentMovie.tmdb_id !== movie.tmdb_id),
+        current.filter((currentMovie) => currentMovie.id !== movie.id),
       );
     },
     [],

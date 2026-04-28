@@ -6,15 +6,15 @@ import type { RecommendationMovie } from '@/features/recommendations/types';
 
 function toMovieCard(movie: RecommendationMovie) {
   const voteavg =
-    typeof movie.vote_average === 'number' ? movie.vote_average.toFixed(1) : 'N/A';
+    typeof movie.voteAverage === 'number' ? movie.voteAverage.toFixed(1) : 'N/A';
 
   return {
-    title: movie.name || 'Untitled',
+    title: movie.title || 'Untitled',
     subtitle: movie.overview || 'No description available.',
     type: 'Movie',
     voteavg,
-    poster: movie.poster_path
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    poster: movie.posterPath
+      ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
       : undefined,
   };
 }
@@ -37,7 +37,7 @@ export default function HomeRoute() {
           onSwipeRight={(movieCard, index) => {
             const movie = recommendations[index];
 
-            if (!movie || movie.name !== movieCard.title) {
+            if (!movie || movie.title !== movieCard.title) {
               return;
             }
 
@@ -46,7 +46,7 @@ export default function HomeRoute() {
           onSwipeLeft={(movieCard, index) => {
             const movie = recommendations[index];
 
-            if (!movie || movie.name !== movieCard.title) {
+            if (!movie || movie.title !== movieCard.title) {
               return;
             }
 

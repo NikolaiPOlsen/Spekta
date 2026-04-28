@@ -3,21 +3,23 @@
  */
 
 export type RecommendationMovie = {
-  tmdb_id: number;
-  genre_ids: number[];
-  release_date: string | null;
+  id: number;
+  genreIds: number[];
+  releaseDate: string | null;
   popularity: number;
-  vote_average: number;
-  vote_count: number;
+  voteAverage: number;
+  voteCount: number;
   adult: boolean;
-  name: string;
-  poster_path: string | null;
+  title: string;
+  posterPath: string | null;
   overview: string;
+  actorIds?: number[];
+  runtime?: number;
 };
 
 export type RecommendationResponse = {
   apiRequest?: string;
-  movies: RecommendationMovie[];
+  recommendations: RecommendationMovie[];
 };
 
 export type SwipeParameter = {
