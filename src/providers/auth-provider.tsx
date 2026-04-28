@@ -1,11 +1,14 @@
 import { AuthContext } from '@/hooks/use-auth-context'
+import { initializeUserProfile } from '@/features/auth/services'
 import { supabase } from '@/lib/supabase'
 import { PropsWithChildren, useEffect, useState } from 'react'
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [claims, setClaims] = useState<Record<string, any> | undefined | null>()
-  const [profile, setProfile] = useState<any>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isInitializingUser, setIsInitializingUser] = useState(false)
+  const [isUserInitialized, setIsUserInitialized] = useState(false)
+  const [initializationError, setInitializationError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -39,34 +42,60 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setIsLoading(true)
+    const userId = claims?.sub
 
-      if (claims) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', claims.sub)
-          .single()
-
-        setProfile(data)
-      } else {
-        setProfile(null)
-      }
-
-      setIsLoading(false)
+    if (!userId) {
+      setIsInitializingUser(false)
+      setIsUserInitialized(false)
+      setInitializationError(null)
+      return
     }
 
-    fetchProfile()
-  }, [claims])
+    let isActive = true
+
+    const bootstrapUser = async () => {
+      setIsInitializingUser(true)
+      setInitializationError(null)
+
+      try {
+        await initializeUserProfile()
+
+        if (isActive) {
+          setIsUserInitialized(true)
+          setInitializationError(null)
+        }
+      } catch (error) {
+        console.error('Error initializing user weights:', error)
+
+        if (isActive) {
+          setIsUserInitialized(false)
+          setInitializationError(
+            error instanceof Error ? error.message : 'Failed to initialize user weights',
+          )
+        }
+      } finally {
+        if (isActive) {
+          setIsInitializingUser(false)
+        }
+      }
+    }
+
+    bootstrapUser()
+
+    return () => {
+      isActive = false
+    }
+  }, [claims?.sub])
 
   return (
     <AuthContext.Provider
       value={{
         claims,
         isLoading,
-        profile,
-        isLoggedIn: claims !== undefined,
+        isInitializingUser,
+        isUserInitialized,
+        initializationError,
+        isLoggedIn: claims != null,
       }}
     >
       {children}

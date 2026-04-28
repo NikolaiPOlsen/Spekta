@@ -1,12 +1,18 @@
 import { Swiper, type SwiperCardRefType } from 'rn-swiper-list';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import React, { useRef, useState } from 'react';
-import { MovieCard } from '@/features/swipe/components';
+import React, { useRef } from 'react';
+import { MovieCard } from './movie-card';
 import type { MovieCardProps } from './movie-card';
 import { useWindowDimensions } from 'react-native';
 
-export function Swipe({ data }: { data: MovieCardProps[] }) {
-    const ref = useRef<SwiperCardRefType>(null);
+type SwipeProps = {
+  data: MovieCardProps[];
+  onSwipeRight?: (movie: MovieCardProps, index: number) => void;
+  onSwipeLeft?: (movie: MovieCardProps, index: number) => void;
+};
+
+export function Swipe({ data, onSwipeLeft, onSwipeRight }: SwipeProps) {
+    const ref = useRef<SwiperCardRefType | null>(null);
 
     const { width, height } = useWindowDimensions();
     const cardWidth = width * 0.85;
@@ -17,10 +23,10 @@ export function Swipe({ data }: { data: MovieCardProps[] }) {
             <Swiper
                 ref={ref}
                 data={data}
-                renderCard={(item) => <MovieCard {...item} />}
+                renderCard={(item: MovieCardProps) => <MovieCard {...item} />}
                 cardStyle={{ width: cardWidth, height: cardHeight }}
-                onSwipeRight={(index) => console.log('Liked', index)}
-                onSwipeLeft={(index) => console.log('Passed', index)}
+                onSwipeRight={(index: number) => onSwipeRight?.(data[index], index)}
+                onSwipeLeft={(index: number) => onSwipeLeft?.(data[index], index)}
                 disableBottomSwipe
                 disableTopSwipe
             />

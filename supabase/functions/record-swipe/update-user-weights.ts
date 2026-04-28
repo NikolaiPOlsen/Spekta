@@ -24,7 +24,6 @@ type UpdateUserWeightsInput = {
  *
  * @throws Error if fetching or updating weights fails.
  */
-export async function updateUserWeights(...)
 export async function updateUserWeights({
   supabase,
   userId,
