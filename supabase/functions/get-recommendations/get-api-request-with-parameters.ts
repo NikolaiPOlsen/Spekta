@@ -1,6 +1,6 @@
 import getUserWeights from "../_shared/get-weights-from-db.ts";
-import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.js";
-import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
+import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.ts";
+import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
 import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
 import { getUserSettingsFromDb } from "../_shared/get-user-settings.ts";
 
@@ -312,7 +312,9 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     const useRandomWeightOffset = randomWeightOffset ? true : false;
     const useRandomURLParameters = randomizeURLParameters ? true : false;
 
+    console.log("Before getUserWeights");
     const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
+    console.log("After getUserWeights");
     // const parameterAmount = parameters.length;
     const resultParams: APIRequestTypeParameter[] = [];
 
@@ -333,6 +335,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             type: paramType,
             parameters: []
         };
+
+        console.log(`currently looping for ${paramType}`);
 
         topParameterWeights.forEach(parameterWeight => {
             // const paramType = parameterWeight.parameter_type;
