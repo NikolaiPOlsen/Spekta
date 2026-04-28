@@ -108,26 +108,10 @@ serve(async (req) => {
 			movies.push(genericMovie);
 		});
 
-
-
-
 		// Sort and get details for first movies
-		const finalMovieRecommendations = await getFinalRecommendations(tmdbData, movies);
+		const recommendations = await getFinalRecommendations(tmdbData, movies);
 
-		// const movies = (data.results ?? []).map((movie: any) => ({
-		// 	tmdb_id: movie.id,
-		// 	genre_ids: movie.genre_ids,
-		// 	release_date: movie.release_date ?? null,
-		// 	popularity: movie.popularity,
-		// 	vote_average: movie.vote_average,
-		// 	vote_count: movie.vote_count,
-		// 	adult: movie.adult,
-		// 	name: movie.title,
-		// 	poster_path: movie.poster_path,
-		// 	overview: movie.overview
-		// }));
-
-		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "{APIKEY}"), finalMovieRecommendations }), {
+		return new Response(JSON.stringify({ recommendations }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});
