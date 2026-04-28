@@ -36,8 +36,6 @@ serve(async (req) => {
 			APIKey: tmdbApiKey,
 			baseURL: tmdbBaseUrl
 		};
-		//       `${tmdbBaseUrl}/movie/popular?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1`,
-		// `https://api.themoviedb.org/3/discover/movie?api_key=${encodeURIComponent(tmdbApiKey)}&language=en-US&page=1&sort_by=popularity.desc`,
 
 		const APIRequestOptions: getAPIRequestProperties = {
 			tmdbData: tmdbData,
@@ -54,11 +52,6 @@ serve(async (req) => {
 			console.log("Trying to build api request");
 			APIRequestURL = await getAPIRequestWithParameters(APIRequestOptions);
 			console.log("Built api request");
-
-			// return new Response(JSON.stringify({ apiRequest: APIRequestURL }), {
-			// 	status: 200,
-			// 	headers: { "Content-Type": "application/json" },
-			// });
 
 			response = await fetch(APIRequestURL, { headers: { accept: "application/json" } });
 		} catch (error) {

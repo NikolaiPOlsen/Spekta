@@ -255,56 +255,6 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         queryParams.append(URLKey, concatenatedParameters);
     }
 
-    // // custom params
-    // parameters.forEach((paramGroup) => {
-    //     const { positive, type, parameters } = paramGroup;
-
-    //     if (!parameters.length) return;
-
-    //     const tmdbKey = positive ? `with_${type}` : `without_${type}`;
-    //     queryParams.append(tmdbKey, parameters.join(","));
-    // });
-
-    // randomized params
-    // const appendRandomParam = (
-    //     key: string,
-    //     value: boolean | number | undefined
-    // ) => {
-    //     if (!value) return;
-
-    //     let count: number;
-
-    //     if (typeof value === "boolean") {
-    //         count = APIRequestParameterAmount;
-    //     } else {
-    //         count = value;
-    //     }
-
-    //     // collect matching parameters from existing list
-    //     const pool: string[] = [];
-
-    //     parameters.forEach((group) => {
-    //         if (group.type === key.replace("with_", "").replace("without_", "")) {
-    //             pool.push(...group.parameters);
-    //         }
-    //     });
-
-    //     if (!pool.length) return;
-
-    //     const shuffled = pool.sort(() => Math.random() - 0.5);
-    //     const selected = shuffled.slice(0, count);
-
-    //     if (!selected.length) return;
-    //     queryParams.append(key, selected.join(","));
-    // };
-
-
-
-    // appendRandomParam("with_genres", randomWithGenres);
-    // appendRandomParam("with_cast", randomWithCast);
-    // appendRandomParam("without_genres", randomWithoutGenres);
-    // appendRandomParam("without_cast", randomWithoutCast);
-
     return `${baseURL}?${queryParams.toString()}`;
 }
 
