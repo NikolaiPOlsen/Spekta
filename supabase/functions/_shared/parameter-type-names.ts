@@ -1,8 +1,8 @@
 export enum ParameterTypeName {
-    Genre = "genre",
-    Actor = "actor",
-    Runtime = "runtime",
-    ReleaseDate = "release_date"
+    Genre = "genre", // api request param, is generic return
+    Actor = "actor", // api request param, not generic return
+    Runtime = "runtime", // api request param, not generic return
+    ReleaseDate = "release_date" // api request param, is generic return
 }
 
 export const parameterTypeNames = Object.values(ParameterTypeName);
