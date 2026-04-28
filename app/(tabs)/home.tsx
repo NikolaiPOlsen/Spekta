@@ -27,3 +27,22 @@ const styles = StyleSheet.create({
   },
 
 });
+
+//This is useful for later implementation of recording swipes in the database
+//should not be added directly here, but have not decided where to put it yet, so I will just leave it here for now
+
+// await supabase.functions.invoke("record-swipe", {
+//   body: {
+//     tmdb_id: String(movie.tmdb_id),
+//     liked: true, // right swipe
+//     genre_ids: movie.genre_ids.map(String),
+//   },
+// });
+
+// await supabase.functions.invoke("record-swipe", {
+//   body: {
+//     tmdb_id: String(movie.tmdb_id),
+//     liked: false,
+//     genre_ids: movie.genre_ids.map(String),
+//   },
+// });

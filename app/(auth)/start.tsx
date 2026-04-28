@@ -11,14 +11,18 @@ export default function StartScreen() {
 	const themeColors = Colors[colorScheme ?? 'light'];
 
 	const testEdgeFunc = async () => {
+		console.log("testing function");
+
 		try {
 			const { data, error } = await supabase.functions.invoke("get-recommendations");
+			console.log("got something");
 			if (error) throw error;
 
 			// console.log(`it worked, data: ${JSON.parse(data)}`);
 			console.log(JSON.stringify(data, null, 2));
 
 		} catch (error) {
+			console.log("error");
 			if (error instanceof FunctionsHttpError) {
 				const errorMessage = await error.context.json();
 				console.error("Function returned error body:", errorMessage);
