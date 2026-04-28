@@ -13,6 +13,20 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         throw new Error("userCast must be present and length > APIRequestParameterAmount if `randomWithCast` or `randomWithoutCast` are set");
     }
 
+    console.log(`
+        API Request parameters:\n
+        includeAdult: ${includeAdult}\n
+        parametersLength: ${parameters.length}\n
+        languagePreference: ${languagePreference}\n
+        randomPage: ${randomPage}\n
+        randomSorting: ${randomSorting}\n
+        randomWithGenres: ${randomWithGenres}\n
+        randomWithoutGenres: ${randomWithoutGenres}\n
+        randomWithCast: ${randomWithCast}\n
+        randomWithoutCast: ${randomWithoutCast}\n
+    `);
+
+
     const tmdbAPIKey = tmdbData.APIKey;
     // const tmdbBaseURL = tmdbData.baseURL;
 
@@ -184,11 +198,17 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
                 break;
 
             case ParameterTypeName.Runtime:
-                handleRuntimeParameters(parameter);
+                // ~Half the time: no runtime parameters added to URL
+                if (Math.random() < 0.5) {
+                    handleRuntimeParameters(parameter);
+                }
                 break;
 
             case ParameterTypeName.ReleaseDate:
-                handleReleaseDateParameters(parameter);
+                // ~Half the time: no release_date parameters added to URL
+                if (Math.random() < 0.5) {
+                    handleReleaseDateParameters(parameter);
+                }
                 break;
 
             default:
@@ -337,7 +357,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     };
 
     if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
-        buildAPIRequestURLOptions.randomSorting = true;
+        buildAPIRequestURLOptions.randomPage = false;
+        buildAPIRequestURLOptions.randomSorting = false;
     }
 
     if (preferredLanguage != null) {
