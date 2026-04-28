@@ -357,8 +357,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     };
 
     if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
-        buildAPIRequestURLOptions.randomPage = true;
-        buildAPIRequestURLOptions.randomSorting = true;
+        buildAPIRequestURLOptions.randomPage = false;
+        buildAPIRequestURLOptions.randomSorting = false;
     }
 
     if (preferredLanguage != null) {

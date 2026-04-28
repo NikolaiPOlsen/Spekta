@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import getAPIRequestWithParameters from "./get-api-request-with-parameters.ts";
+import getFinalRecommendations from "./get-final-recommendations.ts";
 import { APIRequestTypeParameter, getAPIRequestProperties, tmdbData, GenericMovieAPIFetch, GenericMovie, DetailedMovie } from "../_shared/properties.ts";
 
 serve(async (req) => {
@@ -107,6 +108,12 @@ serve(async (req) => {
 			movies.push(genericMovie);
 		});
 
+
+
+
+		// Sort and get details for first movies
+		const finalMovieRecommendations = await getFinalRecommendations(tmdbData, movies);
+
 		// const movies = (data.results ?? []).map((movie: any) => ({
 		// 	tmdb_id: movie.id,
 		// 	genre_ids: movie.genre_ids,
@@ -120,7 +127,7 @@ serve(async (req) => {
 		// 	overview: movie.overview
 		// }));
 
-		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "{APIKEY}"), movies }), {
+		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "{APIKEY}"), finalMovieRecommendations }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});
