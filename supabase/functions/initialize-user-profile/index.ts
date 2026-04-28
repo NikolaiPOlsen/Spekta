@@ -22,6 +22,30 @@ serve(async (req) => {
       });
     }
 
+    const { data: existingWeights, error: existingWeightsError } = await supabase
+      .from("user_parameter_weights")
+      .select("parameter_id")
+      .eq("user_id", user.id)
+      .limit(1);
+
+    if (existingWeightsError) {
+      throw new Error(`Failed to check existing user weights: ${existingWeightsError.message}`);
+    }
+
+    if ((existingWeights ?? []).length > 0) {
+      return new Response(
+        JSON.stringify({
+          message: "User weights already initialized",
+          user_id: user.id,
+          initialized_weights: 0,
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const { data: genreParameters, error: parametersError } = await supabase
       .from("parameters")
       .select("id")
@@ -52,7 +76,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({
-        message: "User profile initialized",
+        message: "User weights initialized",
         user_id: user.id,
         initialized_weights: rows.length,
       }),

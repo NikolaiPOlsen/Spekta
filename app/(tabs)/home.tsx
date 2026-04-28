@@ -1,20 +1,59 @@
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
-import { MovieCardProps } from '@/features/swipe/components/movie-card';
+import { useMediaContext } from '@/hooks/use-media-context';
+import type { RecommendationMovie } from '@/features/recommendations/types';
+
+function toMovieCard(movie: RecommendationMovie) {
+  const voteavg =
+    typeof movie.vote_average === 'number' ? movie.vote_average.toFixed(1) : 'N/A';
+
+  return {
+    title: movie.name || 'Untitled',
+    subtitle: movie.overview || 'No description available.',
+    type: 'Movie',
+    voteavg,
+    poster: movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : undefined,
+  };
+}
 
 export default function HomeRoute() {
-const { width, height } = useWindowDimensions();
+  const { recommendations, isLoading, error, recordSwipe } = useMediaContext();
 
-const MOVIES: MovieCardProps[] = [
-  { title: 'Interstellar', subtitle: 'A team of explorers travel through a wormhole in space.', type: 'Movie', voteavg: '8.6', poster: 'https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bAY4deknql9Ph7Fk.jpg' },
-  { title: 'Dune', subtitle: 'A noble family becomes embroiled in a war for control over the galaxy.', type: 'Movie', voteavg: '7.9' },
-];
+  const cards = recommendations.map(toMovieCard);
 
   return (
     <View style={styles.container}>
-      <Swipe data={MOVIES} />
+      {isLoading ? <Text>Loading recommendations...</Text> : null}
+      {error ? <Text>{error}</Text> : null}
+      {!isLoading && !error && cards.length === 0 ? (
+        <Text>No recommendations available.</Text>
+      ) : null}
+      {cards.length > 0 ? (
+        <Swipe
+          data={cards}
+          onSwipeRight={(movieCard, index) => {
+            const movie = recommendations[index];
+
+            if (!movie || movie.name !== movieCard.title) {
+              return;
+            }
+
+            void recordSwipe(movie, true);
+          }}
+          onSwipeLeft={(movieCard, index) => {
+            const movie = recommendations[index];
+
+            if (!movie || movie.name !== movieCard.title) {
+              return;
+            }
+
+            void recordSwipe(movie, false);
+          }}
+        />
+      ) : null}
     </View>
   );
 }
@@ -25,24 +64,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
 });
-
-//This is useful for later implementation of recording swipes in the database
-//should not be added directly here, but have not decided where to put it yet, so I will just leave it here for now
-
-// await supabase.functions.invoke("record-swipe", {
-//   body: {
-//     tmdb_id: String(movie.tmdb_id),
-//     liked: true, // right swipe
-//     genre_ids: movie.genre_ids.map(String),
-//   },
-// });
-
-// await supabase.functions.invoke("record-swipe", {
-//   body: {
-//     tmdb_id: String(movie.tmdb_id),
-//     liked: false,
-//     genre_ids: movie.genre_ids.map(String),
-//   },
-// });
