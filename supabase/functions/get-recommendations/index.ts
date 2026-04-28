@@ -55,10 +55,10 @@ serve(async (req) => {
 			APIRequestURL = await getAPIRequestWithParameters(APIRequestOptions);
 			console.log("Built api request");
 
-			return new Response(JSON.stringify({ apiRequest: APIRequestURL }), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
-			});
+			// return new Response(JSON.stringify({ apiRequest: APIRequestURL }), {
+			// 	status: 200,
+			// 	headers: { "Content-Type": "application/json" },
+			// });
 
 			response = await fetch(APIRequestURL, { headers: { accept: "application/json" } });
 		} catch (error) {

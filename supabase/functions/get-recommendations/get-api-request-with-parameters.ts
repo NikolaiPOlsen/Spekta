@@ -315,10 +315,17 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     console.log("Before getUserWeights");
     const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
     console.log("After getUserWeights");
+
+
+
     // const parameterAmount = parameters.length;
     const resultParams: APIRequestTypeParameter[] = [];
 
     parameters.forEach(parameterWeights => {
+        if (!parameterWeights || parameterWeights.length < 1) {
+            return;
+        }
+
         if (useRandomWeightOffset) {
             // loop through and add randomness to weights
         }
@@ -327,6 +334,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
         const sortedWeights = parameterWeights.sort((a, b) => b.weight - a.weight);
         // const reverseSortedWeights = [...sortedWeights].reverse();
         const topParameterWeights = sortedWeights.slice(0, APIRequestParameterAmount);
+
+        console.log(parameterWeights);
 
         // Build data structure of parameters that will be specified in API request
         const paramType = parameterWeights[0].parameter_type;
@@ -376,6 +385,10 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
         parameters: resultParams,
         includeAdult: userPreferences.include_adult
     };
+
+    if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
+        buildAPIRequestURLOptions.randomSorting = true;
+    }
 
     if (preferredLanguage != null) {
         buildAPIRequestURLOptions.languagePreference = preferredLanguage;
