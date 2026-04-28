@@ -1,8 +1,8 @@
-import getUserWeights from "../_shared/get-weights-from-db.js";
+import getUserWeights from "../_shared/get-weights-from-db.ts";
 import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.js";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
-import { ParameterTypeName } from "../_shared/parameter-type-names.js";
-import { getUserSettingsFromDb } from "../_shared/get-user-settings.js";
+import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
+import { getUserSettingsFromDb } from "../_shared/get-user-settings.ts";
 
 const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting, randomWithGenres, randomWithCast, randomWithoutGenres, randomWithoutCast, userGenres, userCast }: BuildAPIRequestURLSpecification) => {
     if ((randomWithGenres || randomWithoutGenres) && (!userGenres || userGenres.length < APIRequestParameterAmount)) {
@@ -14,9 +14,9 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
     }
 
     const tmdbAPIKey = tmdbData.APIKey;
-    const tmdbBaseURL = tmdbData.baseURL;
+    // const tmdbBaseURL = tmdbData.baseURL;
 
-    const baseURL = tmdbBaseURL ? tmdbBaseURL : "https://api.themoviedb.org/3/discover/movie";
+    const baseURL = tmdbData.baseURL;
     const queryParams = new URLSearchParams({ api_key: encodeURIComponent(tmdbAPIKey) });
 
     // language

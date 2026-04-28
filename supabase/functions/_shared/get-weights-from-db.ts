@@ -1,6 +1,6 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { UserParameterWeight, UsesUserId } from "../_shared/properties.ts";
-import { parameterTypeNames } from "./parameter-type-names.js";
+import { parameterTypeNames } from "./parameter-type-names.ts";
 
 // Type for raw supabase query result
 type UserParameterWeightRow = {
