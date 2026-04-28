@@ -97,7 +97,7 @@ serve(async (req) => {
 			overview: movie.overview
 		}));
 
-		return new Response(JSON.stringify({ apiRequest: APIRequestURL, movies }), {
+		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "{APIKEY}"), movies }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});

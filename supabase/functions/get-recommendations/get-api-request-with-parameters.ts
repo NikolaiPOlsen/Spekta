@@ -13,6 +13,20 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         throw new Error("userCast must be present and length > APIRequestParameterAmount if `randomWithCast` or `randomWithoutCast` are set");
     }
 
+    console.log(`
+        API Request parameters:\n
+        includeAdult: ${includeAdult}\n
+        parametersLength: ${parameters.length}\n
+        languagePreference: ${languagePreference}\n
+        randomPage: ${randomPage}\n
+        randomSorting: ${randomSorting}\n
+        randomWithGenres: ${randomWithGenres}\n
+        randomWithoutGenres: ${randomWithoutGenres}\n
+        randomWithCast: ${randomWithCast}\n
+        randomWithoutCast: ${randomWithoutCast}\n
+    `);
+
+
     const tmdbAPIKey = tmdbData.APIKey;
     // const tmdbBaseURL = tmdbData.baseURL;
 
@@ -343,7 +357,7 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     };
 
     if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
-        buildAPIRequestURLOptions.randomPage = true;
+        buildAPIRequestURLOptions.randomPage = [499, 500];
         buildAPIRequestURLOptions.randomSorting = true;
     }
 
