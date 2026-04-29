@@ -1,28 +1,37 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Swipe } from '@/features/swipe/components/swipe';
+import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
 import { useMediaContext } from '@/hooks/use-media-context';
 import type { RecommendationMovie } from '@/features/recommendations/types';
 
-function toMovieCard(movie: RecommendationMovie) {
+type RecommendationCard = {
+  movie: RecommendationMovie;
+  card: MovieCardProps;
+};
+
+function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
   const voteavg =
     typeof movie.voteAverage === 'number' ? movie.voteAverage.toFixed(1) : 'N/A';
 
   return {
-    title: movie.title || 'Untitled',
-    subtitle: movie.overview || 'No description available.',
-    type: 'Movie',
-    voteavg,
-    poster: movie.posterPath
-      ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
-      : undefined,
+    movie,
+    card: {
+      title: movie.title || 'Untitled',
+      subtitle: movie.overview || 'No description available.',
+      type: 'Movie',
+      voteavg,
+      poster: movie.posterPath
+        ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
+        : undefined,
+    },
   };
 }
 
 export default function HomeRoute() {
   const { recommendations, isLoading, error, recordSwipe } = useMediaContext();
 
-  const cards = recommendations.map(toMovieCard);
+  const cards = recommendations.map(toRecommendationCard);
 
   return (
     <View style={styles.container}>
@@ -33,24 +42,14 @@ export default function HomeRoute() {
       ) : null}
       {cards.length > 0 ? (
         <Swipe
+          key={recommendations[0]?.id ?? 'recommendations'}
           data={cards}
-          onSwipeRight={(movieCard, index) => {
-            const movie = recommendations[index];
-
-            if (!movie || movie.title !== movieCard.title) {
-              return;
-            }
-
-            void recordSwipe(movie, true);
+          renderCard={(item) => <MovieCard {...item.card} />}
+          onSwipeRight={(item) => {
+            void recordSwipe(item.movie, true);
           }}
-          onSwipeLeft={(movieCard, index) => {
-            const movie = recommendations[index];
-
-            if (!movie || movie.title !== movieCard.title) {
-              return;
-            }
-
-            void recordSwipe(movie, false);
+          onSwipeLeft={(item) => {
+            void recordSwipe(item.movie, false);
           }}
         />
       ) : null}
