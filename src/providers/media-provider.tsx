@@ -40,9 +40,13 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 		let out = "";
 		for (let i = 0; i < 8; i++) {
 			const element = recommendations[i];
-			out += `(${i}) ${element.title}, `;
+			if (element) {
+				out += `(${i}) ${element.title}, `;
+			} else {
+				out += `(${i}) UNDEFINED, `;
+			}
 		}
-		
+
 		console.log(`(${recommendations.length}) [${out}...]`);
 	}
 
@@ -50,15 +54,15 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 		
 
 		setRecommendations(remainingMovies => {
-			const nextThree = remainingMovies.slice(1, genericMoviesBuffer + 1);
-			const newMovies = [...nextThree, ...nextBatch];
+			const nextCurrentMovies = remainingMovies.slice(1, genericMoviesBuffer + 1);
+			const newMovies = [...nextCurrentMovies, ...nextBatch];
 
 			let out = "";
 			for (let i = 0; i < 10; i++) {
 				const element = newMovies[i];
 				out += `(${i}) ${element.title}, `;
 			}
-			console.log("\n\nMOVIES AFTER COMBINING LASTTHREE AND NEXTBATCH:");
+			console.log("\n\nmovies after combining nextCurrentMovies and nextBatch:");
 			console.log(`(${newMovies.length}) [${out}...]`);
 
 			return newMovies;

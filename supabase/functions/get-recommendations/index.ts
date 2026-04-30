@@ -11,7 +11,7 @@ serve(async (req) => {
 		const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 		const tmdbBaseUrl = Deno.env.get("TMDB_BASE_URL");
 
-		console.log("Test");
+		// console.log("Test");
 
 		if (!tmdbApiKey) {
 			return new Response(
@@ -50,9 +50,9 @@ serve(async (req) => {
 		let response;
 
 		try {
-			console.log("Trying to build api request");
+			// console.log("Trying to build api request");
 			APIRequestURL = await getAPIRequestWithParameters(APIRequestOptions);
-			console.log("Built api request");
+			// console.log("Built api request");
 
 			response = await fetch(APIRequestURL, { headers: { accept: "application/json" } });
 		} catch (error) {
