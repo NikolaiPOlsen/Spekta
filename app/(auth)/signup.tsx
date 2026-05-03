@@ -42,17 +42,18 @@ export default function SignUpScreen() {
             >
 
                 <View style={styles.container}>
-                        <Text style={[TextStyles.sectionTitle, { color: themeColors.primary }]}>Sign up</Text>
+                    <View style={styles.inner}>
+                        <Text style={[TextStyles.sectionTitle, { color: themeColors.primary, textAlign: 'center' }]}>Sign up</Text>
                         <Text style={[TextStyles.sectionSubTitle, { color: themeColors.text }]}>Sign up to get started!</Text>
 
-                            <InputField name='Displayname' value={displayName} onChange={setDisplayName} />
-                            <InputField name='Email' value={email} onChange={setEmail} />
+                        <InputField name='Displayname' value={displayName} onChange={setDisplayName} />
+                        <InputField name='Email' value={email} onChange={setEmail} />
 
-                            <PasswordField name='Passord' value={password} onChange={setPassword} />
-                            <PasswordField name='Confirm passord' value={repassword} onChange={setRePassword} />
+                        <PasswordField name='Passord' value={password} onChange={setPassword} />
+                        <PasswordField name='Confirm passord' value={repassword} onChange={setRePassword} />
 
-                        <AppButton onPress={signUp} label='Sign up' disabled={loading} />
-
+                    </View>
+                    <AppButton onPress={signUp} label='Sign up' disabled={loading} />
                 </View>
             </KeyboardAvoidingView>
     )
@@ -63,5 +64,8 @@ const styles = StyleSheet.create ({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    inner: {
+        width: '90%',
     },
 });
