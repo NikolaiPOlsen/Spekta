@@ -90,7 +90,10 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, []);
 
 	const loadRecommendations = useCallback(async () => {
+		console.log("loadRecommendations called");
+		console.log(claims);
 		if (!claims?.sub) {
+			console.log("what is happening");
 			clearMedia();
 			return;
 		}
@@ -100,6 +103,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 
 		try {
 			const response = await fetchRecommendations();
+			console.log(response);
 			setRecommendations(response.recommendations);
 			setSwipedInCurrentBatch(0);
 			setIsPrefetching(false);
@@ -117,6 +121,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, [claims?.sub, clearMedia]);
 
 	const refreshRecommendations = useCallback(async () => {
+		console.log("refreshing movies");
 		await loadRecommendations();
 	}, [loadRecommendations]);
 
@@ -130,8 +135,6 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			DEBUGLogMovies();;
 			
 			if (shouldSwapToPendingBatch) {
-				console.log("\n\nMOVIES BEFORE SETTING TO NEXTBATCH:");
-				DEBUGLogMovies();
 				applyPendingBatch(pendingBatch);
 			} else {
 				// QUEUE.POP
@@ -161,6 +164,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, [applyPendingBatch, pendingBatch, recommendations.length]);
 
 	useEffect(() => {
+		console.log("useEffect running");
 		if (isAuthLoading || isInitializingUser) {
 			return;
 		}
