@@ -1,0 +1,48 @@
+diff --git a/node_modules/rn-swiper-list/src/SwiperCard/index.tsx b/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
+index 7e248b1..3d8ea06 100644
+--- a/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
++++ b/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
+@@ -96,8 +96,9 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
+       translateX.value = withSpring(maxCardTranslation, {
+         ...swipeRightSpringConfig,
+         reduceMotion: ReduceMotion.Never,
++      }, () => {
++        activeIndex.value++;
+       });
+-      activeIndex.value++;
+     });
+   }, [
+     index,
+@@ -114,8 +115,9 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
+       translateX.value = withSpring(-maxCardTranslation, {
+         ...swipeLeftSpringConfig,
+         reduceMotion: ReduceMotion.Never,
++      }, () => {
++        activeIndex.value++;
+       });
+-      activeIndex.value++;
+     });
+   }, [
+     index,
+@@ -132,8 +134,9 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
+       translateY.value = withSpring(-maxCardTranslationY, {
+         ...swipeTopSpringConfig,
+         reduceMotion: ReduceMotion.Never,
++      }, () => {
++        activeIndex.value++;
+       });
+-      activeIndex.value++;
+     });
+   }, [
+     index,
+@@ -150,8 +153,9 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
+       translateY.value = withSpring(maxCardTranslationY, {
+         ...swipeBottomSpringConfig,
+         reduceMotion: ReduceMotion.Never,
++      }, () => {
++        activeIndex.value++;
+       });
+-      activeIndex.value++;
+     });
+   }, [
+     index,
