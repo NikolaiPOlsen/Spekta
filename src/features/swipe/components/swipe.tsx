@@ -1,29 +1,28 @@
 import { Swiper, type SwiperCardRefType } from 'rn-swiper-list';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useRef } from 'react';
-import { MovieCard } from './movie-card';
-import type { MovieCardProps } from './movie-card';
 import { useWindowDimensions } from 'react-native';
 
-type SwipeProps = {
-  data: MovieCardProps[];
-  onSwipeRight?: (movie: MovieCardProps, index: number) => void;
-  onSwipeLeft?: (movie: MovieCardProps, index: number) => void;
+type SwipeProps<T> = {
+  data: T[];
+  renderCard: (item: T) => React.ReactNode;
+  onSwipeRight?: (item: T, index: number) => void;
+  onSwipeLeft?: (item: T, index: number) => void;
 };
 
-export function Swipe({ data, onSwipeLeft, onSwipeRight }: SwipeProps) {
+export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeProps<T>) {
     const ref = useRef<SwiperCardRefType | null>(null);
 
     const { width, height } = useWindowDimensions();
-    const cardWidth = width * 0.85;
-    const cardHeight = height * 0.65;
+    const cardWidth = width * 0.92;
+    const cardHeight = height * 0.80;
 
     return (
         <GestureHandlerRootView style={{ width: cardWidth, height: cardHeight }}>
             <Swiper
                 ref={ref}
                 data={data}
-                renderCard={(item: MovieCardProps) => <MovieCard {...item} />}
+                renderCard={renderCard}
                 cardStyle={{ width: cardWidth, height: cardHeight }}
                 onSwipeRight={(index: number) => onSwipeRight?.(data[index], index)}
                 onSwipeLeft={(index: number) => onSwipeLeft?.(data[index], index)}

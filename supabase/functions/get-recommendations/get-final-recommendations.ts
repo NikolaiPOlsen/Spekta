@@ -6,7 +6,17 @@ import { MovieDetailsResponse } from "./detail-properties.ts";
 const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: GenericMovie[]) => {
     const results: DetailedMovie[] = [];
 
-    const sortedGenericMovies = genericMovies.sort((movieA, movieB) => {
+    const genericMoviesWithPosterPath: GenericMovie[] = [];
+
+    genericMovies.forEach(movie => {
+        // posterPath is either a string or null
+        if (movie.posterPath) {
+            genericMoviesWithPosterPath.push(movie);
+        }
+        // console.log(`title: ${movie.title} | poster: ${movie.posterPath}`);
+    });
+
+    const sortedGenericMovies = genericMoviesWithPosterPath.sort((movieA, movieB) => {
         const estimatedQualityA = (movieA.voteAverage * movieA.voteCount * movieA.popularity) / 100;
         const estimatedQualityB = (movieB.voteAverage * movieB.voteCount * movieB.popularity) / 100;
 
@@ -17,7 +27,7 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
 
     const fetchMovieDetails = async () => {
         const moviePromises: Promise<MovieDetailsResponse>[] = highestQualityMovies.map((movie) => {
-            console.log(`Fetching details for movie ${movie.id}`);
+            // console.log(`Fetching details for movie ${movie.id}`);
             return getMovieDetails(tmdbData, movie.id);
         });
 
@@ -60,8 +70,8 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
     const remainingMovies = sortedGenericMovies.slice(APIDetailsMovieAmount);
     results.push(...remainingMovies);
 
-    console.log(`Final results: ${results.length}`);
-    console.log(`Final results example: ${results[0].title}`);
+    // console.log(`Final results: ${results.length}`);
+    // console.log(`Final results example: ${results[0].title}`);
 
     return results;
 };

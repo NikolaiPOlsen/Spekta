@@ -37,8 +37,6 @@ export function SearchButton({ onPress, icon, disabled }: Props) {
     )
 }
 
-const { width, height } = Dimensions.get('window');
-
 // Styles for the button component
 const styles = StyleSheet.create({
     searchButton: {

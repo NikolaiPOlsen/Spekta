@@ -65,7 +65,8 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
 
     // sorting
     if (randomSorting) {
-        const sortOptions = ["original_title.asc", "original_title.desc", "popularity.asc", "popularity.desc", "revenue.asc, revenue.desc", "primary_release_date.asc", "title.asc", "title.desc", "primary_release_date.desc", "vote_average.asc", "vote_average.desc", "vote_count.asc", "vote_count.desc"];
+        // const sortOptions = ["original_title.asc", "original_title.desc", "popularity.asc", "popularity.desc", "revenue.asc, revenue.desc", "primary_release_date.asc", "title.asc", "title.desc", "primary_release_date.desc", "vote_average.asc", "vote_average.desc", "vote_count.asc", "vote_count.desc"];
+        const sortOptions = ["popularity.desc", "revenue.desc", "vote_count.desc"];
 
         const randomSort = sortOptions[Math.floor(Math.random() * sortOptions.length)];
         queryParams.append("sort_by", randomSort);
@@ -353,7 +354,9 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     let buildAPIRequestURLOptions: BuildAPIRequestURLSpecification = {
         tmdbData: tmdbData,
         parameters: resultParams,
-        includeAdult: userPreferences.include_adult
+        includeAdult: userPreferences.include_adult,
+        randomPage: true,
+        randomSorting: true
     };
 
     if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
