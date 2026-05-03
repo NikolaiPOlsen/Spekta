@@ -1,25 +1,9 @@
-import { Redirect, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ActivityIndicator, View } from 'react-native';
 
-import { useAuthContext } from '@/hooks/use-auth-context';
-
-export default function TabsLayout() {
-  const { isLoading, isLoggedIn } = useAuthContext();
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  if (!isLoggedIn) {
-    return <Redirect href="/(auth)/start" />;
-  }
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/themes/colors';
+
 
 export default function TabsLayout() {
   const colorScheme = useColorScheme();
