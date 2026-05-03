@@ -18,7 +18,6 @@ export default function StartScreen() {
 			console.log("got something");
 			if (error) throw error;
 
-			// console.log(`it worked, data: ${JSON.parse(data)}`);
 			console.log(JSON.stringify(data, null, 2));
 
 		} catch (error) {
@@ -36,17 +35,9 @@ export default function StartScreen() {
 		<SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
 			<Text style={styles.title}>Get started!</Text>
 			<View style={styles.actions}>
-				{/* <Pressable style={[styles.button, { backgroundColor: themeColors.primary }]} onPress={() => router.push('/(auth)/login')}>
-					<Text style={[styles.buttonText, { color: themeColors. }]}>Login</Text>
-				</Pressable>
-				<Pressable style={[styles.button, { backgroundColor: themeColors.primary }]} onPress={() => router.push('/(auth)/signup')}>
-					<Text style={[styles.buttonText, { color: themeColors.text }]}>Sign up</Text>
-				</Pressable> */}
 
 				<AppButton label='Login' onPress={() => router.push('/(auth)/login')} ></AppButton>
 				<AppButton label='Sign up' onPress={() => router.push('/(auth)/signup')} ></AppButton>
-
-				<AppButton label='TEST FUNCTION' onPress={testEdgeFunc} ></AppButton>
 
 			</View>
 		</SafeAreaView>
@@ -58,7 +49,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		// paddingHorizontal: 24,
 		backgroundColor: '#ffffff'
 	},
 	title: {
@@ -69,18 +59,7 @@ const styles = StyleSheet.create({
 	},
 	actions: {
 		width: '100%',
-		gap: 12,
+		gap: 8,
 		alignItems: 'center'
 	}
-	// button: {
-	// 	paddingVertical: 14,
-	// 	borderRadius: 12,
-	// 	backgroundColor: '#111827',
-	// 	alignItems: 'center',
-	// },
-	// buttonText: {
-	// 	color: '#ffffff',
-	// 	fontSize: 16,
-	// 	fontWeight: '600',
-	// },
 });
