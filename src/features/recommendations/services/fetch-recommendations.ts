@@ -3,16 +3,18 @@ import { supabase } from '@/lib/supabase';
 import type { RecommendationResponse } from '../types';
 
 export async function fetchRecommendations(): Promise<RecommendationResponse> {
-  const { data, error } = await supabase.functions.invoke<RecommendationResponse>(
+  const response = await supabase.functions.invoke<RecommendationResponse>(
     'get-recommendations',
   );
 
-  if (error) {
-    throw new Error(error.message || 'Failed to load recommendations');
+  // console.log(response);
+
+  if (response.error) {
+    throw new Error(response.error.message || 'Failed to load recommendations');
   }
 
   return {
-    apiRequest: data?.apiRequest,
-    recommendations: data?.recommendations ?? [],
+    apiRequest: response.data?.apiRequest,
+    recommendations: response.data?.recommendations ?? [],
   };
 }

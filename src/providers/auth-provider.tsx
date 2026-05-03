@@ -28,13 +28,13 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, _session) => {
+    } = supabase.auth.onAuthStateChange((_event, _session) => {
       if (_session) {
-        setClaims(_session.user)
-    } else {
+        setClaims({ ..._session.user, sub: _session.user.id })
+      } else {
         setClaims(null)
-    }
-})
+      }
+    })
 
     return () => {
       subscription.unsubscribe()
