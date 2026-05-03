@@ -26,14 +26,16 @@ export default function LoginScreen() {
             <KeyboardAvoidingView style={{ flex: 1, width: "100%", backgroundColor: themeColors.background }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
 
                 <View style={styles.container}>
-                        <Text style={[TextStyles.sectionTitle, { color: themeColors.primary }]}>Login</Text>
+                    <View style={styles.inner}>
+                        <Text style={[TextStyles.sectionTitle, { color: themeColors.primary, textAlign: 'center' }]}>Login</Text>
                         <Text style={[TextStyles.sectionSubTitle, { color: themeColors.text }]}>Welcome back! Login to continue where you left off.</Text>
 
-                            <InputField name='Email' value={email} onChange={setEmail} />
+                        <InputField name='Email' value={email} onChange={setEmail} />
 
-                            <PasswordField name='Password' value={password} onChange={setPassword} />
+                        <PasswordField name='Password' value={password} onChange={setPassword} />
 
-                        <AppButton onPress={signIn} label='Login' disabled={loading} />
+                    </View>
+                    <AppButton onPress={signIn} label='Login' disabled={loading} />
                 </View>
             </KeyboardAvoidingView>
     )
@@ -44,5 +46,8 @@ const styles = StyleSheet.create ({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    inner: {
+        width: '90%',
     },
 });
