@@ -14,8 +14,8 @@ export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeP
     const ref = useRef<SwiperCardRefType | null>(null);
 
     const { width, height } = useWindowDimensions();
-    const cardWidth = width * 0.85;
-    const cardHeight = height * 0.65;
+    const cardWidth = width * 0.92;
+    const cardHeight = height * 0.80;
 
     return (
         <GestureHandlerRootView style={{ width: cardWidth, height: cardHeight }}>
