@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useColorScheme } from 'react-native';
 
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
 import { useMediaContext } from '@/hooks/use-media-context';
 import type { RecommendationMovie } from '@/features/recommendations/types';
+import { Colors } from '@/themes/colors';
 
 type RecommendationCard = {
   movie: RecommendationMovie;
@@ -30,15 +31,17 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 
 export default function HomeRoute() {
   const { recommendations, isLoading, error, recordSwipe } = useMediaContext();
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
 
   const cards = recommendations.map(toRecommendationCard);
 
   return (
-    <View style={styles.container}>
-      {isLoading ? <Text>Loading recommendations...</Text> : null}
-      {error ? <Text>{error}</Text> : null}
+    <View style={[styles.container]}>
+      {isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
+      {error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
       {!isLoading && !error && cards.length === 0 ? (
-        <Text>No recommendations available.</Text>
+        <Text style={{ color: themeColors.text }}>No recommendations available.</Text>
       ) : null}
       {cards.length > 0 ? (
         <Swipe
