@@ -2,10 +2,12 @@
  * Renders a simple reusable movie card for movie-related UI.
  */
 
-import { StyleSheet, View, Text, ImageBackground, useWindowDimensions, useColorScheme, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, useColorScheme, Pressable } from 'react-native';
+import { useState } from 'react';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { MovieModal } from '@/features/movies/components/movie-modal';
 
 export type MovieCardProps = {
   title: string;
@@ -18,6 +20,7 @@ export type MovieCardProps = {
 export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardProps) {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.shadow}>
@@ -39,10 +42,18 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
           <Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
         </View>
 
-        <Pressable style={styles.infoButton} onPress={() => false}>
+        <Pressable style={styles.infoButton} onPress={() => setModalVisible(true)}>
           <MaterialIcons name='info' size={24} color={themeColors.white} />
         </Pressable>
       </ImageBackground>
+
+      <MovieModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        movieTitle={title}
+        movieDescription={subtitle}
+        imageUrl={poster ?? ''}
+      />
     </View>
   );
 }
