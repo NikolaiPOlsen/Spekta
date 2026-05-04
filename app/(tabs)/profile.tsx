@@ -6,6 +6,7 @@ import { TextStyles } from '@/constants/text-style';
 import { AppButton } from "@/components/ui/app-button";
 import { supabase } from '@/lib/supabase';
 import { Colors } from "@/themes/colors";
+import { useAuthContext } from "@/hooks/use-auth-context";
 
 async function signOut() {
         await supabase.auth.signOut();
@@ -15,7 +16,9 @@ export default function ProfileRoute() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
 
-  const { width, height } = useWindowDimensions();
+  const { claims } = useAuthContext();
+  const placeHolderDisplayName = claims?.user_metadata?.display_name;
+  const placeHolderEmail = claims?.user_metadata?.email;
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -33,10 +36,10 @@ export default function ProfileRoute() {
             <Text style={[TextStyles.sectionTitle, {color: themeColors.text}]}>Profile</Text>
 
             <Text style={[TextStyles.inputLabel, {color: themeColors.text}]}>Displayname</Text>
-            <InputField name='Displayname' value={username} onChange={setUsername}/>
+            <InputField name={placeHolderDisplayName} value={username} onChange={setUsername}/>
 
             <Text style={[TextStyles.inputLabel, {color: themeColors.text}]}>Email</Text>
-            <InputField name='Email' value={email} onChange={setEmail} />
+            <InputField name={placeHolderEmail} value={email} onChange={setEmail} />
 
             <Text style={[TextStyles.inputLabel, {color: themeColors.text}]}>Password</Text>
             <PasswordField name='Password' value={password} onChange={setPassword}/>
