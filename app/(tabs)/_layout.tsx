@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { useColorScheme } from 'react-native';
 import { Colors } from '@/themes/colors';
