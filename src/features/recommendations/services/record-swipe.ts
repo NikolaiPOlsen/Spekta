@@ -66,7 +66,7 @@ function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 		const decade = `${decadeStart}-${decadeStart + 9}`; // if releaseDate is "1973-05-7", this should become e.g. 1970-1979
 		swipeParameters.push(
 			{
-				parameter_type: "runtime",
+				parameter_type: "release_date",
 				parameter_value: String(decade)
 			}
 		);

@@ -13,7 +13,7 @@ export interface TmdbData {
     baseURL: string;
 }
 
-export interface GetParametersFromWeightsParameters {
+export interface GetParametersFromWeightsFunctionParameters {
     // tmdbData: tmdbData;
     // supabaseClientInstance: SupabaseClient
     // userId: string;

@@ -26,7 +26,7 @@ export const APIRequestRandomPageMin = 1;
  * @constant {number} APIRequestParameterAmount
  * @default 1
  */
-export const APIRequestRandomPageMax = 500;
+export const APIRequestRandomPageMax = 100;
 
 /**
  * Default sorting. Results in the most popular results on page 1.

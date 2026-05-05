@@ -56,6 +56,8 @@ export const formatDate = (date: Date) => {
 }
 
 export const getRegularQueryParameters = (positive: boolean, parameters: string[], urlParamType: string) => {
+	if (parameters.length < 1) return null;
+
 	const urlKey = positive ? `with_${urlParamType}` : `without_${urlParamType}`;
 	// Always add with_{e.g. keywords} (using OR) for positive
 	// 75% of the time, without_{e.g. keywords} will be there

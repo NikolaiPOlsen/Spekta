@@ -13,6 +13,7 @@ const getMovieDetails = async (tmdbData: TmdbData, selectedGenericMovies: Generi
 
 	// only store the details needed
 	const detailedMovies: ExtraMovieDetails[] = highlyDetailedMovies.map((highlyDetailedMovie: MovieDetailsResponse) => {
+		console.log(`runtime: ${highlyDetailedMovie.runtime}, keywords: ${highlyDetailedMovie.keywords}`);
 		return {
 			id: highlyDetailedMovie.id,
 			runtime: highlyDetailedMovie.runtime,

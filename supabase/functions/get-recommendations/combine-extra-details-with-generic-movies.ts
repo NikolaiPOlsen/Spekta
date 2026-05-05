@@ -4,6 +4,8 @@ import { ExtraMovieDetails } from "./detail-properties.ts";
 const combineExtraDetailsWithGenericMovies = (genericMovies: GenericMovie[], extraMovieDetailsArray: ExtraMovieDetails[]) => {
     const detailedMovies: DetailedMovie[] = [];
 
+    console.log(`genericMovies length before merge: ${genericMovies.length}`);
+
     // could be optimized by only looping for ApiDetailsMovieAmount (default: 5) iterations
     genericMovies.forEach(genericMovie => {
         const extraMovieDetails = extraMovieDetailsArray.find(movie => movie.id == genericMovie.id);
@@ -35,11 +37,13 @@ const combineExtraDetailsWithGenericMovies = (genericMovies: GenericMovie[], ext
 
             // first few movies have extra details
             detailedMovies.push(detailedMovie);
+        } else {
+            // only first few movies have extra details, so just add the generic movie
+            detailedMovies.push(genericMovie);
         }
-
-        // only first few movies have extra details, so just add the generic movie
-        detailedMovies.push(genericMovie);
     });
+
+    console.log(`detailedMovies length after merge: ${detailedMovies.length}`);
 
     return detailedMovies;
 }
