@@ -11,6 +11,7 @@ import sortGenericMovies from "./sort-generic-movies.ts";
 import { ApiDetailsMovieAmount } from "../_shared/constants.ts";
 import getMovieDetails from "./get-movie-details.ts";
 import combineExtraDetailsWithGenericMovies from "./combine-extra-details-with-generic-movies.ts";
+import convertDiscoverResponseToGenericMovie from "./convert-discover-response-to-generic-movie.ts";
 
 // types
 import {
@@ -119,9 +120,14 @@ serve(async (req) => {
 			console.error(`Error whilst fetching from /discover: ${error}`);
 
 			return new Response(
+				JSON.stringify({ error: "Fetching from /discover failed", details: error }), { status: 500, headers: { "Content-Type": "application/json" } });
+		}
+
+		if (!response.ok) {
+			return new Response(
 				JSON.stringify({
-					error: "Fetching from /discover failed",
-					details: error,
+					error: `TMDb request failed: ${response.status}`,
+					details: response,
 				}),
 				{
 					status: 500,
@@ -132,49 +138,15 @@ serve(async (req) => {
 
 		// Deserialize from JSON to JS object
 		const discoverResponse = await response.json();
+		const discoverResponseMovies: GenericMovieAPIFetch[] = discoverResponse.result;
 
-		if (!response.ok) {
-			return new Response(
-				JSON.stringify({
-					error: `TMDb request failed: ${response.status}`,
-					details: discoverResponse,
-				}),
-				{
-					status: 500,
-					headers: { "Content-Type": "application/json" },
-				}
-			);
-		}
-
-		// use the GenericMovie type to handle data easier
-		const genricMovies: GenericMovie[] = [];
-
-		discoverResponse.results.forEach((movie: GenericMovieAPIFetch) => {
-			const genericMovie: GenericMovie = {
-				adult: movie.adult,
-				backdropPath: movie.backdrop_path,
-				genreIds: movie.genre_ids,
-				id: movie.id,
-				title: movie.title,
-				originalLanguage: movie.original_language,
-				originalTitle: movie.original_title,
-				overview: movie.overview,
-				popularity: movie.popularity,
-				posterPath: movie.poster_path,
-				releaseDate: movie.release_date,
-				video: movie.video,
-				voteAverage: movie.vote_average,
-				voteCount: movie.vote_count
-			}
-
-			genricMovies.push(genericMovie);
-		});
-
+		// convert to local type GenericMovie[]
+		const genericMovies: GenericMovie[] = convertDiscoverResponseToGenericMovie(discoverResponseMovies);
 
 
 		// =====================================================================
 		// step 7: filter out the generic movies without poster path
-		const filteredGenericMovies: GenericMovie[] = filterMoviesWithoutPosterPath(genricMovies);
+		const filteredGenericMovies: GenericMovie[] = filterMoviesWithoutPosterPath(genericMovies);
 
 
 
