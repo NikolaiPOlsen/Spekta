@@ -37,17 +37,13 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
         // Wait for all promises to resolve
         const highlyDetailedMovies = await Promise.all(moviePromises);
 
-        // console.log("keywords");
-        // highlyDetailedMovies[0].keywords.forEach(keyword => {
-        //     console.log(`id: ${keyword.id} | name: ${keyword.name}`);
-        // });
-
         // Extract only the needed properties (cast and runtime)
         return highlyDetailedMovies.map((movieDetail: MovieDetailsResponse) => ({
             id: movieDetail.id,
             title: movieDetail.title,
             runtime: movieDetail.runtime,
-            cast: movieDetail.credits?.cast || []  // If there are no cast members, we provide an empty array
+            cast: movieDetail.credits?.cast || [],  // If there are no cast members, we provide an empty array
+            keywords: movieDetail.keywords
         }));
     };
 
@@ -62,15 +58,21 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
         }
 
         const actorIds: number[] = [];
+        const keywordIds: number[] = [];
 
         highlyDetailedMovie.cast.forEach(actor => {
             actorIds.push(actor.id);
         });
 
+        highlyDetailedMovie.keywords.keywords.forEach(keywordObject => {
+            keywordIds.push(keywordObject.id);
+        });
+
         const detailedMovie: DetailedMovie = {
             ...genericMovie,
             actorIds: actorIds,
-            runtime: highlyDetailedMovie.runtime ?? -1
+            runtime: highlyDetailedMovie.runtime ?? -1,
+            keywordIds: keywordIds
         };
 
         results.push(detailedMovie);

@@ -14,6 +14,7 @@ export type RecommendationMovie = {
   posterPath: string | null;
   overview: string;
   actorIds?: number[];
+  keywordIds: number[];
   runtime?: number;
 };
 

@@ -24,7 +24,7 @@ export interface MovieDetailsResponse {
     video: boolean;
     vote_average: number;
     vote_count: number;
-    keywords: Keyword[];
+    keywords: { keywords: Keyword[] };
     credits: Credits;
 }
 

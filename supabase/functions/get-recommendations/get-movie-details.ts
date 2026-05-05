@@ -9,11 +9,11 @@ const getMovieDetails = async (tmdbData: tmdbData, movieId: number) => {
     try {
         response = await fetch(detailsURL, { headers: { accept: "application/json" } });
     } catch (error) {
-        console.error(`Error whilst building API request: ${error}`);
+        console.error(`Fetching movie details failed: ${error}`);
 
         return new Response(
             JSON.stringify({
-                error: `Building API request failed`,
+                error: `Fetching movie details failed`,
                 details: error,
             }),
             {
@@ -24,6 +24,19 @@ const getMovieDetails = async (tmdbData: tmdbData, movieId: number) => {
     }
 
     const data = await response.json();
+
+    // try {
+    //     // console.log(data.keywords);
+    //     // for (const [key, value] of data) {
+    //     //     console.log(key);
+    //     // }
+    //     // // data.keywords.forEach((keyword: any) => {
+    //     // //     console.log(`id: ${keyword.id} | name: ${keyword.name}`);
+    //     // // });
+    // } catch (error) {
+    //     console.error(`Failed to log keywords: ${error}`);
+    // }
+
     return data;
 }
 

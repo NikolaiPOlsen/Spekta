@@ -37,13 +37,17 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, []);
 
 	const DEBUGLogMovies = () => {
+		if (recommendations[3]) {
+			console.log(`[3] KEYWORDSID: ${recommendations[3].keywordIds}`);
+		}
+
 		let out = "";
 		for (let i = 0; i < 8; i++) {
 			const element = recommendations[i];
 			if (element) {
-				out += `(${i}) ${element.title}, `;
+				out += `[${i}] ${element.title}, `;
 			} else {
-				out += `(${i}) UNDEFINED, `;
+				out += `[${i}] UNDEFINED, `;
 			}
 		}
 
