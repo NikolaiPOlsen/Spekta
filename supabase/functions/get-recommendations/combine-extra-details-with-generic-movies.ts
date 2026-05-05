@@ -17,9 +17,9 @@ const combineExtraDetailsWithGenericMovies = (genericMovies: GenericMovie[], ext
             const keywordIds: number[] = [];
 
             // get the actor ids (!_ popularity?)
-            extraMovieDetails.cast.forEach(actor => {
-                actorIds.push(actor.id);
-            });
+            // extraMovieDetails.cast.forEach(actor => {
+            //     actorIds.push(actor.id);
+            // });
 
             // get the keyword ids
             extraMovieDetails.keywords.keywords.forEach(keywordObject => {

@@ -77,11 +77,6 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
-    const handleActorParameters = (parameter: ApiRequestTypeParameter) => {
-        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "cast");
-        if (paramData) queryParams.append(paramData.key, paramData.param);
-    }
-
     const handleKeywordParameters = (parameter: ApiRequestTypeParameter) => {
         const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "kaywords");
         if (paramData) queryParams.append(paramData.key, paramData.param);
@@ -123,10 +118,6 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         switch (type) {
             case ParameterTypeName.Genre:
                 handleGenreParameters(parameter);
-                break;
-
-            case ParameterTypeName.Actor:
-                handleActorParameters(parameter);
                 break;
 
             case ParameterTypeName.Keyword:
