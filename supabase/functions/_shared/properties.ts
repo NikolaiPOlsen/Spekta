@@ -8,15 +8,16 @@ export type UserParameterWeight = {
     interaction_count: number;
 };
 
-export interface tmdbData {
+export interface TmdbData {
     APIKey: string;
     baseURL: string;
 }
 
-export interface getAPIRequestProperties {
-    tmdbData: tmdbData;
-    supabaseClientInstance: SupabaseClient
-    userId: string;
+export interface GetParametersFromWeightsParameters {
+    // tmdbData: tmdbData;
+    // supabaseClientInstance: SupabaseClient
+    // userId: string;
+    userParameterWeights: UserParameterWeight[][];
     randomWeightOffset?: boolean;
     randomizeURLParameters?: boolean;
 };
@@ -25,7 +26,7 @@ export interface getAPIRequestProperties {
 //     value: string;
 // };
 
-export interface APIRequestTypeParameter {
+export interface ApiRequestTypeParameter {
     positive: boolean;
     type: string;
     parameters: string[];
@@ -49,9 +50,9 @@ export interface APIRequestTypeParameter {
  * @property randomSorting - Randomizes sorting parameters.
  *
  */
-export interface BuildAPIRequestURLSpecification {
-    tmdbData: tmdbData;
-    parameters: APIRequestTypeParameter[];
+export interface GetDiscoverApiRequestFunctionParameters {
+    tmdbData: TmdbData;
+    parameters: ApiRequestTypeParameter[];
     languagePreference?: string;
     includeAdult?: boolean;
     randomPage?: boolean | [number, number];

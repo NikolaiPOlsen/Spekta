@@ -1,15 +1,18 @@
-const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, userId, randomWeightOffset = false, randomizeURLParameters = false }: getAPIRequestProperties) => {
+import { APIRequestParameterAmount } from "../_shared/constants.js";
+import { ApiRequestTypeParameter, GetParametersFromWeightsParameters, UserParameterWeight } from "../_shared/properties.js";
+
+const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, randomWeightOffset = false, randomizeURLParameters = false }: GetParametersFromWeightsParameters) => {
     const useRandomWeightOffset = randomWeightOffset ? true : false;
     const useRandomURLParameters = randomizeURLParameters ? true : false;
 
-    console.log("Before getUserWeights");
-    const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
-    console.log("After getUserWeights");
+    // console.log("Before getUserWeights");
+    // const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
+    // console.log("After getUserWeights");
 
     // const parameterAmount = parameters.length;
-    const resultParams: APIRequestTypeParameter[] = [];
+    const resultParams: ApiRequestTypeParameter[] = [];
 
-    parameters.forEach(parameterWeights => {
+    userParameterWeights.forEach(parameterWeights => {
         if (!parameterWeights || parameterWeights.length < 1) {
             return;
         }
@@ -46,7 +49,7 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
 
         // Build data structure of parameters that will be specified in API request
         const paramType = parameterWeights[0].parameter_type;
-        const resultParametersPositive: APIRequestTypeParameter = {
+        const resultParametersPositive: ApiRequestTypeParameter = {
             positive: true, // for top 5 (positive weight)
             type: paramType,
             parameters: []
@@ -67,7 +70,7 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
         
         // Otherwise top and bottom would overlap, compare to APIRequestParameterAmount multiplied by almost 2
         if (parameterWeightsLength > Math.ceil(APIRequestParameterAmount * 1.75)) {
-            const resultParametersNegative: APIRequestTypeParameter = {
+            const resultParametersNegative: ApiRequestTypeParameter = {
                 positive: false, // for bottom 5 (negative weight)
                 type: paramType,
                 parameters: []
@@ -75,8 +78,7 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             
             // Bottom 5 weights (last elements)
             const bottomParametersWeights = sortedWeights.slice(parameterWeightsLength - APIRequestParameterAmount, parameterWeightsLength - 1);
-            
-            
+
             // Fill with negative weights (meaning without in API)
             bottomParametersWeights.forEach(parameterWeight => {
                 // const paramType = parameterWeight.parameter_type;
@@ -90,8 +92,10 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
         }
     });
 
-    const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
-    const preferredLanguage = userPreferences.preferred_language;
+    return resultParams;
+
+    // const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
+    // const preferredLanguage = userPreferences.preferred_language;
 
     let buildAPIRequestURLOptions: BuildAPIRequestURLSpecification = {
         tmdbData: tmdbData,
@@ -128,18 +132,15 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             }
         });
 
-        buildAPIRequestURLOptions.randomPage = true;
-        buildAPIRequestURLOptions.randomSorting = true;
-        buildAPIRequestURLOptions.randomWithGenres = true;
-        buildAPIRequestURLOptions.randomWithCast = true;
-        buildAPIRequestURLOptions.randomWithoutGenres = true;
-        buildAPIRequestURLOptions.randomWithoutCast = true;
-        buildAPIRequestURLOptions.userGenres = userCast,
-        buildAPIRequestURLOptions.userCast = userCast
+        // buildAPIRequestURLOptions.randomPage = true;
+        // buildAPIRequestURLOptions.randomSorting = true;
+        // buildAPIRequestURLOptions.randomWithGenres = true;
+        // buildAPIRequestURLOptions.randomWithCast = true;
+        // buildAPIRequestURLOptions.randomWithoutGenres = true;
+        // buildAPIRequestURLOptions.randomWithoutCast = true;
+        // buildAPIRequestURLOptions.userGenres = userCast,
+        // buildAPIRequestURLOptions.userCast = userCast
     }
-
-    const APIRequestURL = buildAPIRequestURLFromParameters(buildAPIRequestURLOptions);
-    return APIRequestURL;
 }
 
-export default getAPIRequestWithParameters;
+export default getDiscoverApiRequestUrlParametersFromWeights;

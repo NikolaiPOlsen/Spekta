@@ -1,8 +1,17 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.js";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
-import getAPIRequestWithParameters from "./get-api-request-from-parameters.ts";
+import getAPIRequestWithParameters from "./get-discover-api-request-url.ts";
 import getFinalRecommendations from "./get-final-recommendations.ts";
-import { APIRequestTypeParameter, getAPIRequestProperties, tmdbData, GenericMovieAPIFetch, GenericMovie, DetailedMovie } from "../_shared/properties.ts";
+import getUserWeights from "../_shared/get-weights-from-db.ts";
+import getDiscoverApiRequestUrlParametersFromWeights from "./get-discover-url-parameters.js";
+import { getUserSettingsFromDb } from "../_shared/get-user-settings.js";
+import getDiscoverApiRequestUrlFromParameters from "./get-discover-api-request-url.ts";
+
+// types
+import {
+	ApiRequestTypeParameter, GetParametersFromWeightsParameters, tmdbData, GenericMovieAPIFetch, GenericMovie,
+	DetailedMovie, UserParameterWeight, GetDiscoverApiRequestFunctionParameters
+} from "../_shared/properties.ts";
 
 serve(async (req) => {
 	try {
@@ -11,7 +20,6 @@ serve(async (req) => {
 		const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 		const tmdbBaseUrl = Deno.env.get("TMDB_BASE_URL");
 
-		// console.log("Test");
 
 		if (!tmdbApiKey) {
 			return new Response(
@@ -38,7 +46,70 @@ serve(async (req) => {
 			baseURL: tmdbBaseUrl
 		};
 
-		const APIRequestOptions: getAPIRequestProperties = {
+		// =====================================================================
+		// step 1: get user weights from database
+		console.log("Reading user weights from database");
+		const userParameterWeights: UserParameterWeight[][] = await getUserWeights(supabase, user.id);
+
+
+		// =====================================================================
+		// step 2: use the weights to filter which parameters to use in the /discover api request url
+		// options
+		const getUrlParametersOptions: GetParametersFromWeightsParameters = {
+			userParameterWeights: userParameterWeights, // use the weights from step 1
+			randomWeightOffset: true,
+			randomizeURLParameters: false
+		};
+
+		const discoverUrlParameters: ApiRequestTypeParameter[] = getDiscoverApiRequestUrlParametersFromWeights(getUrlParametersOptions);
+
+
+		// =====================================================================
+		// step 3: read user preferences from database, these are also used in the /discover api request url
+		const userPreferences = await getUserSettingsFromDb(supabase, user.id);
+		const preferredLanguage = userPreferences.preferred_language;
+
+		// =====================================================================
+		// step 4: take those parameters and build the /discover api request url
+
+		const getDiscoverApiRequestUrlOptions: GetDiscoverApiRequestFunctionParameters = {
+			tmdbData: tmdbData,
+			parameters: discoverUrlParameters,
+			includeAdult: userPreferences.include_adult,
+			randomPage: true,
+			randomSorting: true
+		};
+
+		const APIRequestURL = getDiscoverApiRequestUrlFromParameters(getDiscoverApiRequestUrlOptions);
+		// return APIRequestURL;
+
+
+
+		// =====================================================================
+		// step 5: take those parameters and build the /discover api request url
+
+
+
+
+		// step 6: fetch from the /discover endpoint
+
+
+
+		// step 7: sort the 20 GenericMovie[] movies by something (call sort movies function)
+
+
+
+		// step 8: fetch extra details for the top 5 or so movies (actors (cast), runtime, keywords)
+
+
+
+		// step 9: combine the DetailedMovie[] and GenericMovie[]
+
+
+
+		// step 10: return the movie recommendations to frontend
+
+		const discoverApiRequestOptions: GetDiscoverApiRequestFunctionParameters = {
 			tmdbData: tmdbData,
 			supabaseClientInstance: supabase,
 			userId: user.id,
@@ -50,6 +121,10 @@ serve(async (req) => {
 		let response;
 
 		try {
+			console.log("Before getUserWeights");
+			const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
+			console.log("After getUserWeights");
+
 			// console.log("Trying to build api request");
 			APIRequestURL = await getAPIRequestWithParameters(APIRequestOptions);
 			// console.log("Built api request");

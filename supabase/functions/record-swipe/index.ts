@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.js";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import { validateRecordSwipeBody } from "./validate-body.ts";
 import { saveSeenMedia } from "./save-seen-media.ts";

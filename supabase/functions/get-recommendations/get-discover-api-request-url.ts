@@ -1,9 +1,9 @@
-import { APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
-import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
-import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
-import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
+import { ApiRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.js";
+import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
+import { ParameterTypeName } from "../_shared/parameter-type-names.js";
+import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.js";
 
-const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting }: BuildAPIRequestURLSpecification) => {
+const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting }: BuildAPIRequestURLSpecification) => {
     const paramTypes: string[] = [];
 
     parameters.forEach(param => {
@@ -72,22 +72,22 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
     }
 
 
-    const handleGenreParameters = (parameter: APIRequestTypeParameter) => {
+    const handleGenreParameters = (parameter: ApiRequestTypeParameter) => {
         const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "genres");
         if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
-    const handleActorParameters = (parameter: APIRequestTypeParameter) => {
+    const handleActorParameters = (parameter: ApiRequestTypeParameter) => {
         const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "cast");
         if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
-    const handleKeywordParameters = (parameter: APIRequestTypeParameter) => {
+    const handleKeywordParameters = (parameter: ApiRequestTypeParameter) => {
         const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "kaywords");
         if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
-    const handleRuntimeParameters = (parameter: APIRequestTypeParameter) => {
+    const handleRuntimeParameters = (parameter: ApiRequestTypeParameter) => {
         const positive = parameter.positive;
         if (!positive) return;
 
@@ -101,7 +101,7 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
 
     }
 
-    const handleReleaseDateParameters = (parameter: APIRequestTypeParameter) => {
+    const handleReleaseDateParameters = (parameter: ApiRequestTypeParameter) => {
         const positive = parameter.positive;
         if (!positive) return;
 
@@ -157,4 +157,4 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
     return `${baseURL}?${queryParams.toString()}`;
 }
 
-export default getAPIRequestUrlFromParameters;
+export default getDiscoverApiRequestUrlFromParameters;
