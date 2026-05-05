@@ -1,5 +1,7 @@
-import { StyleSheet, Text, View, useColorScheme } from 'react-native';
-
+import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
 import { useMediaContext } from '@/hooks/use-media-context';
@@ -34,6 +36,7 @@ export default function HomeRoute() {
 	const { recommendations, isLoading, error, recordSwipe, refreshRecommendations } = useMediaContext();
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
+	const insets = useSafeAreaInsets();
 
 	useEffect(() => {
 		refreshRecommendations();
@@ -43,32 +46,16 @@ export default function HomeRoute() {
 
 	return (
 		<View style={[styles.container]}>
+			<Pressable
+				style={[styles.profileButton, { top: insets.top + 12, left: insets.left + 12 }]}
+				onPress={() => router.push('/(tabs)/profile')}
+			>
+				<MaterialIcons name='person' size={36} color={themeColors.primary} />
+			</Pressable>
 			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
 			{!isLoading && !error && cards.length === 0 ? (
 				<Text style={{ color: themeColors.text }}>No recommendations available.</Text>
-			) : null}
-			{cards.length > 0 ? (
-				<Swipe
-					key={recommendations[0]?.id ?? 'recommendations'}
-					data={cards}
-					renderCard={(item) => <MovieCard {...item.card} />}
-					onSwipeRight={(item) => {
-						void recordSwipe(item.movie, true);
-					}}
-					onSwipeLeft={(item) => {
-						void recordSwipe(item.movie, false);
-					}}
-				/>
-			) : null}
-		</View>
-	);
-	return (
-		<View style={styles.container}>
-			{isLoading ? <Text>Loading recommendations...</Text> : null}
-			{error ? <Text>{error}</Text> : null}
-			{!isLoading && !error && cards.length === 0 ? (
-				<Text>No recommendations available.</Text>
 			) : null}
 			{cards.length > 0 ? (
 				<Swipe
@@ -92,5 +79,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	profileButton: {
+		position: 'absolute',
+		zIndex: 10,
 	},
 });
