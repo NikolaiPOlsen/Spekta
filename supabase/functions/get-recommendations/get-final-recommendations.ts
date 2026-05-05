@@ -28,11 +28,20 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
     const fetchMovieDetails = async () => {
         const moviePromises: Promise<MovieDetailsResponse>[] = highestQualityMovies.map((movie) => {
             // console.log(`Fetching details for movie ${movie.id}`);
-            return getMovieDetails(tmdbData, movie.id);
+            // sort actors, e.g. top 5 by popularity
+            // use keywords
+            const details = getMovieDetails(tmdbData, movie.id);
+            return details;
         });
 
         // Wait for all promises to resolve
         const highlyDetailedMovies = await Promise.all(moviePromises);
+
+        // console.log("keywords");
+        // highlyDetailedMovies[0].keywords.forEach(keyword => {
+        //     console.log(`id: ${keyword.id} | name: ${keyword.name}`);
+        // });
+
         // Extract only the needed properties (cast and runtime)
         return highlyDetailedMovies.map((movieDetail: MovieDetailsResponse) => ({
             id: movieDetail.id,

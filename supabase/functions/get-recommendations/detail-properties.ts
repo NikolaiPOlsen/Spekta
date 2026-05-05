@@ -24,6 +24,7 @@ export interface MovieDetailsResponse {
     video: boolean;
     vote_average: number;
     vote_count: number;
+    keywords: Keyword[];
     credits: Credits;
 }
 
@@ -59,6 +60,11 @@ export interface SpokenLanguage {
 export interface Credits {
     cast: CastMember[];
     crew: CrewMember[];
+}
+
+export interface Keyword {
+    id: number;
+    name: string;
 }
 
 export interface CastMember {
