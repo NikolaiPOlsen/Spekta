@@ -49,7 +49,7 @@ export default function HomeRoute() {
 	return (
 		<View style={[styles.container]}>
 			<Pressable
-				style={[styles.profileButton, { top: insets.top + 12, left: insets.left + 12 }]}
+				style={[styles.profileButton, { top: insets.top + 15, left: insets.left + 12 }]}
 				onPress={() => router.push('/(tabs)/profile')}
 			>
 				<MaterialIcons name='person' size={iconSize} color={themeColors.primary} />
