@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
-import getAPIRequestWithParameters from "./get-api-request-with-parameters.ts";
+import getAPIRequestWithParameters from "./get-api-request-from-parameters.js";
 import getFinalRecommendations from "./get-final-recommendations.ts";
 import { APIRequestTypeParameter, getAPIRequestProperties, tmdbData, GenericMovieAPIFetch, GenericMovie, DetailedMovie } from "../_shared/properties.ts";
 

@@ -48,16 +48,6 @@ export interface APIRequestTypeParameter {
  * @property randomPage - If true, selects a random page; if [min, max], picks a page in range.
  * @property randomSorting - Randomizes sorting parameters.
  *
- * **For all below:** If true, uses APIRequestParameterAmount.
- * Specify a number to decide how many random genres/cast to specify.
- * 
- * @property randomWithGenres
- * @property randomWithCast
- * @property randomWithoutGenres
- * @property randomWithoutCast
- *
- * @property userGenres - Must be present if `randomWithGenres` or `randomWithoutGenres` are set
- * @property userCast - Must be present if `randomWithCast` or `randomWithoutCast` are set
  */
 export interface BuildAPIRequestURLSpecification {
     tmdbData: tmdbData;
@@ -66,12 +56,6 @@ export interface BuildAPIRequestURLSpecification {
     includeAdult?: boolean;
     randomPage?: boolean | [number, number];
     randomSorting?: boolean;
-    randomWithGenres?: boolean | number;
-    randomWithCast?: boolean | number;
-    randomWithoutGenres?: boolean | number;
-    randomWithoutCast?: boolean | number;
-    userGenres?: string[];
-    userCast?: string[];
 }
 
 export type SwipeParameter = {
