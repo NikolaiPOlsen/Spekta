@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,6 +37,8 @@ export default function HomeRoute() {
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
+	const { width } = useWindowDimensions();
+	const iconSize = Math.min(Math.round(width * 0.09), 46);
 
 	useEffect(() => {
 		refreshRecommendations();
@@ -50,7 +52,7 @@ export default function HomeRoute() {
 				style={[styles.profileButton, { top: insets.top + 12, left: insets.left + 12 }]}
 				onPress={() => router.push('/(tabs)/profile')}
 			>
-				<MaterialIcons name='person' size={36} color={themeColors.primary} />
+				<MaterialIcons name='person' size={iconSize} color={themeColors.primary} />
 			</Pressable>
 			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
