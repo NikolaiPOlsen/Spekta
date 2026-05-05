@@ -1,7 +1,7 @@
 import getUserWeights from "../_shared/get-weights-from-db.ts";
 import { getAPIRequestProperties, UserParameterWeight, APIRequestTypeParameter, BuildAPIRequestURLSpecification, tmdbData } from "../_shared/properties.ts";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
-import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
+import { ParameterTypeName, parameterTypeNames } from "../_shared/parameter-type-names.ts";
 import { getUserSettingsFromDb } from "../_shared/get-user-settings.ts";
 
 const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting, randomWithGenres, randomWithCast, randomWithoutGenres, randomWithoutCast, userGenres, userCast }: BuildAPIRequestURLSpecification) => {
@@ -77,10 +77,12 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
     const concatenateParameters = (parameters: string[]) => {
         let concatenatedParameters = "";
         for (let i = 0; i < parameters.length; i++) {
+            const operator = "|"; // positive ? "|" : ","; // Math.random() < 0.8 ? "|" : ",";
+
             if (i != 0) {
-                concatenatedParameters += "|";
+                concatenatedParameters += operator;
             }
-            concatenatedParameters += `|${parameters[i]}`;
+            concatenatedParameters += parameters[i];
         }
 
         return concatenatedParameters;
@@ -180,6 +182,14 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         queryParams.append(URLKey.upper, formatDate(endDate));
     }
 
+    const handleKeywordParameters = (parameter: APIRequestTypeParameter) => {
+        const positive = parameter.positive;
+        const keywordIds = parameter.parameters;
+        const URLKey = positive ? "with_keywords" : "without_keywords";
+        let URLArgument = concatenateParameters(keywordIds);
+        queryParams.append(URLKey, URLArgument);
+    }
+
     parameters.forEach(parameter => {
         const type = parameter.type;
 
@@ -211,6 +221,12 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
                     handleReleaseDateParameters(parameter);
                 }
                 break;
+
+            case ParameterTypeName.Keyword:
+                // 2/3 of the time: include keywords the user likes
+                if (Math.random() < 0.67) {
+                    handleKeywordParameters(parameter);
+                }
 
             default:
                 break;
@@ -287,8 +303,6 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
     const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
     console.log("After getUserWeights");
 
-
-
     // const parameterAmount = parameters.length;
     const resultParams: APIRequestTypeParameter[] = [];
 
@@ -303,10 +317,21 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
 
         const parameterWeightsLength = parameterWeights.length;
         const sortedWeights = parameterWeights.sort((a, b) => b.weight - a.weight);
+
+        const weights: number[] = [];
+
+        sortedWeights.forEach(weightobj => {
+            weights.push(weightobj.weight);
+        });
+
+        console.log(`sorted weights: ${weights}`);
+
         // const reverseSortedWeights = [...sortedWeights].reverse();
         const topParameterWeights = sortedWeights.slice(0, APIRequestParameterAmount);
 
-        console.log(parameterWeights);
+        // console.log("top weights");
+
+        // console.log(parameterWeights);
 
         // Build data structure of parameters that will be specified in API request
         const paramType = parameterWeights[0].parameter_type;
@@ -315,39 +340,45 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             type: paramType,
             parameters: []
         };
-
-        console.log(`currently looping for ${paramType}`);
-
+        
+        console.log(`currently looping for weight type: ${paramType}`);
+        
         topParameterWeights.forEach(parameterWeight => {
             // const paramType = parameterWeight.parameter_type;
             const paramValue = parameterWeight.parameter_value;
             resultParametersPositive.parameters.push(paramValue);
+            // console.log(parameterWeight.weight);
         });
-
+        
+        // console.log("top weight");
+        
         resultParams.push(resultParametersPositive);
-
+        
         // Otherwise top and bottom would overlap, compare to APIRequestParameterAmount multiplied by almost 2
         if (parameterWeightsLength > Math.ceil(APIRequestParameterAmount * 1.75)) {
             const resultParametersNegative: APIRequestTypeParameter = {
-                positive: true, // for top 5 (positive weight)
+                positive: false, // for bottom 5 (negative weight)
                 type: paramType,
                 parameters: []
             };
-
-            // Indexes of bottom 5 (last element)
+            
+            // Bottom 5 weights (last elements)
             const bottomParametersWeights = sortedWeights.slice(parameterWeightsLength - APIRequestParameterAmount, parameterWeightsLength - 1);
-
+            
+            
             // Fill with negative weights (meaning without in API)
             bottomParametersWeights.forEach(parameterWeight => {
                 // const paramType = parameterWeight.parameter_type;
                 const paramValue = parameterWeight.parameter_value;
                 resultParametersNegative.parameters.push(paramValue);
+                // console.log(parameterWeight.weight);
             });
-
+            // console.log("top weight");
+            
             resultParams.push(resultParametersNegative);
         }
     });
-
+    
     const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
     const preferredLanguage = userPreferences.preferred_language;
 

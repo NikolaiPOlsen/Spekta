@@ -111,7 +111,7 @@ serve(async (req) => {
 		// Sort and get details for first movies
 		const recommendations = await getFinalRecommendations(tmdbData, movies);
 
-		return new Response(JSON.stringify({ recommendations }), {
+		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "APIKEY"), recommendations }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});

@@ -37,9 +37,9 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, []);
 
 	const DEBUGLogMovies = () => {
-		if (recommendations[3]) {
-			console.log(`[3] KEYWORDSID: ${recommendations[3].keywordIds}`);
-		}
+		// if (recommendations[3]) {
+		// 	console.log(`[3] KEYWORDIDS: ${recommendations[3].keywordIds}`);
+		// }
 
 		let out = "";
 		for (let i = 0; i < 8; i++) {
@@ -55,7 +55,6 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}
 
 	const applyPendingBatch = useCallback((nextBatch: RecommendationMovie[]) => {
-		
 
 		setRecommendations(remainingMovies => {
 			const nextCurrentMovies = remainingMovies.slice(1, genericMoviesBuffer + 1);
@@ -64,7 +63,14 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			let out = "";
 			for (let i = 0; i < 10; i++) {
 				const element = newMovies[i];
-				out += `(${i}) ${element.title}, `;
+				let title;
+				if (element) {
+					title = element.title;
+				} else {
+					title = "UNDEFINED";
+				}
+
+				out += `(${i}) ${title}, `;
 			}
 			console.log("\n\nmovies after combining nextCurrentMovies and nextBatch:");
 			console.log(`(${newMovies.length}) [${out}...]`);

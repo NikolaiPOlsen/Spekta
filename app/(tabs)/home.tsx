@@ -35,9 +35,9 @@ export default function HomeRoute() {
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 
-	useEffect(() => {
-		refreshRecommendations();
-	}, []);
+	// useEffect(() => {
+	// 	refreshRecommendations();
+	// }, []);
 
 	const cards = recommendations.map(toRecommendationCard);
 
