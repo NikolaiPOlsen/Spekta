@@ -1,43 +1,35 @@
-import { GenericMovie, tmdbData } from "../_shared/properties.ts";
-import getDetailsAPIRequestURL from "./get-api-request-for-details.ts";
+import { DetailedMovie, GenericMovie, TmdbData } from "../_shared/properties.ts";
+import { ExtraMovieDetails, MovieDetailsResponse } from "./detail-properties.ts";
+import fetchMovieDetails from "./fetch-movie-details.ts";
 
-const getMovieDetails = async (tmdbData: tmdbData, movieId: number) => {
-    const detailsURL = await getDetailsAPIRequestURL(tmdbData, movieId);
+const getMovieDetails = async (tmdbData: TmdbData, selectedGenericMovies: GenericMovie[]) => {
+	const moviePromises: Promise<MovieDetailsResponse>[] = selectedGenericMovies.map((movie) => {
+		const details = fetchMovieDetails(tmdbData, movie.id);
+		return details;
+	});
 
-    let response;
+	// Wait for all promises to resolve
+	const highlyDetailedMovies = await Promise.all(moviePromises);
 
-    try {
-        response = await fetch(detailsURL, { headers: { accept: "application/json" } });
-    } catch (error) {
-        console.error(`Fetching movie details failed: ${error}`);
+	// only store the details needed
+	const detailedMovies: ExtraMovieDetails[] = highlyDetailedMovies.map((highlyDetailedMovie: MovieDetailsResponse) => {
+		return {
+			id: highlyDetailedMovie.id,
+			runtime: highlyDetailedMovie.runtime,
+			cast: highlyDetailedMovie.credits?.cast || [],  // if there are no cast (actors), initialize with an empty array
+			keywords: highlyDetailedMovie.keywords
+		}
+	});
 
-        return new Response(
-            JSON.stringify({
-                error: `Fetching movie details failed`,
-                details: error,
-            }),
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
-            }
-        );
-    }
+	return detailedMovies;
 
-    const data = await response.json();
-
-    // try {
-    //     // console.log(data.keywords);
-    //     // for (const [key, value] of data) {
-    //     //     console.log(key);
-    //     // }
-    //     // // data.keywords.forEach((keyword: any) => {
-    //     // //     console.log(`id: ${keyword.id} | name: ${keyword.name}`);
-    //     // // });
-    // } catch (error) {
-    //     console.error(`Failed to log keywords: ${error}`);
-    // }
-
-    return data;
-}
+	// // Extract only the needed properties (cast and runtime)
+	// return highlyDetailedMovies.map((movieDetail: MovieDetailsResponse) => ({
+	// 	id: movieDetail.id,
+	// 	runtime: movieDetail.runtime,
+	// 	cast: movieDetail.credits?.cast || [],  // if there are no cast (actors), initialize with an empty array
+	// 	keywords: movieDetail.keywords
+	// }));
+};
 
 export default getMovieDetails;

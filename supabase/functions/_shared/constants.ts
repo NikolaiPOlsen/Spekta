@@ -42,4 +42,4 @@ export const APIRequestDefaultSortingMethod = "popularity.desc";
  * @constant {number} APIRequestParameterAmount
  * @default 5
  */
-export const APIDetailsMovieAmount = 5;
+export const ApiDetailsMovieAmount = 5;

@@ -8,15 +8,16 @@ export type UserParameterWeight = {
     interaction_count: number;
 };
 
-export interface tmdbData {
+export interface TmdbData {
     APIKey: string;
     baseURL: string;
 }
 
-export interface getAPIRequestProperties {
-    tmdbData: tmdbData;
-    supabaseClientInstance: SupabaseClient
-    userId: string;
+export interface GetParametersFromWeightsParameters {
+    // tmdbData: tmdbData;
+    // supabaseClientInstance: SupabaseClient
+    // userId: string;
+    userParameterWeights: UserParameterWeight[][];
     randomWeightOffset?: boolean;
     randomizeURLParameters?: boolean;
 };
@@ -25,7 +26,7 @@ export interface getAPIRequestProperties {
 //     value: string;
 // };
 
-export interface APIRequestTypeParameter {
+export interface ApiRequestTypeParameter {
     positive: boolean;
     type: string;
     parameters: string[];
@@ -48,30 +49,14 @@ export interface APIRequestTypeParameter {
  * @property randomPage - If true, selects a random page; if [min, max], picks a page in range.
  * @property randomSorting - Randomizes sorting parameters.
  *
- * **For all below:** If true, uses APIRequestParameterAmount.
- * Specify a number to decide how many random genres/cast to specify.
- * 
- * @property randomWithGenres
- * @property randomWithCast
- * @property randomWithoutGenres
- * @property randomWithoutCast
- *
- * @property userGenres - Must be present if `randomWithGenres` or `randomWithoutGenres` are set
- * @property userCast - Must be present if `randomWithCast` or `randomWithoutCast` are set
  */
-export interface BuildAPIRequestURLSpecification {
-    tmdbData: tmdbData;
-    parameters: APIRequestTypeParameter[];
+export interface GetDiscoverApiRequestFunctionParameters {
+    tmdbData: TmdbData;
+    parameters: ApiRequestTypeParameter[];
     languagePreference?: string;
     includeAdult?: boolean;
     randomPage?: boolean | [number, number];
     randomSorting?: boolean;
-    randomWithGenres?: boolean | number;
-    randomWithCast?: boolean | number;
-    randomWithoutGenres?: boolean | number;
-    randomWithoutCast?: boolean | number;
-    userGenres?: string[];
-    userCast?: string[];
 }
 
 export type SwipeParameter = {
