@@ -8,7 +8,7 @@ import { AuthProvider, MediaProvider } from '@/providers';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuthContext } from '@/hooks/use-auth-context';
 
-export function RootNavigation() {
+function AuthGuard() {
   const { isLoading, isLoggedIn } = useAuthContext();
 
   if (isLoading) {
@@ -22,6 +22,8 @@ export function RootNavigation() {
   if (!isLoggedIn) {
     return <Redirect href="/(auth)/start" />;
   }
+
+  return null;
 }
 
 export default function RootLayout() {
@@ -31,11 +33,11 @@ export default function RootLayout() {
     <AuthProvider>
       <MediaProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <AuthGuard />
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="movie/[id]" options={{ title: 'Movie' }} />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>

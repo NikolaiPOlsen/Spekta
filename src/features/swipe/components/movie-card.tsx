@@ -24,6 +24,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
 
   return (
     <View style={styles.shadow}>
+      <Pressable style={{ flex: 1 }} onPress={() => setModalVisible(true)}>
       <ImageBackground
         source={poster ? { uri: poster } : undefined}
         style={styles.card}
@@ -41,11 +42,8 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
           <Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
           <Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
         </View>
-
-        <Pressable style={styles.infoButton} onPress={() => setModalVisible(true)}>
-          <MaterialIcons name='info' size={24} color={themeColors.white} />
-        </Pressable>
       </ImageBackground>
+      </Pressable>
 
       <MovieModal
         visible={modalVisible}
@@ -69,6 +67,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   card: {
+    marginTop: 12,
     flex: 1,
     borderRadius: 24,
     overflow: 'hidden',
