@@ -38,7 +38,7 @@ export default function HomeRoute() {
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
 	const { width } = useWindowDimensions();
-	const iconSize = Math.min(Math.round(width * 0.09), 46);
+	const iconSize = Math.min(Math.round(width * 0.09), 56);
 
 	useEffect(() => {
 		refreshRecommendations();
