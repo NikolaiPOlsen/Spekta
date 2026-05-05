@@ -1,6 +1,7 @@
-import { APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.js";
-import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
-import { ParameterTypeName } from "../_shared/parameter-type-names.js";
+import { APIRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
+import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
+import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
+import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
 
 const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting }: BuildAPIRequestURLSpecification) => {
     const paramTypes: string[] = [];
@@ -70,78 +71,20 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
         queryParams.append("sort_by", APIRequestDefaultSortingMethod);
     }
 
-    const concatenateParameters = (parameters: string[]) => {
-        let concatenatedParameters = "";
-        for (let i = 0; i < parameters.length; i++) {
-            const operator = "|"; // positive ? "|" : ","; // Math.random() < 0.8 ? "|" : ",";
-
-            if (i != 0) {
-                concatenatedParameters += operator;
-            }
-            concatenatedParameters += parameters[i];
-        }
-
-        return concatenatedParameters;
-    }
-
-    const findMinMaxValuesInRange = (array: string[]) => {
-        let maxValue = 0;
-        let minValue = 9.2E18;
-
-        array.forEach(element => {
-            const numbers = element.split("-");
-            const rangeMin = parseInt(numbers[0]);
-            const rangeMax = parseInt(numbers[1]);
-
-            if (Number.isNaN(rangeMin) || Number.isNaN(rangeMax)) {
-                throw new Error("Cannot convert string to valid number");
-            }
-
-            if (rangeMin < minValue) {
-                minValue = rangeMin;
-            }
-
-            if (rangeMax > maxValue) {
-                maxValue = rangeMax;
-            }
-        });
-
-        return {
-            min: minValue,
-            max: maxValue,
-        };
-    }
-
-    const formatDate = (date: Date) => {
-        return date.toISOString().split("T")[0];
-    }
-
-    const addRegularQueryArgument = (positive: boolean, parameters: string[], urlParamType: string) => {
-        const urlKey = positive ? `with_${urlParamType}` : `without_${urlParamType}`;
-        // Always add with_{e.g. keywords} (using OR) for positive
-        // 75% of the time, without_{e.g. keywords} will be there
-        if (positive || Math.random() < 0.75) {
-            const urlArgument = concatenateParameters(parameters);
-            queryParams.append(urlKey, urlArgument);
-        }
-    }
 
     const handleGenreParameters = (parameter: APIRequestTypeParameter) => {
-        addRegularQueryArgument(parameter.positive, parameter.parameters, "genres");
-        // const positive = parameter.positive;
-        // const genres = parameter.parameters;
-        // const URLKey = positive ? "with_genres" : "without_genres";
-        // let URLArgument = concatenateParameters(genres);
-        // queryParams.append(URLKey, URLArgument);
+        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "genres");
+        if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
     const handleActorParameters = (parameter: APIRequestTypeParameter) => {
-        addRegularQueryArgument(parameter.positive, parameter.parameters, "cast");
-        // const positive = parameter.positive;
-        // const actors = parameter.parameters;
-        // const URLKey = positive ? "with_cast" : "without_cast";
-        // let URLArgument = concatenateParameters(actors);
-        // queryParams.append(URLKey, URLArgument);
+        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "cast");
+        if (paramData) queryParams.append(paramData.key, paramData.param);
+    }
+
+    const handleKeywordParameters = (parameter: APIRequestTypeParameter) => {
+        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "kaywords");
+        if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
     const handleRuntimeParameters = (parameter: APIRequestTypeParameter) => {
@@ -174,38 +117,6 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
         queryParams.append(URLKey.upper, formatDate(endDate));
     }
 
-    // const handleRevenueParameters = (parameter: APIRequestTypeParameter) => {
-    //     const positive = parameter.positive;
-    //     if (!positive) return;
-
-    //     const URLKey = { lower: "primary_release_date.gte", upper: "primary_release_date.lte" };
-    //     const dateRanges = parameter.parameters;
-
-    //     const { min, max } = findMinMaxValuesInRange(dateRanges);
-
-    //     const startDate = new Date(min, 0, 1, 0, 0, 0); // first time of a year
-    //     const endDate = new Date(max, 11, 31, 23, 59, 59); // last time of a year
-
-    //     queryParams.append(URLKey.lower, formatDate(startDate));
-    //     queryParams.append(URLKey.upper, formatDate(endDate));
-    // }
-
-    const handleKeywordParameters = (parameter: APIRequestTypeParameter) => {
-        addRegularQueryArgument(parameter.positive, parameter.parameters, "keywords");
-        // const positive = parameter.positive;
-        // const keywordIds = parameter.parameters;
-        // const URLKey = positive ? "with_keywords" : "without_keywords";
-
-        // // Always add with_keywords (using OR) for positive
-        // // 75% of the time, without_keywords will be there
-        // if (positive || Math.random() < 0.75) {
-        //     let URLArgument;
-        //     URLArgument = concatenateParameters(keywordIds);
-        //     queryParams.append(URLKey, URLArgument);
-        // }
-        
-    }
-
     parameters.forEach(parameter => {
         const type = parameter.type;
 
@@ -215,9 +126,14 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
                 break;
 
             case ParameterTypeName.Actor:
-                // Check if randomWithCast is set to false or not specified
                 handleActorParameters(parameter);
                 break;
+
+            case ParameterTypeName.Keyword:
+                // ~90% of the time: include keywords the user likes
+                if (Math.random() < 0.90) {
+                    handleKeywordParameters(parameter);
+                }
 
             case ParameterTypeName.Runtime:
                 // ~Half the time: no runtime parameters added to URL
@@ -233,38 +149,10 @@ const getAPIRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, la
                 }
                 break;
 
-            case ParameterTypeName.Keyword:
-                // 90% of the time: include keywords the user likes
-                if (Math.random() < 0.90) {
-                    handleKeywordParameters(parameter);
-                }
-
             default:
                 break;
         }
     });
-
-    const getRandomElements = (original: string[], returnCount: number) => {
-        const shuffled = [...original];
-
-        // Fisher-Yates shuffle (Knuth shuffle)
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap
-        }
-
-        // first elements
-        return shuffled.slice(0, returnCount);
-    }
-
-    const getParameterAmount = (randomAmount: number | boolean) => {
-        if (typeof randomAmount == "number") {
-            return randomAmount;
-        }
-
-        const amount = Math.floor(Math.random() * 10) + Math.ceil(APIRequestParameterAmount / 2);
-        return amount;
-    }
 
     return `${baseURL}?${queryParams.toString()}`;
 }
