@@ -186,8 +186,15 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
         const positive = parameter.positive;
         const keywordIds = parameter.parameters;
         const URLKey = positive ? "with_keywords" : "without_keywords";
-        let URLArgument = concatenateParameters(keywordIds);
-        queryParams.append(URLKey, URLArgument);
+
+        // Always add with_keywords (using OR) for positive
+        // 75% of the time, without_keywords will be there
+        if (positive || Math.random() < 0.75) {
+            let URLArgument;
+            URLArgument = concatenateParameters(keywordIds);
+            queryParams.append(URLKey, URLArgument);
+        }
+        
     }
 
     parameters.forEach(parameter => {
@@ -224,7 +231,7 @@ const buildAPIRequestURLFromParameters = ({ tmdbData, includeAdult, parameters, 
 
             case ParameterTypeName.Keyword:
                 // 2/3 of the time: include keywords the user likes
-                if (Math.random() < 0.67) {
+                if (Math.random() < 0.90) {
                     handleKeywordParameters(parameter);
                 }
 
@@ -315,8 +322,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             // loop through and add randomness to weights
             parameterWeights.forEach(parameterWeight => {
                 if (Math.random() < 0.5) {
-                    const multiplier = Math.abs(parameterWeight.weight) * Math.random() * 3 - 1.5;
-                    parameterWeight.weight *= multiplier;
+                    const addition = Math.random() * 2 - 1; // Math.abs(parameterWeight.weight) * Math.random() * 3 - 1.5;
+                    parameterWeight.weight += addition;
                 } 
             });
         }
@@ -331,6 +338,8 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
         });
 
         console.log(`sorted weights: ${weights}`);
+
+        const positiveLimit = Math.random() * 0.2 + 0.4;
 
         // const reverseSortedWeights = [...sortedWeights].reverse();
         const topParameterWeights = sortedWeights.slice(0, APIRequestParameterAmount);
@@ -384,7 +393,7 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
             resultParams.push(resultParametersNegative);
         }
     });
-    
+
     const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
     const preferredLanguage = userPreferences.preferred_language;
 
