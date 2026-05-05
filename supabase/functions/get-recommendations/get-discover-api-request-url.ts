@@ -3,7 +3,7 @@ import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRa
 import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
 import { exponent, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
 
-const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeAdult, languagePreference, randomPage, randomSorting }: GetDiscoverApiRequestFunctionParameters) => {
+const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeAdult, includeUnreleasedMovies, languagePreference, randomPage, randomSorting }: GetDiscoverApiRequestFunctionParameters) => {
     const paramTypes: string[] = [];
 
     parameters.forEach(param => {
@@ -24,6 +24,8 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
     const tmdbAPIKey = tmdbData.APIKey;
     const baseURL = tmdbData.baseURL;
     const queryParams = new URLSearchParams({ api_key: encodeURIComponent(tmdbAPIKey) });
+
+    const avoidUnreleasedMovies = !includeUnreleasedMovies;
 
     // language
     if (languagePreference) {
@@ -78,7 +80,7 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
     }
 
     const handleKeywordParameters = (parameter: ApiRequestTypeParameter) => {
-        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "kaywords");
+        const paramData = getRegularQueryParameters(parameter.positive, parameter.parameters, "keywords");
         if (paramData) queryParams.append(paramData.key, paramData.param);
     }
 
@@ -93,7 +95,6 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
 
         queryParams.append(URLKey.lower, String(min));
         queryParams.append(URLKey.upper, String(max));
-
     }
 
     const handleReleaseDateParameters = (parameter: ApiRequestTypeParameter) => {
@@ -105,11 +106,28 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
 
         const { min, max } = findMinMaxValuesInRange(dateRanges);
 
-        const startDate = new Date(min, 0, 1, 0, 0, 0); // first time of a year
-        const endDate = new Date(max, 11, 31, 23, 59, 59); // last time of a year
+        const currentUnixTime = Date.now();
 
-        queryParams.append(URLKey.lower, formatDate(startDate));
-        queryParams.append(URLKey.upper, formatDate(endDate));
+        // ~Half the time: release_date.gte/lte parameters added to url
+        // gte: greater than or equal
+        // lte: less than or equal
+        if (Math.random() < 0.50) {
+            const startDate = new Date(min, 0, 0, 0, 0, 0); // first time of a year
+            const endDate = new Date(max, 11, 31, 23, 59, 59); // last time of a year
+
+            queryParams.append(URLKey.lower, formatDate(startDate));
+
+            if (endDate.getTime() <= currentUnixTime && avoidUnreleasedMovies) {
+                queryParams.append(URLKey.upper, formatDate(endDate));
+            } else if (!avoidUnreleasedMovies) {
+                queryParams.append(URLKey.upper, formatDate(endDate));
+            }
+        }
+
+        if (avoidUnreleasedMovies) {
+            // Avoid movies that have not been released yet
+            queryParams.append(URLKey.upper, formatDate(new Date(currentUnixTime)));
+        }
     }
 
     parameters.forEach(parameter => {
@@ -134,10 +152,7 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
                 break;
 
             case ParameterTypeName.ReleaseDate:
-                // ~Half the time: no release_date parameters added to URL
-                if (Math.random() < 0.5) {
-                    handleReleaseDateParameters(parameter);
-                }
+                handleReleaseDateParameters(parameter);
                 break;
 
             default:

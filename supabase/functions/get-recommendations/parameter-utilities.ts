@@ -29,8 +29,8 @@ export const findMinMaxValuesInRange = (array: string[]) => {
 
 	array.forEach(element => {
 		const numbers = element.split("-");
-		const rangeMin = parseInt(numbers[0]);
-		const rangeMax = parseInt(numbers[1]);
+		const rangeMin = parseInt(numbers[0], 10); // base 10
+		const rangeMax = parseInt(numbers[1], 10);
 
 		if (Number.isNaN(rangeMin) || Number.isNaN(rangeMax)) {
 			throw new Error("Cannot convert string to valid number");

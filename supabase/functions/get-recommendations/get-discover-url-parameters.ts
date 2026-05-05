@@ -4,6 +4,8 @@ import { ApiRequestTypeParameter, GetParametersFromWeightsParameters, UserParame
 const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, randomWeightOffset = false, randomizeURLParameters = false }: GetParametersFromWeightsParameters) => {
     const useRandomWeightOffset = randomWeightOffset ? true : false;
 
+    // TODO: implement positiveLimit instead of top 5
+
     const resultParams: ApiRequestTypeParameter[] = [];
 
     userParameterWeights.forEach(parameterWeights => {

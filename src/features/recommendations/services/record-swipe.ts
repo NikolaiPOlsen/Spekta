@@ -8,6 +8,12 @@ type RecordSwipePayload = {
 	parameters: SwipeParameter[];
 };
 
+function convertToValueRange(value: number, range: number): string {
+	const bottomValue = Math.floor(value / range) * range;
+	const topValue = bottomValue + range - 1;
+	return `${bottomValue}-${topValue}`;
+}
+
 function buildParameterArray(type: string, ids: number[]) {
 	const parameterArray: SwipeParameter[] = [];
 
@@ -49,11 +55,31 @@ function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 	}
 
 	if (releaseDate) {
+		const year = releaseDate.split("-")[0];
+		const parsedYear = parseInt(year, 10); // base 10
 
+		if (Number.isNaN(parsedYear)) {
+			throw new Error("Cannot convert string to valid number. Unable to parse start year");
+		}
+
+		const decadeStart = Math.floor(parsedYear / 10) * 10;
+		const decade = `${decadeStart}-${decadeStart + 9}`; // if releaseDate is "1973-05-7", this should become e.g. 1970-1979
+		swipeParameters.push(
+			{
+				parameter_type: "runtime",
+				parameter_value: String(decade)
+			}
+		);
 	}
 
 	if (runtime) {
-
+		const range = convertToValueRange(runtime, 30); // 30-min groups
+		swipeParameters.push(
+			{
+				parameter_type: "runtime",
+				parameter_value: String(range)
+			}
+		);
 	}
 
 	return swipeParameters;

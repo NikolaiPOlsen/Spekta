@@ -39,12 +39,13 @@ export interface ApiRequestTypeParameter {
  * Parameters used to build a TMDb API request URL for fetching movies with optional filtering
  * and randomization behavior.
  *
- * @property tmdbAPIKey - API key
- * @property tmdbBaseURL - API base URL
+ * @property tmdbData - object with tmdb baseurl and apikey
  *
- * @property includeAdult - Include adult content in results.
  * @property parameters - Array of API filter parameters (e.g. genres, dates, ratings).
+ * 
  * @property languagePreference - The language preference of the movie. Leave blank to disable.
+ * @property includeAdult - Include adult content in results.
+ * @property includeUnreleasedMovies - Whether to include unreleased movies in results. False by default.
  *
  * @property randomPage - If true, selects a random page; if [min, max], picks a page in range.
  * @property randomSorting - Randomizes sorting parameters.
@@ -55,6 +56,7 @@ export interface GetDiscoverApiRequestFunctionParameters {
     parameters: ApiRequestTypeParameter[];
     languagePreference?: string;
     includeAdult?: boolean;
+    includeUnreleasedMovies?: boolean;
     randomPage?: boolean | [number, number];
     randomSorting?: boolean;
 }
