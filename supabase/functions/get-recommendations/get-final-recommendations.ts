@@ -1,4 +1,4 @@
-import fetchMovieDetails from "./fetch-movie-details.js";
+import fetchMovieDetails from "./fetch-movie-details.ts";
 import { ApiDetailsMovieAmount } from "../_shared/constants.ts";
 import { DetailedMovie, GenericMovie, tmdbData } from "../_shared/properties.ts";
 import { MovieDetailsResponse } from "./detail-properties.ts";

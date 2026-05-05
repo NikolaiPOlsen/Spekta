@@ -1,7 +1,7 @@
-import { ApiRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.js";
-import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.js";
-import { ParameterTypeName } from "../_shared/parameter-type-names.js";
-import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.js";
+import { ApiRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
+import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
+import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
+import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
 
 const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting }: BuildAPIRequestURLSpecification) => {
     const paramTypes: string[] = [];

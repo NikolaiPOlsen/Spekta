@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.js";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import getAPIRequestWithParameters from "./get-discover-api-request-url.ts";
 import getFinalRecommendations from "./get-final-recommendations.ts";
@@ -166,25 +166,19 @@ serve(async (req) => {
 
 		// =====================================================================
 		// step 9: combine the extra details with the GenericMovie[]
-		const detailedMovies: DetailedMovie[] = combineExtraDetailsWithGenericMovies(firstSortedGenericMovies, extraDetailsForMovies);
+		const recommendations: DetailedMovie[] = combineExtraDetailsWithGenericMovies(firstSortedGenericMovies, extraDetailsForMovies);
 
 
-
+		// =====================================================================
 		// step 10: return the movie recommendations to frontend
-
-
-
-
-
-
-
-		// Sort and get details for first movies
-		const recommendations = await getFinalRecommendations(tmdbData, movies);
-
-		return new Response(JSON.stringify({ apiRequest: APIRequestURL.replace(tmdbData.APIKey, "APIKEY"), recommendations }), {
+		return new Response(JSON.stringify({ discoverApiRequestUrl: discoverApiRequestUrl.replace(tmdbData.APIKey, "APIKEY"), recommendations }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },
 		});
+
+
+
+
 	} catch (error) {
 		return new Response(
 			JSON.stringify({

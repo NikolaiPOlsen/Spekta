@@ -1,5 +1,5 @@
-import { APIRequestParameterAmount } from "../_shared/constants.js";
-import { ApiRequestTypeParameter, GetParametersFromWeightsParameters, UserParameterWeight } from "../_shared/properties.js";
+import { APIRequestParameterAmount } from "../_shared/constants.ts";
+import { ApiRequestTypeParameter, GetParametersFromWeightsParameters, UserParameterWeight } from "../_shared/properties.ts";
 
 const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, randomWeightOffset = false, randomizeURLParameters = false }: GetParametersFromWeightsParameters) => {
     const useRandomWeightOffset = randomWeightOffset ? true : false;

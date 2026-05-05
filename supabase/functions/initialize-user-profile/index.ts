@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.js";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
 

@@ -31,3 +31,5 @@ const getMovieDetails = async (tmdbData: TmdbData, selectedGenericMovies: Generi
 	// 	keywords: movieDetail.keywords
 	// }));
 };
+
+export default getMovieDetails;

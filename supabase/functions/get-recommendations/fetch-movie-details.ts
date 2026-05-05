@@ -1,5 +1,5 @@
-import { GenericMovie, tmdbData } from "../_shared/properties.js";
-import getDetailsAPIRequestURL from "./get-api-request-for-details.js";
+import { GenericMovie, tmdbData } from "../_shared/properties.ts";
+import getDetailsAPIRequestURL from "./get-api-request-for-details.ts";
 
 const fetchMovieDetails = async (tmdbData: tmdbData, movieId: number) => {
     const detailsURL = await getDetailsAPIRequestURL(tmdbData, movieId);
