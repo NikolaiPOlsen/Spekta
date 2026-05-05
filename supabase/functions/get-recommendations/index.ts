@@ -3,15 +3,21 @@ import { createUserClient } from "../_shared/supabase-create-client.ts";
 import getAPIRequestWithParameters from "./get-discover-api-request-url.ts";
 import getFinalRecommendations from "./get-final-recommendations.ts";
 import getUserWeights from "../_shared/get-weights-from-db.ts";
-import getDiscoverApiRequestUrlParametersFromWeights from "./get-discover-url-parameters.js";
-import { getUserSettingsFromDb } from "../_shared/get-user-settings.js";
+import getDiscoverApiRequestUrlParametersFromWeights from "./get-discover-url-parameters.ts";
+import { getUserSettingsFromDb } from "../_shared/get-user-settings.ts";
 import getDiscoverApiRequestUrlFromParameters from "./get-discover-api-request-url.ts";
+import filterMoviesWithoutPosterPath from "./filter-movies-no-poster.ts";
+import sortGenericMovies from "./sort-generic-movies.ts";
+import { ApiDetailsMovieAmount } from "../_shared/constants.ts";
+import getMovieDetails from "./get-movie-details.ts";
+import combineExtraDetailsWithGenericMovies from "./combine-extra-details-with-generic-movies.ts";
 
 // types
 import {
-	ApiRequestTypeParameter, GetParametersFromWeightsParameters, tmdbData, GenericMovieAPIFetch, GenericMovie,
+	ApiRequestTypeParameter, GetParametersFromWeightsParameters, TmdbData, GenericMovieAPIFetch, GenericMovie,
 	DetailedMovie, UserParameterWeight, GetDiscoverApiRequestFunctionParameters
 } from "../_shared/properties.ts";
+import { ExtraMovieDetails } from "./detail-properties.ts";
 
 serve(async (req) => {
 	try {
@@ -21,6 +27,9 @@ serve(async (req) => {
 		const tmdbBaseUrl = Deno.env.get("TMDB_BASE_URL");
 
 
+
+		// =====================================================================
+		// step 0: load supabase secrets and/or environment variables
 		if (!tmdbApiKey) {
 			return new Response(
 				JSON.stringify({ error: "Missing TMDB_API_KEY" }),
@@ -41,7 +50,8 @@ serve(async (req) => {
 			);
 		}
 
-		const tmdbData: tmdbData = {
+		// initialize object of type for easier api variable handling
+		const tmdbData: TmdbData = {
 			APIKey: tmdbApiKey,
 			baseURL: tmdbBaseUrl
 		};
@@ -94,7 +104,7 @@ serve(async (req) => {
 
 
 		// =====================================================================
-		// step 5: take those parameters and build the /discover api request url
+		// step 5: take those options and build the /discover api request url
 		const discoverApiRequestUrl = getDiscoverApiRequestUrlFromParameters(getDiscoverApiRequestUrlOptions);
 
 
@@ -160,17 +170,31 @@ serve(async (req) => {
 			genricMovies.push(genericMovie);
 		});
 
-		// 
 
+
+		// =====================================================================
+		// step 7: filter out the generic movies without poster path
+		const filteredGenericMovies: GenericMovie[] = filterMoviesWithoutPosterPath(genricMovies);
+
+
+
+		// =====================================================================
 		// step 7: sort the 20 GenericMovie[] movies by something (call sort movies function)
+		const sortedGenericMovies: GenericMovie[] = sortGenericMovies(filteredGenericMovies);
 
 
 
+		// =====================================================================
 		// step 8: fetch extra details for the top 5 or so movies (actors (cast), runtime, keywords)
+		// get the first generic movies of the sorted generic movies
+		const firstSortedGenericMovies = sortedGenericMovies.slice(0, ApiDetailsMovieAmount)
+		const extraDetailsForMovies: ExtraMovieDetails[] = await getMovieDetails(tmdbData, firstSortedGenericMovies);
 
 
 
-		// step 9: combine the DetailedMovie[] and GenericMovie[]
+		// =====================================================================
+		// step 9: combine the extra details with the GenericMovie[]
+		const detailedMovies: DetailedMovie[] = combineExtraDetailsWithGenericMovies(firstSortedGenericMovies, extraDetailsForMovies);
 
 
 

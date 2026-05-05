@@ -86,3 +86,12 @@ export interface CrewMember {
     name: string;
     profile_path: string | null;
 }
+
+export interface ExtraMovieDetails {
+    id: number;
+    runtime: number | null;
+    cast: CastMember[];
+    keywords: {
+        keywords: Keyword[];
+    };
+}

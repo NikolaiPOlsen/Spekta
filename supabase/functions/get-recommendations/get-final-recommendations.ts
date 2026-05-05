@@ -1,53 +1,37 @@
-import getMovieDetails from "./get-movie-details.ts";
-import { APIDetailsMovieAmount } from "../_shared/constants.ts";
+import fetchMovieDetails from "./fetch-movie-details.js";
+import { ApiDetailsMovieAmount } from "../_shared/constants.ts";
 import { DetailedMovie, GenericMovie, tmdbData } from "../_shared/properties.ts";
 import { MovieDetailsResponse } from "./detail-properties.ts";
 
 const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: GenericMovie[]) => {
     const results: DetailedMovie[] = [];
 
-    const genericMoviesWithPosterPath: GenericMovie[] = [];
 
-    genericMovies.forEach(movie => {
-        // posterPath is either a string or null
-        if (movie.posterPath) {
-            genericMoviesWithPosterPath.push(movie);
-        }
-        // console.log(`title: ${movie.title} | poster: ${movie.posterPath}`);
-    });
 
-    const sortedGenericMovies = genericMoviesWithPosterPath.sort((movieA, movieB) => {
-        const estimatedQualityA = (movieA.voteAverage * movieA.voteCount * movieA.popularity) / 100;
-        const estimatedQualityB = (movieB.voteAverage * movieB.voteCount * movieB.popularity) / 100;
 
-        return estimatedQualityB - estimatedQualityA;
-    });
+    // const getMovieDetails = async () => {
+    //     const moviePromises: Promise<MovieDetailsResponse>[] = highestQualityMovies.map((movie) => {
+    //         // console.log(`Fetching details for movie ${movie.id}`);
+    //         // sort actors, e.g. top 5 by popularity
+    //         // use keywords
+    //         const details = fetchMovieDetails(tmdbData, movie.id);
+    //         return details;
+    //     });
 
-    const highestQualityMovies = sortedGenericMovies.slice(0, APIDetailsMovieAmount);
+    //     // Wait for all promises to resolve
+    //     const highlyDetailedMovies = await Promise.all(moviePromises);
 
-    const fetchMovieDetails = async () => {
-        const moviePromises: Promise<MovieDetailsResponse>[] = highestQualityMovies.map((movie) => {
-            // console.log(`Fetching details for movie ${movie.id}`);
-            // sort actors, e.g. top 5 by popularity
-            // use keywords
-            const details = getMovieDetails(tmdbData, movie.id);
-            return details;
-        });
+    //     // Extract only the needed properties (cast and runtime)
+    //     return highlyDetailedMovies.map((movieDetail: MovieDetailsResponse) => ({
+    //         id: movieDetail.id,
+    //         title: movieDetail.title,
+    //         runtime: movieDetail.runtime,
+    //         cast: movieDetail.credits?.cast || [],  // if there are no cast (actors), initialize with an empty array
+    //         keywords: movieDetail.keywords
+    //     }));
+    // };
 
-        // Wait for all promises to resolve
-        const highlyDetailedMovies = await Promise.all(moviePromises);
-
-        // Extract only the needed properties (cast and runtime)
-        return highlyDetailedMovies.map((movieDetail: MovieDetailsResponse) => ({
-            id: movieDetail.id,
-            title: movieDetail.title,
-            runtime: movieDetail.runtime,
-            cast: movieDetail.credits?.cast || [],  // If there are no cast members, we provide an empty array
-            keywords: movieDetail.keywords
-        }));
-    };
-
-    const movieDetails = await fetchMovieDetails();
+    const movieDetails = await getMovieDetails();
 
     for (let index = 0; index < highestQualityMovies.length; index++) {
         const genericMovie = highestQualityMovies[index];
@@ -78,7 +62,7 @@ const getFinalRecommendations = async (tmdbData: tmdbData, genericMovies: Generi
         results.push(detailedMovie);
     }
 
-    const remainingMovies = sortedGenericMovies.slice(APIDetailsMovieAmount);
+    const remainingMovies = sortedGenericMovies.slice(ApiDetailsMovieAmount);
     results.push(...remainingMovies);
 
     // console.log(`Final results: ${results.length}`);
