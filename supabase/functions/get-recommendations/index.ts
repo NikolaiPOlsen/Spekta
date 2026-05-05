@@ -42,7 +42,7 @@ serve(async (req) => {
 			tmdbData: tmdbData,
 			supabaseClientInstance: supabase,
 			userId: user.id,
-			randomWeightOffset: false,
+			randomWeightOffset: true,
 			randomizeURLParameters: false
 		};
 

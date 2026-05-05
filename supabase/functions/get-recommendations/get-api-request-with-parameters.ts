@@ -313,6 +313,12 @@ const getAPIRequestWithParameters = async ({ tmdbData, supabaseClientInstance, u
 
         if (useRandomWeightOffset) {
             // loop through and add randomness to weights
+            parameterWeights.forEach(parameterWeight => {
+                if (Math.random() < 0.5) {
+                    const multiplier = Math.abs(parameterWeight.weight) * Math.random() * 3 - 1.5;
+                    parameterWeight.weight *= multiplier;
+                } 
+            });
         }
 
         const parameterWeightsLength = parameterWeights.length;

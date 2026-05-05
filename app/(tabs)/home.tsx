@@ -31,7 +31,7 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { recommendations, isLoading, error, recordSwipe, refreshRecommendations } = useMediaContext();
+	const { recommendations, isLoading, error, recordSwipe } = useMediaContext(); // , refreshRecommendations
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 
