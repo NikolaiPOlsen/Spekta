@@ -3,13 +3,7 @@ import { ApiRequestTypeParameter, GetParametersFromWeightsParameters, UserParame
 
 const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, randomWeightOffset = false, randomizeURLParameters = false }: GetParametersFromWeightsParameters) => {
     const useRandomWeightOffset = randomWeightOffset ? true : false;
-    const useRandomURLParameters = randomizeURLParameters ? true : false;
 
-    // console.log("Before getUserWeights");
-    // const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
-    // console.log("After getUserWeights");
-
-    // const parameterAmount = parameters.length;
     const resultParams: ApiRequestTypeParameter[] = [];
 
     userParameterWeights.forEach(parameterWeights => {
@@ -93,54 +87,6 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
     });
 
     return resultParams;
-
-    // const userPreferences = await getUserSettingsFromDb(supabaseClientInstance, userId);
-    // const preferredLanguage = userPreferences.preferred_language;
-
-    let buildAPIRequestURLOptions: BuildAPIRequestURLSpecification = {
-        tmdbData: tmdbData,
-        parameters: resultParams,
-        includeAdult: userPreferences.include_adult,
-        randomPage: true,
-        randomSorting: true
-    };
-
-    if (!buildAPIRequestURLOptions.parameters || buildAPIRequestURLOptions.parameters.length < 1) {
-        buildAPIRequestURLOptions.randomPage = false;
-        buildAPIRequestURLOptions.randomSorting = false;
-    }
-
-    if (preferredLanguage != null) {
-        buildAPIRequestURLOptions.languagePreference = preferredLanguage;
-    }
-
-    if (useRandomURLParameters) {
-        const userGenres: string[] = [];
-        const userCast: string[] = [];
-
-        resultParams.forEach(paramType => {
-            if (paramType.type == ParameterTypeName.Genre && paramType.positive) {
-                for (let i = 0; i < paramType.parameters.length; i++) {
-                    userGenres.push(paramType.parameters[i]);
-                }
-            }
-
-            if (paramType.type == ParameterTypeName.Actor && paramType.positive) {
-                for (let i = 0; i < paramType.parameters.length; i++) {
-                    userCast.push(paramType.parameters[i]);
-                }
-            }
-        });
-
-        // buildAPIRequestURLOptions.randomPage = true;
-        // buildAPIRequestURLOptions.randomSorting = true;
-        // buildAPIRequestURLOptions.randomWithGenres = true;
-        // buildAPIRequestURLOptions.randomWithCast = true;
-        // buildAPIRequestURLOptions.randomWithoutGenres = true;
-        // buildAPIRequestURLOptions.randomWithoutCast = true;
-        // buildAPIRequestURLOptions.userGenres = userCast,
-        // buildAPIRequestURLOptions.userCast = userCast
-    }
 }
 
 export default getDiscoverApiRequestUrlParametersFromWeights;

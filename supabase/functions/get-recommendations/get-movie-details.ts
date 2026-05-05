@@ -16,7 +16,6 @@ const getMovieDetails = async (tmdbData: TmdbData, selectedGenericMovies: Generi
 		return {
 			id: highlyDetailedMovie.id,
 			runtime: highlyDetailedMovie.runtime,
-			cast: highlyDetailedMovie.credits?.cast || [],  // if there are no cast (actors), initialize with an empty array
 			keywords: highlyDetailedMovie.keywords
 		}
 	});
