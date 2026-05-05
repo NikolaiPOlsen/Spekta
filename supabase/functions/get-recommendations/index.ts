@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createUserClient } from "../_shared/supabase-create-client.ts";
 import getAPIRequestWithParameters from "./get-discover-api-request-url.ts";
-import getFinalRecommendations from "./get-final-recommendations.ts";
 import getUserWeights from "../_shared/get-weights-from-db.ts";
 import getDiscoverApiRequestUrlParametersFromWeights from "./get-discover-url-parameters.ts";
 import { getUserSettingsFromDb } from "../_shared/get-user-settings.ts";
@@ -57,12 +56,15 @@ serve(async (req) => {
 			baseURL: tmdbBaseUrl
 		};
 
+		console.log("finish step 0");
+
 
 
 		// =====================================================================
 		// step 1: get user weights from database
 		console.log("Reading user weights from database");
 		const userParameterWeights: UserParameterWeight[][] = await getUserWeights(supabase, user.id);
+		console.log("finish step 1");
 
 
 
@@ -76,6 +78,7 @@ serve(async (req) => {
 		};
 
 		const discoverUrlParameters: ApiRequestTypeParameter[] = getDiscoverApiRequestUrlParametersFromWeights(getUrlParametersOptions);
+		console.log("finish step 2");
 
 
 
@@ -83,6 +86,7 @@ serve(async (req) => {
 		// step 3: read user preferences from database, these are also used in the /discover api request url
 		const userPreferences = await getUserSettingsFromDb(supabase, user.id);
 		const preferredLanguage = userPreferences.preferred_language;
+		console.log("finish step 3");
 
 
 
@@ -101,12 +105,14 @@ serve(async (req) => {
 		if (preferredLanguage != null) {
 			getDiscoverApiRequestUrlOptions.languagePreference = preferredLanguage;
 		}
+		console.log("finish step 4");
 
 
 
 		// =====================================================================
 		// step 5: take those options and build the /discover api request url
 		const discoverApiRequestUrl = getDiscoverApiRequestUrlFromParameters(getDiscoverApiRequestUrlOptions);
+		console.log("finish step 5");
 
 
 
@@ -115,6 +121,7 @@ serve(async (req) => {
 
 		try {
 			response = await fetch(discoverApiRequestUrl, { headers: { accept: "application/json" } });
+			console.log("Finished fetching from /discover");
 
 		} catch (error) {
 			console.error(`Error whilst fetching from /discover: ${error}`);
@@ -123,11 +130,13 @@ serve(async (req) => {
 				JSON.stringify({ error: "Fetching from /discover failed", details: error }), { status: 500, headers: { "Content-Type": "application/json" } });
 		}
 
+
+
 		if (!response.ok) {
 			return new Response(
 				JSON.stringify({
 					error: `TMDb request failed: ${response.status}`,
-					details: response,
+					details: await response.json(),
 				}),
 				{
 					status: 500,
@@ -137,40 +146,53 @@ serve(async (req) => {
 		}
 
 		// Deserialize from JSON to JS object
+		console.log("before deserializing from json");
 		const discoverResponse = await response.json();
-		const discoverResponseMovies: GenericMovieAPIFetch[] = discoverResponse.result;
+		console.log("after deserializing from json");
+		
+		console.log("before accessing discoverResponse.result");
+		console.log(`discoverResponse keys: ${Object.keys(discoverResponse)}`);
+
+
+		const discoverResponseMovies: GenericMovieAPIFetch[] = discoverResponse.results;
 
 		// convert to local type GenericMovie[]
+		console.log("before step 6");
 		const genericMovies: GenericMovie[] = convertDiscoverResponseToGenericMovie(discoverResponseMovies);
-
-
+		console.log("finish step 6");
+		
+		
 		// =====================================================================
 		// step 7: filter out the generic movies without poster path
 		const filteredGenericMovies: GenericMovie[] = filterMoviesWithoutPosterPath(genericMovies);
-
-
-
+		console.log("finish step 7");
+		
+		
+		
 		// =====================================================================
-		// step 7: sort the 20 GenericMovie[] movies by something (call sort movies function)
+		// step 8: sort the 20 GenericMovie[] movies by something (call sort movies function)
 		const sortedGenericMovies: GenericMovie[] = sortGenericMovies(filteredGenericMovies);
-
-
-
+		console.log("finish step 8");
+		
+		
+		
 		// =====================================================================
-		// step 8: fetch extra details for the top 5 or so movies (actors (cast), runtime, keywords)
+		// step 9: fetch extra details for the top 5 or so movies (actors (cast), runtime, keywords)
 		// get the first generic movies of the sorted generic movies
 		const firstSortedGenericMovies = sortedGenericMovies.slice(0, ApiDetailsMovieAmount)
 		const extraDetailsForMovies: ExtraMovieDetails[] = await getMovieDetails(tmdbData, firstSortedGenericMovies);
-
-
-
+		console.log("finish step 9");
+		
+		
+		
 		// =====================================================================
-		// step 9: combine the extra details with the GenericMovie[]
+		// step 10: combine the extra details with the GenericMovie[]
 		const recommendations: DetailedMovie[] = combineExtraDetailsWithGenericMovies(firstSortedGenericMovies, extraDetailsForMovies);
-
-
+		console.log("finish step 10");
+		
+		
 		// =====================================================================
-		// step 10: return the movie recommendations to frontend
+		// step 11: return the movie recommendations to frontend
 		return new Response(JSON.stringify({ discoverApiRequestUrl: discoverApiRequestUrl.replace(tmdbData.APIKey, "APIKEY"), recommendations }), {
 			status: 200,
 			headers: { "Content-Type": "application/json" },

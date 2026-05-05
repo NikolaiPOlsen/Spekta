@@ -1,5 +1,14 @@
 import { APIRequestParameterAmount } from "../_shared/constants.ts";
 
+export const exponent = (base: number, exponent: number) => {
+    let result = 1;
+    for (let index = 0; index < exponent; index++) {
+        result *= base;
+    }
+
+    return result;
+}
+
 export const concatenateParameters = (parameters: string[]) => {
 	let concatenatedParameters = "";
 	for (let i = 0; i < parameters.length; i++) {

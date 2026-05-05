@@ -1,9 +1,9 @@
-import { ApiRequestTypeParameter, BuildAPIRequestURLSpecification } from "../_shared/properties.ts";
+import { ApiRequestTypeParameter, GetDiscoverApiRequestFunctionParameters } from "../_shared/properties.ts";
 import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
 import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
-import { concatenateParameters, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
+import { exponent, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
 
-const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, includeAdult, parameters, languagePreference, randomPage, randomSorting }: BuildAPIRequestURLSpecification) => {
+const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeAdult, languagePreference, randomPage, randomSorting }: GetDiscoverApiRequestFunctionParameters) => {
     const paramTypes: string[] = [];
 
     parameters.forEach(param => {
@@ -42,19 +42,19 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, includeAdult, parame
     } else {
         // random page
         let page: number = 1;
-
+        
         if (typeof randomPage == "boolean") {
             page = Math.floor(Math.random() * APIRequestRandomPageMax) + APIRequestRandomPageMin;
         } else {
             const min = randomPage[0];
             const max = randomPage[1];
-            const exponent = 4;
+            const exp = 4;
             const randomValue = Math.random();
-
+            
             // page = Math.floor(Math.random() * (max - min + 1)) + min;
-
+            
             // more likely to be a page with a lower value
-            page = Math.floor((randomValue ** exponent) * max) + min;
+            page = Math.floor((exponent(randomValue, exp)) * max) + min;
         }
 
         queryParams.append("page", String(page));
