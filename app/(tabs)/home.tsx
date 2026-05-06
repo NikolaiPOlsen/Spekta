@@ -1,6 +1,4 @@
-import { Pressable, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
@@ -8,6 +6,9 @@ import { useMediaContext } from '@/hooks/use-media-context';
 import type { RecommendationMovie } from '@/features/recommendations/types';
 import { Colors } from '@/themes/colors';
 import { useEffect } from 'react';
+import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import { ProfileButton } from '@/components/ui/app-button';
 
 type RecommendationCard = {
 	movie: RecommendationMovie;
@@ -26,7 +27,7 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 			type: 'Movie',
 			voteavg,
 			poster: movie.posterPath
-				? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
+				? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
 				: undefined,
 		},
 	};
@@ -46,14 +47,16 @@ export default function HomeRoute() {
 
 	const cards = recommendations.map(toRecommendationCard);
 
+	useEffect(() => {
+		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
+		void Image.prefetch(urls);
+	}, [recommendations]);
+
 	return (
 		<View style={[styles.container]}>
-			<Pressable
-				style={[styles.profileButton, { top: insets.top + 15, left: insets.left + 12 }]}
-				onPress={() => router.push('/(tabs)/profile')}
-			>
-				<MaterialIcons name='person' size={iconSize} color={themeColors.primary} />
-			</Pressable>
+			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
+				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
+			</View>
 			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
 			{!isLoading && !error && cards.length === 0 ? (
@@ -63,13 +66,15 @@ export default function HomeRoute() {
 				<Swipe
 					key={recommendations[0]?.id ?? 'recommendations'}
 					data={cards}
-					renderCard={(item) => <MovieCard {...item.card} />}
-					onSwipeRight={(item) => {
-						void recordSwipe(item.movie, true);
-					}}
-					onSwipeLeft={(item) => {
-						void recordSwipe(item.movie, false);
-					}}
+					renderCard={(item, swipeLeft, swipeRight) => (
+						<MovieCard
+							{...item.card}
+							onSwipeLeft={() => { swipeLeft(); void recordSwipe(item.movie, false); }}
+							onSwipeRight={() => { swipeRight(); void recordSwipe(item.movie, true); }}
+						/>
+					)}
+					onSwipeRight={(item) => { void recordSwipe(item.movie, true); }}
+					onSwipeLeft={(item) => { void recordSwipe(item.movie, false); }}
 				/>
 			) : null}
 		</View>
