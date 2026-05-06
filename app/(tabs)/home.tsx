@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
@@ -47,13 +47,14 @@ export default function HomeRoute() {
 
 	const cards = recommendations.map(toRecommendationCard);
 
-	useEffect(() => {
-		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
-		void Image.prefetch(urls);
-	}, [recommendations]);
+	// useEffect(() => {
+	// 	const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
+	// 	void Image.prefetch(urls);
+	// }, [recommendations]);
 
 	return (
 		<SafeAreaView style={[styles.container]}>
+			<StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		backgroundColor: "#0e0f0f"
 	},
 	profileButton: {
 		position: 'absolute',
