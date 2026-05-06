@@ -25,7 +25,8 @@ export const Colors = {
     mute: '#cfcfcf',
     white: '#fff',
     light: "#E7E7E7",
-    dark: "#11181C"
+    dark: "#11181C",
+    themeIsDark: false
   },
   dark: {
     text: '#ECEDEE',
@@ -43,7 +44,8 @@ export const Colors = {
     mute: '#cfcfcf',
     white: '#fff',
     light: "#E7E7E7",
-    dark: "#11181C"
+    dark: "#11181C",
+    themeIsDark: true
   },
 };
 

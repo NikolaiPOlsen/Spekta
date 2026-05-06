@@ -1,11 +1,12 @@
 import { InputField, PasswordField } from "@/components/ui/input-field";
 import { useState } from "react";
-import { Alert, View, StyleSheet, Text, KeyboardAvoidingView, Platform, useColorScheme } from 'react-native';
+import { Alert, View, StyleSheet, Text, KeyboardAvoidingView, Platform, useColorScheme, StatusBar } from 'react-native';
 import { TextStyles } from '@/constants/text-style';
 import { AppButton } from "@/components/ui/app-button";
 import { supabase } from '@/lib/supabase';
 import { Colors } from "@/themes/colors";
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 async function signOut() {
 	await supabase.auth.signOut();
@@ -57,6 +58,8 @@ export default function ProfileRoute() {
 			style={{ flex: 1, width: '100%' }}
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 			keyboardVerticalOffset={0}>
+
+			<StatusBar barStyle={themeColors.themeIsDark ? "light-content" : "dark-content"} backgroundColor="transparent" translucent />
 
 			<View style={styles.container}>
 				<View style={styles.inner}>
