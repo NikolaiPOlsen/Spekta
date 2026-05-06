@@ -69,11 +69,13 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         const sortOptions = ["popularity.desc", "revenue.desc", "vote_count.desc", "primary_release_date.desc", "revenue.asc", "vote_average.asc", "vote_average.desc"];
         const randomSort = sortOptions[Math.floor(Math.random() * sortOptions.length)];
 
-        if (randomSort != "primary_release_date.desc" && randomSort != "revenue.asc" && randomSort != "vote_average.asc") {
-            // minimum vote count
-            queryParams.append("vote_count.gte", String(ApiDetailsVoteCountMinimum));
-        }
+        // if (randomSort != "primary_release_date.desc" && randomSort != "revenue.asc" && randomSort != "vote_average.asc") {
+        //     // minimum vote count
+        // }
 
+        // minimum amount of votes
+        queryParams.append("vote_count.gte", String(ApiDetailsVoteCountMinimum));
+        
         queryParams.append("sort_by", randomSort);
     } else {
         queryParams.append("sort_by", APIRequestDefaultSortingMethod);

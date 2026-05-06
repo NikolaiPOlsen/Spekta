@@ -24,9 +24,9 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 		if (useRandomWeightOffset) {
 			// loop through and add randomness to weights
 			parameterWeights.forEach(parameterWeight => {
-				// ~5% chance to add +1 or -1 to weights to sometimes show user new things
-				if (Math.random() < 0.95) {
-					const addition = Math.random() * 2 - 1;
+				// ~25% chance to add +0.25 or -0.25 to weights to sometimes show user new things
+				if (Math.random() < 0.75) {
+					const addition = Math.random() * 0.5 - 0.25;
 					parameterWeight.weight += addition;
 				}
 			});
@@ -36,8 +36,7 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 		const isCurrentlyKeyword = paramType == ParameterTypeName.Keyword;
 		const isCurrentlyGenre = paramType == ParameterTypeName.Genre;
 		const parameterWeightsLength = parameterWeights.length;
-		let includePositiveKeyword = true;
-		const relevantKeywordWeightBoundary = Math.random() * 0.35 + 0.6;
+		const relevantKeywordWeightBoundary = Math.random() * 0.2 + 0.75;
 		const sortedWeights = parameterWeights.sort((a, b) => b.weight - a.weight);
 
 		console.log(`currently looping for weight type: ${paramType}`);
@@ -63,15 +62,15 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 			// console.log(`withoutkeyword: ${withoutKeyword.parameter_value}`);
 
 			// For keywords: only use most liked and most disliked keyword
+			// only include with_keywords if its very high rated, because including with_keyword for obscure keywords causes issues with few results
 			if (withKeyword.weight > relevantKeywordWeightBoundary) {
 				resultParametersPositive.parameters.push(withKeyword.parameter_value);
 				resultParams.push(resultParametersPositive);
 			}
 
-			if (withoutKeyword.weight < -1 * relevantKeywordWeightBoundary) {
-				resultParametersNegative.parameters.push(withoutKeyword.parameter_value);
-				resultParams.push(resultParametersNegative);
-			}
+			// always include without_keywords, because excluding one keyword is fine
+			resultParametersNegative.parameters.push(withoutKeyword.parameter_value);
+			resultParams.push(resultParametersNegative);
 
 			return;
 		}
@@ -86,13 +85,8 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 		const topParameterWeights = sortedWeights.slice(0, APIRequestParameterAmount);
 
 		topParameterWeights.forEach(parameterWeight => {
-			if (isCurrentlyGenre && Math.random() < 0.8) {
-				const paramValue = parameterWeight.parameter_value;
-				resultParametersPositive.parameters.push(paramValue);
-			} else if (!isCurrentlyGenre) {
-				const paramValue = parameterWeight.parameter_value;
-				resultParametersPositive.parameters.push(paramValue);
-			}
+			const paramValue = parameterWeight.parameter_value;
+			resultParametersPositive.parameters.push(paramValue);
 		});
 
 		resultParams.push(resultParametersPositive);

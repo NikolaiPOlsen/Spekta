@@ -147,17 +147,17 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			const shouldPrefetch = !shouldSwapToPendingBatch && nextSwipeCount >= PREFETCH_TRIGGER && !isPrefetching;
 
 			console.log("\n\n\n\nCURRENT MOVIES:\n");
-			DEBUGLogMovies();;
-			
+			DEBUGLogMovies();
+
 			if (shouldSwapToPendingBatch) {
 				applyPendingBatch(pendingBatch);
 			} else {
 				// QUEUE.POP
-				setRecommendations((current) =>current.filter((currentMovie) => currentMovie.id !== movie.id));
+				setRecommendations((current) => current.filter((currentMovie) => currentMovie.id !== movie.id));
 				setSwipedInCurrentBatch(nextSwipeCount);
 			}
 
-			if (shouldPrefetch) {
+			if (shouldPrefetch || swipedInCurrentBatch > PREFETCH_TRIGGER * 2) {
 				void prefetchNextBatch();
 			}
 
