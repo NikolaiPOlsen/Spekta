@@ -1,5 +1,5 @@
 import { ApiRequestTypeParameter, GetDiscoverApiRequestFunctionParameters } from "../_shared/properties.ts";
-import { APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
+import { ApiDetailsVoteCountMinimum, APIRequestDefaultSortingMethod, APIRequestParameterAmount, APIRequestRandomPageMax, APIRequestRandomPageMin } from "../_shared/constants.ts";
 import { ParameterTypeName } from "../_shared/parameter-type-names.ts";
 import { exponent, getRegularQueryParameters, findMinMaxValuesInRange, formatDate } from "./parameter-utilities.ts";
 
@@ -37,6 +37,10 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         queryParams.append("include_adult", includeAdult ? "true" : "false");
     }
 
+    // minimum vote count
+    queryParams.append("vote_count.gte", String(ApiDetailsVoteCountMinimum));
+
+
     // random page
     if (randomPage == undefined) {
         // get first page
@@ -65,7 +69,7 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
     // sorting
     if (randomSorting) {
         // const sortOptions = ["original_title.asc", "original_title.desc", "popularity.asc", "popularity.desc", "revenue.asc, revenue.desc", "primary_release_date.asc", "title.asc", "title.desc", "primary_release_date.desc", "vote_average.asc", "vote_average.desc", "vote_count.asc", "vote_count.desc"];
-        const sortOptions = ["popularity.desc", "revenue.desc", "vote_count.desc"];
+        const sortOptions = ["popularity.desc", "revenue.desc", "vote_count.desc", "primary_release_date.desc", "revenue.asc", "vote_average.asc", "vote_average.desc"];
 
         const randomSort = sortOptions[Math.floor(Math.random() * sortOptions.length)];
         queryParams.append("sort_by", randomSort);

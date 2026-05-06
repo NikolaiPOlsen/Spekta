@@ -6,6 +6,9 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 	const useRandomWeightOffset = randomWeightOffset ? true : false;
 	const useRandomURLParameters = randomizeURLParameters ? true : false;
 
+	// TODO: fix without_genres and without_keywords not showing up
+	// sometimes works, sometimes doesnt.
+
 	// console.log("Before getUserWeights");
 	// const parameters: UserParameterWeight[][] = await getUserWeights(supabaseClientInstance, userId);
 	// console.log("After getUserWeights");
@@ -27,11 +30,13 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 				}
 			});
 		}
-		
+
 		const paramType = parameterWeights[0].parameter_type;
 		const parameterWeightsLength = parameterWeights.length;
 		const sortedWeights = parameterWeights.sort((a, b) => b.weight - a.weight);
 		let sliceEnd = APIRequestParameterAmount;
+		let includePositiveKeyword = true;
+		const relevantKeywordWeightBoundary = Math.random() * 0.25 + 0.6;
 		// let useKeywords = true;
 
 		const weights: number[] = [];
@@ -51,9 +56,14 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 		const topParameterWeights = sortedWeights.slice(0, sliceEnd);
 
 		// prevents random keywords from being included, because to reach +0.5 or +0.75 weight, it needs to have been seen a few times
-		if (paramType == ParameterTypeName.Keyword && topParameterWeights[0].weight < Math.random() * 0.25 + 0.5) {
-			return;
+		if (paramType == ParameterTypeName.Keyword && topParameterWeights[0].weight <= relevantKeywordWeightBoundary) {
+			includePositiveKeyword = false;
 		}
+
+		// // Same idea for negative weights, something
+		// if (paramType == ParameterTypeName.Keyword && topParameterWeights[parameterWeightsLength - 1].weight >= -1 * relevantKeywordWeightBoundary) {
+		// 	return;
+		// }
 
 		// console.log("top weights");
 
@@ -68,19 +78,20 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 
 		console.log(`currently looping for weight type: ${paramType}`);
 
-		topParameterWeights.forEach(parameterWeight => {
-			// const paramType = parameterWeight.parameter_type;
-			const paramValue = parameterWeight.parameter_value;
-			resultParametersPositive.parameters.push(paramValue);
-			// console.log(parameterWeight.weight);
-		});
+		if (includePositiveKeyword) { // this is true for all other parameter types
+			topParameterWeights.forEach(parameterWeight => {
+				const paramValue = parameterWeight.parameter_value;
+				resultParametersPositive.parameters.push(paramValue);
+			});
+		}
+
 
 		// console.log("top weight");
 
 		resultParams.push(resultParametersPositive);
 
-		// Otherwise top and bottom would overlap, compare to APIRequestParameterAmount multiplied by almost 2
-		if (parameterWeightsLength > Math.ceil(APIRequestParameterAmount * 1.75)) {
+		// Otherwise top and bottom would overlap, compare to APIRequestParameterAmount multiplied by 2 (both top and bottom)
+		if (parameterWeightsLength > Math.ceil(APIRequestParameterAmount * 2)) {
 			const resultParametersNegative: ApiRequestTypeParameter = {
 				positive: false, // for bottom 5 (negative weight)
 				type: paramType,
