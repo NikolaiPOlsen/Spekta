@@ -24,7 +24,7 @@ export interface MovieDetailsResponse {
     video: boolean;
     vote_average: number;
     vote_count: number;
-    credits: Credits;
+    keywords: { keywords: Keyword[] };
 }
 
 export interface BelongsToCollection {
@@ -56,27 +56,16 @@ export interface SpokenLanguage {
     name: string;
 }
 
-export interface Credits {
-    cast: CastMember[];
-    crew: CrewMember[];
-}
-
-export interface CastMember {
-    cast_id: number;
-    character: string;
-    credit_id: string;
+export interface Keyword {
     id: number;
     name: string;
-    order: number;
-    profile_path: string | null;
 }
 
-export interface CrewMember {
-    credit_id: string;
-    department: string;
-    gender: number | null;
+
+export interface ExtraMovieDetails {
     id: number;
-    job: string;
-    name: string;
-    profile_path: string | null;
+    runtime: number | null;
+    keywords: {
+        keywords: Keyword[];
+    };
 }

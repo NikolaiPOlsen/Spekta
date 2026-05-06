@@ -34,16 +34,16 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { recommendations, isLoading, error, recordSwipe, refreshRecommendations } = useMediaContext();
+	const { recommendations, isLoading, error, recordSwipe } = useMediaContext(); // , refreshRecommendations
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
 	const { width } = useWindowDimensions();
 	const iconSize = Math.min(Math.round(width * 0.09), 56);
 
-	useEffect(() => {
-		refreshRecommendations();
-	}, []);
+	// useEffect(() => {
+	// 	refreshRecommendations();
+	// }, []);
 
 	const cards = recommendations.map(toRecommendationCard);
 

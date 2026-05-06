@@ -17,6 +17,7 @@ export async function getWeightsFromDb(
     userId: string,
     type: string
 ): Promise<UserParameterWeight[]> {
+    console.log(`getting weights: current type: ${type}`);
     const { data, error } = await supabase
         .from("user_parameter_weights")
         .select(`

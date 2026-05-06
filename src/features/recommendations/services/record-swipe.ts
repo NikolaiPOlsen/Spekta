@@ -3,30 +3,106 @@ import { supabase } from '@/lib/supabase';
 import type { RecommendationMovie, SwipeParameter } from '../types';
 
 type RecordSwipePayload = {
-  tmdb_id: string;
-  liked: boolean;
-  parameters: SwipeParameter[];
+	tmdb_id: string;
+	liked: boolean;
+	parameters: SwipeParameter[];
 };
 
+function convertToValueRange(value: number, range: number): string {
+	const bottomValue = Math.floor(value / range) * range;
+	const topValue = bottomValue + range - 1;
+	return `${bottomValue}-${topValue}`;
+}
+
+function buildParameterArray(type: string, ids: number[]) {
+	const parameterArray: SwipeParameter[] = [];
+
+	ids.forEach(id => {
+		parameterArray.push(
+			{
+				parameter_type: type,
+				parameter_value: String(id)
+			}
+		);
+	});
+
+	return parameterArray;
+}
+
 function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
-  return movie.genreIds.map((genreId) => ({
-    parameter_type: 'genre',
-    parameter_value: String(genreId),
-  }));
+	const genreIds: number[] = movie.genreIds;
+	const keywordIds: number[] = movie.keywordIds;
+	const releaseDate: string | null = movie.releaseDate;
+	const runtime: number | undefined = movie.runtime;
+
+	const swipeParameters: SwipeParameter[] = [];
+
+	// genre parameter
+	if (genreIds) {
+		// this takes the array returned from buildParameterArray and copies it into swipeParameters (shallow copy)
+		swipeParameters.push(...buildParameterArray("genre", genreIds));
+	}
+
+	// actors, does not run if movie.actorIds is undefined
+	// if (actorIds) {
+	// 	swipeParameters.push(...buildParameterArray("actor", actorIds));
+	// }
+
+	// keywords
+	if (keywordIds) {
+		swipeParameters.push(...buildParameterArray("keyword", keywordIds));
+	}
+
+	if (releaseDate) {
+		const year = releaseDate.split("-")[0];
+		const parsedYear = parseInt(year, 10); // base 10
+
+		if (Number.isNaN(parsedYear)) {
+			throw new Error("Cannot convert string to valid number. Unable to parse start year");
+		}
+
+		const decadeStart = Math.floor(parsedYear / 10) * 10;
+		const decade = `${decadeStart}-${decadeStart + 9}`; // if releaseDate is "1973-05-7", this should become e.g. 1970-1979
+		swipeParameters.push(
+			{
+				parameter_type: "release_date",
+				parameter_value: String(decade)
+			}
+		);
+	}
+
+	if (runtime) {
+		const range = convertToValueRange(runtime, 30); // 30-min groups
+		swipeParameters.push(
+			{
+				parameter_type: "runtime",
+				parameter_value: String(range)
+			}
+		);
+	}
+
+	return swipeParameters;
 }
 
 export async function recordSwipe(movie: RecommendationMovie, liked: boolean): Promise<void> {
-  const payload: RecordSwipePayload = {
-    tmdb_id: String(movie.id),
-    liked,
-    parameters: buildSwipeParameters(movie),
-  };
+	const swipeParameters = buildSwipeParameters(movie);
 
-  const { error } = await supabase.functions.invoke('record-swipe', {
-    body: payload,
-  });
+	// console.log(`just liked these parameters:`);
+	// swipeParameters.forEach(param => {
+	// 	console.log(param);
+	// });
 
-  if (error) {
-    throw new Error(error.message || 'Failed to record swipe');
-  }
+	const payload: RecordSwipePayload = {
+		tmdb_id: String(movie.id),
+		liked,
+		parameters: swipeParameters
+	};
+
+	const { error } = await supabase.functions.invoke('record-swipe', {
+		body: payload,
+	});
+
+	if (error) {
+		throw new Error(error.message || 'Failed to record swipe');
+	}
 }

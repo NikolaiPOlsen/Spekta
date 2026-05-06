@@ -8,15 +8,16 @@ export type UserParameterWeight = {
     interaction_count: number;
 };
 
-export interface tmdbData {
+export interface TmdbData {
     APIKey: string;
     baseURL: string;
 }
 
-export interface getAPIRequestProperties {
-    tmdbData: tmdbData;
-    supabaseClientInstance: SupabaseClient
-    userId: string;
+export interface GetParametersFromWeightsFunctionParameters {
+    // tmdbData: tmdbData;
+    // supabaseClientInstance: SupabaseClient
+    // userId: string;
+    userParameterWeights: UserParameterWeight[][];
     randomWeightOffset?: boolean;
     randomizeURLParameters?: boolean;
 };
@@ -25,7 +26,7 @@ export interface getAPIRequestProperties {
 //     value: string;
 // };
 
-export interface APIRequestTypeParameter {
+export interface ApiRequestTypeParameter {
     positive: boolean;
     type: string;
     parameters: string[];
@@ -38,40 +39,26 @@ export interface APIRequestTypeParameter {
  * Parameters used to build a TMDb API request URL for fetching movies with optional filtering
  * and randomization behavior.
  *
- * @property tmdbAPIKey - API key
- * @property tmdbBaseURL - API base URL
+ * @property tmdbData - object with tmdb baseurl and apikey
  *
- * @property includeAdult - Include adult content in results.
  * @property parameters - Array of API filter parameters (e.g. genres, dates, ratings).
+ * 
  * @property languagePreference - The language preference of the movie. Leave blank to disable.
+ * @property includeAdult - Include adult content in results.
+ * @property includeUnreleasedMovies - Whether to include unreleased movies in results. False by default.
  *
  * @property randomPage - If true, selects a random page; if [min, max], picks a page in range.
  * @property randomSorting - Randomizes sorting parameters.
  *
- * **For all below:** If true, uses APIRequestParameterAmount.
- * Specify a number to decide how many random genres/cast to specify.
- * 
- * @property randomWithGenres
- * @property randomWithCast
- * @property randomWithoutGenres
- * @property randomWithoutCast
- *
- * @property userGenres - Must be present if `randomWithGenres` or `randomWithoutGenres` are set
- * @property userCast - Must be present if `randomWithCast` or `randomWithoutCast` are set
  */
-export interface BuildAPIRequestURLSpecification {
-    tmdbData: tmdbData;
-    parameters: APIRequestTypeParameter[];
+export interface GetDiscoverApiRequestFunctionParameters {
+    tmdbData: TmdbData;
+    parameters: ApiRequestTypeParameter[];
     languagePreference?: string;
     includeAdult?: boolean;
+    includeUnreleasedMovies?: boolean;
     randomPage?: boolean | [number, number];
     randomSorting?: boolean;
-    randomWithGenres?: boolean | number;
-    randomWithCast?: boolean | number;
-    randomWithoutGenres?: boolean | number;
-    randomWithoutCast?: boolean | number;
-    userGenres?: string[];
-    userCast?: string[];
 }
 
 export type SwipeParameter = {
@@ -137,6 +124,7 @@ export interface GenericMovie {
 export interface DetailedMovie extends GenericMovie {
     actorIds?: number[];
     runtime?: number;
+    keywordIds?: number[];
 }
 
 // export interface UsesUserId {
