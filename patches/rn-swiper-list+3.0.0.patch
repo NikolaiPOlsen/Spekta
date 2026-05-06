@@ -1,5 +1,63 @@
+diff --git a/node_modules/rn-swiper-list/lib/module/SwiperCard/index.js b/node_modules/rn-swiper-list/lib/module/SwiperCard/index.js
+index 71e4073..42f0746 100644
+--- a/node_modules/rn-swiper-list/lib/module/SwiperCard/index.js
++++ b/node_modules/rn-swiper-list/lib/module/SwiperCard/index.js
+@@ -271,7 +271,11 @@ const SwipeableCard = /*#__PURE__*/forwardRef(function SwipeableCard(props, ref)
+     const opacity = withTiming(shouldRender && indexDiff < prerenderItems ? 1 : 0, {
+       reduceMotion: ReduceMotion.Never
+     });
+-    const scale = withTiming(1 - 0.07 * indexDiff, {
++    const scale = withSpring(1 - 0.07 * indexDiff, {
++      damping: 20,
++      stiffness: 50,
++      mass: 1,
++      overshootClamping: true,
+       reduceMotion: ReduceMotion.Never
+     });
+     return {
+diff --git a/node_modules/rn-swiper-list/lib/module/hooks/useSwipeControls.js b/node_modules/rn-swiper-list/lib/module/hooks/useSwipeControls.js
+index ab0c52d..e1096d4 100644
+--- a/node_modules/rn-swiper-list/lib/module/hooks/useSwipeControls.js
++++ b/node_modules/rn-swiper-list/lib/module/hooks/useSwipeControls.js
+@@ -39,32 +39,28 @@ const useSwipeControls = (data, loop = false, initialIndex = 0) => {
+       return;
+     }
+     refs[currentIndex]?.current?.swipeRight();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+   const swipeTop = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+     if (!refs[currentIndex]) {
+       return;
+     }
+     refs[currentIndex]?.current?.swipeTop();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+   const swipeLeft = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+     if (!refs[currentIndex]) {
+       return;
+     }
+     refs[currentIndex]?.current?.swipeLeft();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+   const swipeBottom = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+     if (!refs[currentIndex]) {
+       return;
+     }
+     refs[currentIndex]?.current?.swipeBottom();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+   const flipCard = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+     if (!refs[currentIndex]) {
 diff --git a/node_modules/rn-swiper-list/src/SwiperCard/index.tsx b/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
-index 7e248b1..3d8ea06 100644
+index 7e248b1..9efa41d 100644
 --- a/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
 +++ b/node_modules/rn-swiper-list/src/SwiperCard/index.tsx
 @@ -96,8 +96,9 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
@@ -46,3 +104,60 @@ index 7e248b1..3d8ea06 100644
      });
    }, [
      index,
+@@ -372,7 +376,11 @@ const SwipeableCard = forwardRef(function SwipeableCard<T>(
+       shouldRender && indexDiff < prerenderItems ? 1 : 0,
+       { reduceMotion: ReduceMotion.Never }
+     );
+-    const scale = withTiming(1 - 0.07 * indexDiff, {
++    const scale = withSpring(1 - 0.07 * indexDiff, {
++      damping: 20,
++      stiffness: 50,
++      mass: 1,
++      overshootClamping: true,
+       reduceMotion: ReduceMotion.Never,
+     });
+ 
+diff --git a/node_modules/rn-swiper-list/src/hooks/useSwipeControls.ts b/node_modules/rn-swiper-list/src/hooks/useSwipeControls.ts
+index 7875e4a..a360e32 100644
+--- a/node_modules/rn-swiper-list/src/hooks/useSwipeControls.ts
++++ b/node_modules/rn-swiper-list/src/hooks/useSwipeControls.ts
+@@ -56,8 +56,7 @@ const useSwipeControls = <T>(
+       return;
+     }
+     refs[currentIndex]?.current?.swipeRight();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+ 
+   const swipeTop = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+@@ -65,8 +64,7 @@ const useSwipeControls = <T>(
+       return;
+     }
+     refs[currentIndex]?.current?.swipeTop();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+ 
+   const swipeLeft = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+@@ -74,8 +72,7 @@ const useSwipeControls = <T>(
+       return;
+     }
+     refs[currentIndex]?.current?.swipeLeft();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+ 
+   const swipeBottom = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);
+@@ -83,8 +80,7 @@ const useSwipeControls = <T>(
+       return;
+     }
+     refs[currentIndex]?.current?.swipeBottom();
+-    updateActiveIndex();
+-  }, [refs, updateActiveIndex, activeIndex]);
++  }, [refs, activeIndex]);
+ 
+   const flipCard = useCallback(() => {
+     const currentIndex = Math.floor(activeIndex.value);

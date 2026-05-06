@@ -24,7 +24,7 @@ export const MovieModal: React.FC<MovieModalProps> = ({ visible, onClose, movieT
         >
             <View style={styles.container}>
                 <View style={[styles.inner, { backgroundColor: themeColors.background }]}>
-                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 300, borderRadius: 10 }} />
+                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 400, borderRadius: 10 }} />
                     <Text style={[TextStyles.sectionTitle, { color: themeColors.text, marginTop: 10 }]}>{movieTitle}</Text>
                     <Text style={[TextStyles.sectionSubTitle, { color: themeColors.text , textAlign: 'left' }]}>{movieDescription}</Text>
                     <AppButton label="Close" onPress={onClose} />
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     inner: {
         width: '90%',
         padding: 20,
-        borderRadius: 15,
+        borderRadius: 25,
         textAlign: 'left',
         alignItems: 'center',
         gap: 8

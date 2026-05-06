@@ -8,6 +8,7 @@ import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { MovieModal } from '@/features/movies/components/movie-modal';
+import { SwipeButton } from './swipe-button';
 
 export type MovieCardProps = {
   title: string;
@@ -15,34 +16,41 @@ export type MovieCardProps = {
   poster?: string;
   type: string;
   voteavg: string;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
 };
 
-export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardProps) {
+export function MovieCard({ subtitle, title, poster, voteavg, type, onSwipeLeft, onSwipeRight }: MovieCardProps) {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <View style={styles.shadow}>
+    <View style={{ flex: 1 }}>
       <Pressable style={{ flex: 1 }} onPress={() => setModalVisible(true)}>
-      <ImageBackground
-        source={poster ? { uri: poster } : undefined}
-        style={styles.card}
-        imageStyle={styles.cardImage}
-        resizeMode="cover"
-      >
-        <View style={styles.overlay}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
+        <ImageBackground
+          source={poster ? { uri: poster } : undefined}
+          style={styles.card}
+          resizeMode="cover"
+        >
+          <View style={styles.overlay}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
+            </View>
+            <Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
+            <Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flexDirection: 'row', gap: 5 }}>
               <MaterialIcons name="star-rate" size={24} color={themeColors.star} />
               <Text style={[TextStyles.cardRating, { color: themeColors.star }]}>{voteavg}</Text>
             </View>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+            <SwipeButton onPress={() => onSwipeLeft?.()} icon="thumb-down" />  
+            <SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />
+            </View>
           </View>
-          <Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
-          <Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
-        </View>
-      </ImageBackground>
+          </View>
+        </ImageBackground>
       </Pressable>
 
       <MovieModal
@@ -57,23 +65,9 @@ export function MovieCard({ subtitle, title, poster, voteavg, type }: MovieCardP
 }
 
 const styles = StyleSheet.create({
-  shadow: {
-    flex: 1,
-    borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 10,
-  },
   card: {
-    marginTop: 12,
     flex: 1,
-    borderRadius: 24,
     overflow: 'hidden',
-  },
-  cardImage: {
-    borderRadius: 24,
   },
   overlay: {
     flex: 1,
@@ -81,10 +75,5 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 4,
     backgroundColor: 'rgba(0,0,0,0.35)',
-  },
-  infoButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
   },
 });
