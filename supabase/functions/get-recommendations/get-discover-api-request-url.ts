@@ -37,9 +37,6 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         queryParams.append("include_adult", includeAdult ? "true" : "false");
     }
 
-    // minimum vote count
-    queryParams.append("vote_count.gte", String(ApiDetailsVoteCountMinimum));
-
 
     // random page
     if (randomPage == undefined) {
@@ -54,7 +51,7 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         } else {
             const min = randomPage[0];
             const max = randomPage[1];
-            const exp = 4;
+            const exp = 5;
             const randomValue = Math.random();
 
             // page = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -70,8 +67,13 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
     if (randomSorting) {
         // const sortOptions = ["original_title.asc", "original_title.desc", "popularity.asc", "popularity.desc", "revenue.asc, revenue.desc", "primary_release_date.asc", "title.asc", "title.desc", "primary_release_date.desc", "vote_average.asc", "vote_average.desc", "vote_count.asc", "vote_count.desc"];
         const sortOptions = ["popularity.desc", "revenue.desc", "vote_count.desc", "primary_release_date.desc", "revenue.asc", "vote_average.asc", "vote_average.desc"];
-
         const randomSort = sortOptions[Math.floor(Math.random() * sortOptions.length)];
+
+        if (randomSort != "primary_release_date.desc" && randomSort != "revenue.asc" && randomSort != "vote_average.asc") {
+            // minimum vote count
+            queryParams.append("vote_count.gte", String(ApiDetailsVoteCountMinimum));
+        }
+
         queryParams.append("sort_by", randomSort);
     } else {
         queryParams.append("sort_by", APIRequestDefaultSortingMethod);

@@ -141,7 +141,7 @@ serve(async (req) => {
 		// Deserialize from JSON to JS object
 		const discoverResponse = await response.json();
 
-		console.log(`discoverResponse keys: ${Object.keys(discoverResponse)}`);
+		// console.log(`discoverResponse keys: ${Object.keys(discoverResponse)}`);
 
 
 		const discoverResponseMovies: GenericMovieAPIFetch[] = discoverResponse.results;
