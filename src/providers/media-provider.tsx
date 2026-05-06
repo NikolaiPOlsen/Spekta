@@ -41,10 +41,10 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 		// 	console.log(`[3] KEYWORDIDS: ${recommendations[3].keywordIds}`);
 		// }
 
-		if (recommendations[3]) {
-			console.log(`releasedate: ${recommendations[3].releaseDate}`);
-			console.log(`runtime: ${recommendations[3].runtime}`);
-		}
+		// if (recommendations[1]) {
+		// 	console.log(`keywordlength of ${recommendations[1].title}: ${recommendations[1].keywordIds.length}`);
+		// 	// console.log(`runtime: ${recommendations[3].runtime}`);
+		// }
 
 		let out = "";
 		for (let i = 0; i < 8; i++) {

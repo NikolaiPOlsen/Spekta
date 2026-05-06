@@ -31,8 +31,7 @@ function buildParameterArray(type: string, ids: number[]) {
 
 function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 	const genreIds: number[] = movie.genreIds;
-	// const actorIds: number[] | undefined = movie.actorIds;
-	const keywordIds: number[] = movie.genreIds;
+	const keywordIds: number[] = movie.keywordIds;
 	const releaseDate: string | null = movie.releaseDate;
 	const runtime: number | undefined = movie.runtime;
 
@@ -87,6 +86,11 @@ function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 
 export async function recordSwipe(movie: RecommendationMovie, liked: boolean): Promise<void> {
 	const swipeParameters = buildSwipeParameters(movie);
+
+	// console.log(`just liked these parameters:`);
+	// swipeParameters.forEach(param => {
+	// 	console.log(param);
+	// });
 
 	const payload: RecordSwipePayload = {
 		tmdb_id: String(movie.id),
