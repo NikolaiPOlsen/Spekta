@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
 import { useMediaContext } from '@/hooks/use-media-context';
@@ -53,7 +53,7 @@ export default function HomeRoute() {
 	}, [recommendations]);
 
 	return (
-		<View style={[styles.container]}>
+		<SafeAreaView style={[styles.container]}>
 			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
@@ -77,7 +77,7 @@ export default function HomeRoute() {
 					onSwipeLeft={(item) => { void recordSwipe(item.movie, false); }}
 				/>
 			) : null}
-		</View>
+		</SafeAreaView>
 	);
 }
 
