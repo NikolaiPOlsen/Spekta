@@ -20,7 +20,7 @@ export function SwipeButton({ onPress, disabled, icon }: Props & { icon: Materia
             disabled={disabled}
             style={({ pressed }) => [
                 styles.SwipeButton,
-                {backgroundColor: themeColors.primary},
+                {backgroundColor: themeColors.dark, color: themeColors.light},
                 (pressed || disabled) && {opacity: 0.5}
             ]}>
             <MaterialIcons name={icon} size={24} color={themeColors.white} />

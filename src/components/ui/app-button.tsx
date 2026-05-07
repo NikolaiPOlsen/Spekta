@@ -23,7 +23,7 @@ export function AppButton({ onPress, label, disabled }: Props) {
             disabled={disabled}
             style={({ pressed }) => [
                 styles.homeButton,
-                {backgroundColor: themeColors.primary},
+                {backgroundColor: themeColors.buttonBackground, color: themeColors.buttonText},
                 (pressed || disabled) && {opacity: 0.5}
             ]}>
             <Text style={[styles.buttonText, { color: themeColors.background }]}>{label}</Text>
@@ -67,7 +67,7 @@ export function ProfileButton({ onPress, disabled, icon }: Props & { icon: Mater
             disabled={disabled}
             style={({ pressed }) => [
                 styles.ProfileButton,
-                {backgroundColor: themeColors.primary},
+                {backgroundColor: themeColors.dark, color: themeColors.light},
                 (pressed || disabled) && {opacity: 0.5}
             ]}>
             <MaterialIcons name={icon} size={24} color={themeColors.white} />
