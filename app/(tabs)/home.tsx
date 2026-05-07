@@ -73,8 +73,6 @@ export default function HomeRoute() {
 							onSwipeRight={() => { swipeRight(); void recordSwipe(item.movie, true); }}
 						/>
 					)}
-					onSwipeRight={(item) => { void recordSwipe(item.movie, true); }}
-					onSwipeLeft={(item) => { void recordSwipe(item.movie, false); }}
 				/>
 			) : null}
 		</View>
