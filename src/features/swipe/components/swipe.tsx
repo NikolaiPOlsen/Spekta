@@ -13,20 +13,20 @@ type SwipeProps<T> = {
 export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeProps<T>) {
     const ref = useRef<SwiperCardRefType | null>(null);
 
-    const { width, height } = useWindowDimensions();
-    const cardWidth = width * 1;
-    const cardHeight = height * 1;
+    // const { width, height } = useWindowDimensions();
+    // const cardWidth = width * 0.95;
+    // const cardHeight = height * 0.9;
 
     const swipeLeft = () => ref.current?.swipeLeft?.();
     const swipeRight = () => ref.current?.swipeRight?.();
 
     return (
-        <GestureHandlerRootView style={{ width: cardWidth, height: cardHeight }}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
             <Swiper
                 ref={ref}
                 data={data}
                 renderCard={(item) => renderCard(item, swipeLeft, swipeRight)}
-                cardStyle={{ width: cardWidth, height: cardHeight }}
+                cardStyle={{ width: "100%", height: "100%" }}
                 onSwipeRight={(index: number) => onSwipeRight?.(data[index], index)}
                 onSwipeLeft={(index: number) => onSwipeLeft?.(data[index], index)}
                 disableBottomSwipe
