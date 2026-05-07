@@ -1,5 +1,4 @@
-import { useColorScheme, StyleSheet, Dimensions } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { useColorScheme, StyleSheet, Dimensions, Pressable } from "react-native";
 import type { Props } from "@/components/ui/app-button";
 import { Colors } from "@/themes/colors";
 import { MaterialIcons } from "@expo/vector-icons";
