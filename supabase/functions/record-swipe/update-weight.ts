@@ -1,7 +1,7 @@
 export type UpdateWeightOptions = {
-  liked: boolean;
-  learningRate?: number;
-  addRandomness?: boolean;
+	liked: boolean;
+	learningRate?: number;
+	addRandomness?: boolean;
 };
 
 /**
@@ -19,27 +19,27 @@ export type UpdateWeightOptions = {
  * @returns The updated weight before clamping.
  */
 export function updateWeight(
-  currentWeight: number,
-  {
-    liked,
-    learningRate = 0.1,
-    addRandomness = false,
-  }: UpdateWeightOptions,
+	currentWeight: number,
+	{
+		liked,
+		learningRate = 0.1,
+		addRandomness = false,
+	}: UpdateWeightOptions,
 ) {
-  const direction = liked ? 1 : -1;
+	const direction = liked ? 1 : -1;
+	const learningMultiplier = liked ? learningRate * 2.5 : learningRate / 2.5;
 
-  const distanceToLimit = liked
-    ? 1 - currentWeight
-    : 1 + currentWeight;
+	const distanceToLimit = liked
+		? 1 - currentWeight
+		: 1 + currentWeight;
 
-  const randomnessMultiplier = addRandomness
-    ? 0.85 + Math.random() * 0.3
-    : 1;
+	const randomnessMultiplier = addRandomness
+		? 0.85 + Math.random() * 0.3
+		: 1;
 
-  const change =
-    direction * learningRate * distanceToLimit * randomnessMultiplier;
+	const change = direction * learningMultiplier * distanceToLimit * randomnessMultiplier;
 
-  return currentWeight + change;
+	return currentWeight + change;
 }
 
 /**
@@ -50,5 +50,5 @@ export function updateWeight(
  * @returns A value between -1 and 1.
  */
 export function clampWeight(weight: number) {
-  return Math.max(-1, Math.min(1, weight));
+	return Math.max(-1, Math.min(1, weight));
 }
