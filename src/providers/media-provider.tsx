@@ -179,7 +179,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, [applyPendingBatch, pendingBatch, recommendations.length]);
 
 	useEffect(() => {
-		console.log("useEffect running");
+		// console.log("useEffect running");
 		if (isAuthLoading || isInitializingUser) {
 			return;
 		}

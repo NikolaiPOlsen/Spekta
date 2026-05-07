@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { ProfileButton } from '@/components/ui/app-button';
 import { useCallback, useEffect, useRef } from 'react';
 
-const SWIPE_COMMIT_DELAY_MS = 1000;
+const SWIPE_COMMIT_DELAY_MS = -5;
 
 type RecommendationCard = {
 	movie: RecommendationMovie;
@@ -28,14 +28,14 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 
 	if (hasDuration) {
 		const runtime: number = movie.runtime ?? -1;
-		console.log(runtime);
+		// console.log(runtime);
 		duration.hours = Math.floor(runtime / 60);
 		duration.minutes = runtime % 60;
 	}
 
 	const durationString = `${duration.hours}h ${duration.minutes} min`;
 
-	console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
+	// console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
 
 	return {
 		movie,
@@ -64,7 +64,8 @@ export default function HomeRoute() {
 	// 	refreshRecommendations();
 	// }, []);
 
-	const cards = recommendations.map(toRecommendationCard);
+	const cards = recommendations.slice(0, 3).map(toRecommendationCard);
+	// const cards = recommendations.map(toRecommendationCard);
 
 	const queueSwipeRecord = useCallback((movie: RecommendationMovie, liked: boolean) => {
 		const timeoutId = setTimeout(() => {
