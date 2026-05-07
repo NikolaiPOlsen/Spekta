@@ -1,7 +1,13 @@
 import { Swiper, type SwiperCardRefType } from 'rn-swiper-list';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useRef } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+const swipeSpringConfig = {
+	damping: 5000,
+	stiffness: 5000,
+	mass: 0.1,
+	overshootClamping: true,
+};
 
 type SwipeProps<T> = {
     data: T[];
@@ -13,25 +19,34 @@ type SwipeProps<T> = {
 export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeProps<T>) {
     const ref = useRef<SwiperCardRefType | null>(null);
 
-    // const { width, height } = useWindowDimensions();
-    // const cardWidth = width * 0.95;
-    // const cardHeight = height * 0.9;
-
     const swipeLeft = () => ref.current?.swipeLeft?.();
     const swipeRight = () => ref.current?.swipeRight?.();
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={styles.container}>
             <Swiper
                 ref={ref}
                 data={data}
                 renderCard={(item) => renderCard(item, swipeLeft, swipeRight)}
-                cardStyle={{ width: "100%", height: "100%" }}
+                cardStyle={styles.card}
+                swipeLeftSpringConfig={swipeSpringConfig}
+                swipeRightSpringConfig={swipeSpringConfig}
                 onSwipeRight={(index: number) => onSwipeRight?.(data[index], index)}
                 onSwipeLeft={(index: number) => onSwipeLeft?.(data[index], index)}
                 disableBottomSwipe
                 disableTopSwipe
             />
-        </GestureHandlerRootView>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignSelf: 'stretch',
+    },
+    card: {
+        width: '100%',
+        height: '100%',
+    },
+});
