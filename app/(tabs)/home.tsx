@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { ProfileButton } from '@/components/ui/app-button';
 import { useCallback, useEffect, useRef } from 'react';
 
-const SWIPE_COMMIT_DELAY_MS = -5;
+const SWIPE_COMMIT_DELAY_MS = 0;
 
 type RecommendationCard = {
 	movie: RecommendationMovie;
@@ -103,7 +103,7 @@ export default function HomeRoute() {
 		<SafeAreaView style={[styles.container]}>
 			<StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
-				<ProfileButton onPress={() => router.push('/profile')} icon="settings" />
+				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
 			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
