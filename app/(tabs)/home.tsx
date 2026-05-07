@@ -102,7 +102,7 @@ export default function HomeRoute() {
 	return (
 		<SafeAreaView style={[styles.container]}>
 			<StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
+			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 32 }]}>
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
 			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
