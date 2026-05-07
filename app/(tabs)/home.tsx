@@ -45,7 +45,7 @@ export default function HomeRoute() {
 		refreshRecommendations();
 	}, []);
 
-	const cards = recommendations.map(toRecommendationCard);
+	const cards = recommendations.slice(0, 3).map(toRecommendationCard);
 
 	useEffect(() => {
 		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));

@@ -51,7 +51,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}
 
 	const applyPendingBatch = useCallback((nextBatch: RecommendationMovie[]) => {
-		
+
 
 		setRecommendations(remainingMovies => {
 			const nextCurrentMovies = remainingMovies.slice(1, genericMoviesBuffer + 1);
@@ -60,7 +60,14 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			let out = "";
 			for (let i = 0; i < 10; i++) {
 				const element = newMovies[i];
-				out += `(${i}) ${element.title}, `;
+				let title;
+				if (element) {
+					title = element.title;
+				} else {
+					title = "UNDEFINED";
+				}
+
+				out += `(${i}) ${title}, `;
 			}
 			console.log("\n\nmovies after combining nextCurrentMovies and nextBatch:");
 			console.log(`(${newMovies.length}) [${out}...]`);
@@ -133,12 +140,12 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 
 			console.log("\n\n\n\nCURRENT MOVIES:\n");
 			DEBUGLogMovies();;
-			
+
 			if (shouldSwapToPendingBatch) {
 				applyPendingBatch(pendingBatch);
 			} else {
 				// QUEUE.POP
-				setRecommendations((current) =>current.filter((currentMovie) => currentMovie.id !== movie.id));
+				setRecommendations((current) => current.filter((currentMovie) => currentMovie.id !== movie.id));
 				setSwipedInCurrentBatch(nextSwipeCount);
 			}
 
