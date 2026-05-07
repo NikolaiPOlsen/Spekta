@@ -1,4 +1,4 @@
-import { Modal, View, Text, Image, useColorScheme, StyleSheet } from 'react-native';
+import { Modal, View, Text, Image, ScrollView, useColorScheme, StyleSheet, Dimensions } from 'react-native';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from "@/themes/colors";
 import { AppButton } from '@/components/ui/app-button';
@@ -24,15 +24,19 @@ export const MovieModal: React.FC<MovieModalProps> = ({ visible, onClose, movieT
         >
             <View style={styles.container}>
                 <View style={[styles.inner, { backgroundColor: themeColors.background }]}>
-                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 400, borderRadius: 10 }} />
+                    <Image source={{ uri: imageUrl }} style={{ width: '100%', height: height * 0.35, borderRadius: 10 }} />
                     <Text style={[TextStyles.sectionTitle, { color: themeColors.text, marginTop: 10 }]}>{movieTitle}</Text>
-                    <Text style={[TextStyles.sectionSubTitle, { color: themeColors.text , textAlign: 'left' }]}>{movieDescription}</Text>
+                    <ScrollView style={{ flex: 1, width: '100%' }}>
+                        <Text style={[TextStyles.sectionSubTitle, { color: themeColors.text, textAlign: 'left' }]}>{movieDescription}</Text>
+                    </ScrollView>
                     <AppButton label="Close" onPress={onClose} />
                 </View>
             </View>
         </Modal>
     );
 }
+
+const { height, width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -42,7 +46,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)'
     },
     inner: {
-        width: '90%',
+        height: height * 0.9,
+        width: width * 0.9,
         padding: 20,
         borderRadius: 25,
         textAlign: 'left',
