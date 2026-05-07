@@ -34,6 +34,11 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 	}
 
 	const durationString = `${duration.hours}h ${duration.minutes} min`;
+	let yearString = "";
+
+	if (movie.releaseDate) {
+		yearString += movie.releaseDate.split("-")[0];
+	}
 
 	// console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
 
@@ -48,7 +53,9 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 				? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
 				: undefined,
 			durationString: durationString,
-			hasDuration: hasDuration
+			hasDuration: hasDuration,
+			year: yearString,
+			hasYear: yearString != null
 		},
 	};
 }

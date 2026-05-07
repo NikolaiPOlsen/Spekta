@@ -18,11 +18,13 @@ export type MovieCardProps = {
 	voteavg: string;
 	durationString: string;
 	hasDuration: boolean;
+	year: string;
+	hasYear: boolean;
 	onSwipeLeft?: () => void;
 	onSwipeRight?: () => void;
 };
 
-export function MovieCard({ subtitle, title, poster, voteavg, type, durationString, hasDuration, onSwipeLeft, onSwipeRight }: MovieCardProps) {
+export function MovieCard({ subtitle, title, poster, voteavg, type, durationString, hasDuration, year, hasYear, onSwipeLeft, onSwipeRight }: MovieCardProps) {
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const [modalVisible, setModalVisible] = useState(false);
@@ -39,7 +41,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
 						</View>
-						<Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
+						<Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}{hasYear && ` (${year})`}</Text>
 						<Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
 					</Pressable>
 					<View style={styles.metaRow}>
@@ -51,6 +53,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 							<MaterialIcons name="timer" size={18} color={themeColors.mute} style={[{top: 3}]} />
 							<Text style={[TextStyles.cardDuration, { color: themeColors.mute, fontSize: 18 }]}>{durationString}</Text>
 						</View>}
+
 						<View style={styles.buttonRow}>
 							<SwipeButton onPress={() => onSwipeLeft?.()} icon="thumb-down" />
 							<SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />
