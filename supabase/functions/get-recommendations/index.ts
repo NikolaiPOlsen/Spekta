@@ -182,8 +182,8 @@ serve(async (req) => {
 
 		// =====================================================================
 		// step 11: return the movie recommendations to frontend
-		// debug: 
-		return new Response(JSON.stringify({ weights: userParameterWeights, responseTotalPages: discoverResponse.total_pages, discoverApiRequestUrl: discoverApiRequestUrl.replace(tmdbData.APIKey, "APIKEY"), recommendations }), { status: 200, headers: { "Content-Type": "application/json" } });
+		// debug: weights: userParameterWeights, responseTotalPages: discoverResponse.total_pages, discoverApiRequestUrl: discoverApiRequestUrl.replace(tmdbData.APIKey, "APIKEY"), 
+		return new Response(JSON.stringify({ recommendations }), { status: 200, headers: { "Content-Type": "application/json" } });
 
 
 
