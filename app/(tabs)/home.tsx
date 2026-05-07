@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'stretch',
-		backgroundColor: "#0e0f0f"
+		backgroundColor: "#0e0e0f"
 	},
 	deckContainer: {
 		flex: 1,
