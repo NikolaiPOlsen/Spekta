@@ -47,11 +47,11 @@ const getDiscoverApiRequestUrlFromParameters = ({ tmdbData, parameters, includeA
         let page: number = 1;
 
         if (typeof randomPage == "boolean") {
-            page = Math.floor(Math.random() * APIRequestRandomPageMax) + APIRequestRandomPageMin;
+            page = Math.floor((exponent(Math.random(), 3)) * APIRequestRandomPageMax) + APIRequestRandomPageMin;
         } else {
             const min = randomPage[0];
             const max = randomPage[1];
-            const exp = 5;
+            const exp = 3;
             const randomValue = Math.random();
 
             // page = Math.floor(Math.random() * (max - min + 1)) + min;

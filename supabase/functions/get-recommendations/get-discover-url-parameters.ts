@@ -63,10 +63,11 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 
 			// For keywords: only use most liked and most disliked keyword
 			// only include with_keywords if its very high rated, because including with_keyword for obscure keywords causes issues with few results
-			if (withKeyword.weight > relevantKeywordWeightBoundary) {
-				resultParametersPositive.parameters.push(withKeyword.parameter_value);
-				resultParams.push(resultParametersPositive);
-			}
+			// with_keywords limiting results
+			// if (withKeyword.weight > relevantKeywordWeightBoundary) {
+			// 	resultParametersPositive.parameters.push(withKeyword.parameter_value);
+			// 	resultParams.push(resultParametersPositive);
+			// }
 
 			// always include without_keywords, because excluding one keyword is fine
 			resultParametersNegative.parameters.push(withoutKeyword.parameter_value);
