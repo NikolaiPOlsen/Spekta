@@ -16,8 +16,25 @@ type RecommendationCard = {
 };
 
 function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
-	const voteavg =
-		typeof movie.voteAverage === 'number' ? movie.voteAverage.toFixed(1) : 'N/A';
+	const voteavg = typeof movie.voteAverage === 'number' ? movie.voteAverage.toFixed(1) : 'N/A';
+
+	const hasDuration: boolean = movie.runtime != -1 && movie.runtime !== undefined;
+
+	const duration = {
+		hours: 0,
+		minutes: 0
+	};
+
+	if (hasDuration) {
+		const runtime: number = movie.runtime ?? -1;
+		console.log(runtime);
+		duration.hours = Math.floor(runtime / 60);
+		duration.minutes = runtime % 60;
+	}
+
+	const durationString = `${duration.hours}h ${duration.minutes} min`;
+
+	console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
 
 	return {
 		movie,
@@ -29,6 +46,8 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 			poster: movie.posterPath
 				? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
 				: undefined,
+			durationString: durationString,
+			hasDuration: hasDuration
 		},
 	};
 }

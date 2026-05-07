@@ -3,7 +3,7 @@
  */
 
 import { StyleSheet, View, Text, ImageBackground, useColorScheme, Pressable } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -16,11 +16,13 @@ export type MovieCardProps = {
 	poster?: string;
 	type: string;
 	voteavg: string;
+	durationString: string;
+	hasDuration: boolean;
 	onSwipeLeft?: () => void;
 	onSwipeRight?: () => void;
 };
 
-export function MovieCard({ subtitle, title, poster, voteavg, type, onSwipeLeft, onSwipeRight }: MovieCardProps) {
+export function MovieCard({ subtitle, title, poster, voteavg, type, durationString, hasDuration, onSwipeLeft, onSwipeRight }: MovieCardProps) {
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const [modalVisible, setModalVisible] = useState(false);
@@ -41,9 +43,13 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, onSwipeLeft,
 						<Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 							<View style={{ flexDirection: 'row', gap: 5 }}>
-								<MaterialIcons name="star-rate" size={24} color={themeColors.star} />
+								<MaterialIcons name="star-rate" size={24} color={themeColors.star} style={[{top: 3}]} />
 								<Text style={[TextStyles.cardRating, { color: themeColors.star }]}>{voteavg}</Text>
 							</View>
+							{hasDuration && <View style={{ flexDirection: 'row', gap: 5 }}>
+								<MaterialIcons name="timer" size={18} color={themeColors.mute} style={[{top: 3}]} />
+								<Text style={[TextStyles.cardDuration, { color: themeColors.mute, fontSize: 18 }]}>{durationString}</Text>
+							</View>}
 							<View style={{ flexDirection: 'row', gap: 12 }}>
 								<SwipeButton onPress={() => onSwipeLeft?.()} icon="thumb-down" />
 								<SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />

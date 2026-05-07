@@ -34,5 +34,10 @@ export const TextStyles = StyleSheet.create ({
     cardInfo: {
         fontSize: 16,
         marginBottom: 5,
+    },
+    cardDuration: {
+        fontSize: 18,
+        fontWeight: "bold",
+        bottom: 1
     }
 })
