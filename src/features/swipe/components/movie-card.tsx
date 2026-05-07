@@ -3,7 +3,7 @@
  */
 
 import { StyleSheet, View, Text, ImageBackground, useColorScheme, Pressable } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -29,35 +29,35 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 
 	return (
 		<View style={{ flex: 1 }}>
-			<Pressable style={{ flex: 1 }} onPress={() => setModalVisible(true)}>
-				<ImageBackground
-					source={poster ? { uri: poster } : undefined}
-					style={styles.card}
-					resizeMode="cover"
-				>
-					<View style={styles.overlay}>
+			<ImageBackground
+				source={poster ? { uri: poster } : undefined}
+				style={styles.card}
+				resizeMode="cover"
+			>
+				<View style={styles.overlay}>
+					<Pressable onPress={() => setModalVisible(true)} style={styles.summaryPressable}>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
 						</View>
 						<Text style={[TextStyles.cardType, { color: themeColors.mute }]}>{type}</Text>
 						<Text style={[TextStyles.cardInfo, { color: themeColors.mute }]} numberOfLines={3}>{subtitle}</Text>
-						<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-							<View style={{ flexDirection: 'row', gap: 5 }}>
-								<MaterialIcons name="star-rate" size={24} color={themeColors.star} style={[{top: 3}]} />
-								<Text style={[TextStyles.cardRating, { color: themeColors.star }]}>{voteavg}</Text>
-							</View>
-							{hasDuration && <View style={{ flexDirection: 'row', gap: 5 }}>
-								<MaterialIcons name="timer" size={18} color={themeColors.mute} style={[{top: 3}]} />
-								<Text style={[TextStyles.cardDuration, { color: themeColors.mute, fontSize: 18 }]}>{durationString}</Text>
-							</View>}
-							<View style={{ flexDirection: 'row', gap: 12 }}>
-								<SwipeButton onPress={() => onSwipeLeft?.()} icon="thumb-down" />
-								<SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />
-							</View>
+					</Pressable>
+					<View style={styles.metaRow}>
+						<View style={{ flexDirection: 'row', gap: 5 }}>
+							<MaterialIcons name="star-rate" size={24} color={themeColors.star} style={[{top: 3}]} />
+							<Text style={[TextStyles.cardRating, { color: themeColors.star }]}>{voteavg}</Text>
+						</View>
+						{hasDuration && <View style={{ flexDirection: 'row', gap: 5 }}>
+							<MaterialIcons name="timer" size={18} color={themeColors.mute} style={[{top: 3}]} />
+							<Text style={[TextStyles.cardDuration, { color: themeColors.mute, fontSize: 18 }]}>{durationString}</Text>
+						</View>}
+						<View style={styles.buttonRow}>
+							<SwipeButton onPress={() => onSwipeLeft?.()} icon="thumb-down" />
+							<SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />
 						</View>
 					</View>
-				</ImageBackground>
-			</Pressable>
+				</View>
+			</ImageBackground>
 
 			<MovieModal
 				visible={modalVisible}
@@ -82,5 +82,17 @@ const styles = StyleSheet.create({
 		padding: 16,
 		gap: 4,
 		backgroundColor: 'rgba(0,0,0,0.35)',
+	},
+	summaryPressable: {
+		gap: 4,
+	},
+	metaRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	},
+	buttonRow: {
+		flexDirection: 'row',
+		gap: 12,
 	},
 });
