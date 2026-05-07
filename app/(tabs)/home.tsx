@@ -34,7 +34,7 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 
 	const durationString = `${duration.hours}h ${duration.minutes} min`;
 
-	console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
+	// console.log(`runtime in min: ${movie.runtime} ${duration.hours} -> string: ${durationString}`);
 
 	return {
 		movie,
@@ -64,7 +64,9 @@ export default function HomeRoute() {
 	// 	refreshRecommendations();
 	// }, []);
 
-	const cards = recommendations.map(toRecommendationCard);
+	// const cards = recommendations.map(toRecommendationCard);
+	// const cards = [toRecommendationCard(recommendations[0])];
+	const cards = recommendations.slice(0, 3).map(toRecommendationCard);
 
 	// useEffect(() => {
 	// 	const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
