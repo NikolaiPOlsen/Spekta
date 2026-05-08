@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
 	card: {
 		flex: 1,
 		overflow: 'hidden',
-		borderRadius: 16
+		borderRadius: 16,
+		backgroundColor: "#11181C"
 	},
 	overlay: {
 		flex: 1,
