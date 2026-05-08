@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Colors } from '@/themes/colors';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function StartScreen() {
@@ -33,7 +33,7 @@ export default function StartScreen() {
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
-			<Text style={styles.title}>Get started!</Text>
+			<Text style={[styles.title, { color: themeColors.text }]}>Get started!</Text>
 			<View style={styles.actions}>
 
 				<AppButton label='Login' onPress={() => router.push('/(auth)/login')} ></AppButton>
