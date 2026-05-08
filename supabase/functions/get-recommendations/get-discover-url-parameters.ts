@@ -77,11 +77,11 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 		}
 
 
-		const weights: number[] = [];
+		// const weights: number[] = [];
 
-		sortedWeights.forEach(weightobj => {
-			weights.push(weightobj.weight);
-		});
+		// sortedWeights.forEach(weightobj => {
+		// 	weights.push(weightobj.weight);
+		// });
 
 		const topParameterWeights = sortedWeights.slice(0, APIRequestParameterAmount);
 
@@ -100,7 +100,7 @@ const getDiscoverApiRequestUrlParametersFromWeights = ({ userParameterWeights, r
 
 			// Fill with negative weights (meaning without in API)
 			bottomParametersWeights.forEach(parameterWeight => {
-				if (isCurrentlyGenre && Math.random() < 0.8) {
+				if (isCurrentlyGenre && Math.random() < 1) {
 					const paramValue = parameterWeight.parameter_value;
 					resultParametersNegative.parameters.push(paramValue);
 				} else if (!isCurrentlyGenre) {
