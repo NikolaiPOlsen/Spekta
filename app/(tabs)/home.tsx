@@ -44,17 +44,19 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { deck, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
+	const { currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
 
-	const cards = deck.map(toRecommendationCard);
+	const cards = currentSegment.map(toRecommendationCard);
 
 	useEffect(() => {
-		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
+		const urls = currentSegment.flatMap((movie) =>
+			movie.posterPath ? [`https://image.tmdb.org/t/p/w780${movie.posterPath}`] : [],
+		);
 		void Image.prefetch(urls);
-	}, [cards]);
+	}, [currentSegment]);
 
 	return (
 		<View style={[styles.container]}>
@@ -68,7 +70,9 @@ export default function HomeRoute() {
 			) : null}
 			{cards.length > 0 ? (
 				<Swipe
+					key={segmentVersion}
 					data={cards}
+					prerenderItems={2}
 					onSwipeLeft={(item, index) => {
 						swipeLeft(item.movie, index);
 					}}

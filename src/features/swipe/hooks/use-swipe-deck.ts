@@ -3,23 +3,19 @@ import { useMediaContext } from '@/hooks/use-media-context';
 import type { RecommendationMovie } from '@/features/recommendations/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const LOW_WATERMARK = 4;
-const FLUSH_BATCH_SIZE = 5;
-const FLUSH_INTERVAL_MS = 1500;
+const DETAILED_COUNT = 5;
+const INTER_BATCH_BUFFER = 3;
+const SEGMENT_SIZE = DETAILED_COUNT + INTER_BATCH_BUFFER;
+const SWIPE_FLUSH_BATCH_SIZE = 5;
+const SWIPE_FLUSH_INTERVAL_MS = 1500;
 
 type BufferedSwipe = {
 	movie: RecommendationMovie;
 	liked: boolean;
-	timestamp: number;
 };
 
-function dedupeMovies(
-	currentDeck: RecommendationMovie[],
-	nextBatch: RecommendationMovie[],
-): RecommendationMovie[] {
-	const existingIds = new Set(currentDeck.map((movie) => movie.id));
-	const uniqueMovies = nextBatch.filter((movie) => !existingIds.has(movie.id));
-	return uniqueMovies.length > 0 ? [...currentDeck, ...uniqueMovies] : currentDeck;
+function buildSegment(batch: RecommendationMovie[]): RecommendationMovie[] {
+	return batch.slice(0, SEGMENT_SIZE);
 }
 
 export function useSwipeDeck() {
@@ -30,16 +26,25 @@ export function useSwipeDeck() {
 		isUserInitialized,
 		initializationError,
 	} = useAuthContext();
-	const { clearMedia, error, fetchRecommendationsBatch, persistSwipe } = useMediaContext();
-	const [deck, setDeck] = useState<RecommendationMovie[]>([]);
+	const {
+		clearMedia,
+		error,
+		isLoading: isMediaLoading,
+		fetchRecommendationsBatch,
+		persistSwipe,
+	} = useMediaContext();
+	const [currentSegment, setCurrentSegment] = useState<RecommendationMovie[]>([]);
+	const [pendingSegment, setPendingSegment] = useState<RecommendationMovie[] | null>(null);
+	const [segmentVersion, setSegmentVersion] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasInitialized, setHasInitialized] = useState(false);
 	const pendingSwipesRef = useRef<BufferedSwipe[]>([]);
 	const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isFlushingRef = useRef(false);
-	const isFetchingMoreRef = useRef(false);
 	const flushPendingSwipesRef = useRef<() => Promise<void>>(async () => {});
 	const isMountedRef = useRef(true);
+	const isFetchingNextSegmentRef = useRef(false);
+	const nextSegmentPromiseRef = useRef<Promise<RecommendationMovie[] | null> | null>(null);
 
 	const clearFlushTimeout = useCallback(() => {
 		if (flushTimeoutRef.current) {
@@ -52,16 +57,21 @@ export function useSwipeDeck() {
 		clearFlushTimeout();
 		flushTimeoutRef.current = setTimeout(() => {
 			void flushPendingSwipesRef.current();
-		}, FLUSH_INTERVAL_MS);
+		}, SWIPE_FLUSH_INTERVAL_MS);
 	}, [clearFlushTimeout]);
 
-	const appendBatch = useCallback((nextBatch: RecommendationMovie[]) => {
-		if (nextBatch.length === 0) {
-			return;
-		}
+	const queueBufferedSwipe = useCallback(
+		(movie: RecommendationMovie, liked: boolean) => {
+			pendingSwipesRef.current.push({ movie, liked });
 
-		setDeck((currentDeck) => dedupeMovies(currentDeck, nextBatch));
-	}, []);
+			if (pendingSwipesRef.current.length >= SWIPE_FLUSH_BATCH_SIZE) {
+				void flushPendingSwipesRef.current();
+			} else {
+				scheduleFlush();
+			}
+		},
+		[scheduleFlush],
+	);
 
 	const flushPendingSwipes = useCallback(async () => {
 		if (isFlushingRef.current || pendingSwipesRef.current.length === 0) {
@@ -90,7 +100,7 @@ export function useSwipeDeck() {
 		} finally {
 			isFlushingRef.current = false;
 
-			if (!didFail && pendingSwipesRef.current.length >= FLUSH_BATCH_SIZE) {
+			if (!didFail && pendingSwipesRef.current.length >= SWIPE_FLUSH_BATCH_SIZE) {
 				void flushPendingSwipesRef.current();
 			} else if (pendingSwipesRef.current.length > 0) {
 				scheduleFlush();
@@ -102,77 +112,162 @@ export function useSwipeDeck() {
 		flushPendingSwipesRef.current = flushPendingSwipes;
 	}, [flushPendingSwipes]);
 
-	const fetchAndAppendBatch = useCallback(async () => {
-		if (isFetchingMoreRef.current) {
-			return;
-		}
+	const fetchSegment = useCallback(async () => {
+		const batch = await fetchRecommendationsBatch();
+		return buildSegment(batch);
+	}, [fetchRecommendationsBatch]);
 
-		isFetchingMoreRef.current = true;
+	const resetDeck = useCallback(() => {
+		clearFlushTimeout();
+		pendingSwipesRef.current = [];
+		isFetchingNextSegmentRef.current = false;
+		nextSegmentPromiseRef.current = null;
+		setCurrentSegment([]);
+		setPendingSegment(null);
+		setSegmentVersion(0);
+		setHasInitialized(false);
+		setIsLoading(false);
+	}, [clearFlushTimeout]);
 
-		try {
-			const nextBatch = await fetchRecommendationsBatch();
-			appendBatch(nextBatch);
-		} catch {
-			// MediaProvider owns the shared error state for fetch failures.
-		} finally {
-			isFetchingMoreRef.current = false;
-		}
-	}, [appendBatch, fetchRecommendationsBatch]);
-
-	const initializeDeck = useCallback(async () => {
+	const loadInitialSegment = useCallback(async () => {
 		setIsLoading(true);
 
 		try {
-			const initialBatch = await fetchRecommendationsBatch();
-			if (isMountedRef.current) {
-				setDeck(initialBatch);
+			const segment = await fetchSegment();
+			if (!isMountedRef.current) {
+				return;
 			}
+
+			setCurrentSegment(segment);
+			setPendingSegment(null);
+			setSegmentVersion(0);
 		} catch {
-			if (isMountedRef.current) {
-				setDeck([]);
+			if (!isMountedRef.current) {
+				return;
 			}
+
+			setCurrentSegment([]);
+			setPendingSegment(null);
 		} finally {
 			if (isMountedRef.current) {
 				setHasInitialized(true);
 				setIsLoading(false);
 			}
 		}
-	}, [fetchRecommendationsBatch]);
+	}, [fetchSegment]);
 
-	const queueSwipe = useCallback(
-		(movie: RecommendationMovie, liked: boolean, swipedIndex: number) => {
-			pendingSwipesRef.current.push({
-				movie,
-				liked,
-				timestamp: Date.now(),
+	const requestNextSegment = useCallback(async () => {
+		if (pendingSegment && pendingSegment.length > 0) {
+			return pendingSegment;
+		}
+
+		if (nextSegmentPromiseRef.current) {
+			return nextSegmentPromiseRef.current;
+		}
+
+		isFetchingNextSegmentRef.current = true;
+		nextSegmentPromiseRef.current = fetchSegment()
+			.then((nextSegment) => {
+				const normalizedSegment = nextSegment.length > 0 ? nextSegment : null;
+				if (isMountedRef.current) {
+					setPendingSegment(normalizedSegment);
+				}
+				return normalizedSegment;
+			})
+			.catch(() => null)
+			.finally(() => {
+				isFetchingNextSegmentRef.current = false;
+				nextSegmentPromiseRef.current = null;
 			});
 
-			if (pendingSwipesRef.current.length >= FLUSH_BATCH_SIZE) {
-				void flushPendingSwipesRef.current();
-			} else {
-				scheduleFlush();
+		return nextSegmentPromiseRef.current;
+	}, [fetchSegment, pendingSegment]);
+
+	const prefetchNextSegment = useCallback(async () => {
+		void requestNextSegment();
+	}, [requestNextSegment]);
+
+	const activateSegment = useCallback((nextSegment: RecommendationMovie[]) => {
+		setCurrentSegment(nextSegment);
+		setPendingSegment(null);
+		setSegmentVersion((currentVersion) => currentVersion + 1);
+	}, []);
+
+	const fetchAndActivateNextSegment = useCallback(async () => {
+		if (pendingSegment && pendingSegment.length > 0) {
+			activateSegment(pendingSegment);
+			return;
+		}
+
+		setIsLoading(true);
+
+		try {
+			const nextSegment = await requestNextSegment();
+			if (!isMountedRef.current) {
+				return;
 			}
 
-			const remainingCards = deck.length - (swipedIndex + 1);
-			if (remainingCards <= LOW_WATERMARK) {
-				void fetchAndAppendBatch();
+			if (nextSegment && nextSegment.length > 0) {
+				activateSegment(nextSegment);
+			} else {
+				setCurrentSegment([]);
+				setPendingSegment(null);
+			}
+		} catch {
+			if (!isMountedRef.current) {
+				return;
+			}
+
+			setCurrentSegment([]);
+			setPendingSegment(null);
+		} finally {
+			if (isMountedRef.current) {
+				setIsLoading(false);
+			}
+		}
+	}, [activateSegment, pendingSegment, requestNextSegment]);
+
+	const handleSwipe = useCallback(
+		(movie: RecommendationMovie, liked: boolean, swipedIndex: number) => {
+			queueBufferedSwipe(movie, liked);
+
+			const lastSegmentIndex = currentSegment.length - 1;
+			const prefetchTriggerIndex = Math.min(DETAILED_COUNT - 1, lastSegmentIndex);
+
+			if (swipedIndex === prefetchTriggerIndex) {
+				void prefetchNextSegment();
+			}
+
+			if (swipedIndex === lastSegmentIndex) {
+				if (pendingSegment && pendingSegment.length > 0) {
+					activateSegment(pendingSegment);
+				} else {
+					void fetchAndActivateNextSegment();
+				}
 			}
 		},
-		[deck.length, fetchAndAppendBatch, scheduleFlush],
+		[
+			activateSegment,
+			currentSegment.length,
+			fetchAndActivateNextSegment,
+			pendingSegment,
+			prefetchNextSegment,
+			queueBufferedSwipe,
+		],
 	);
 
 	const swipeLeft = useCallback(
 		(movie: RecommendationMovie, swipedIndex: number) => {
-			queueSwipe(movie, false, swipedIndex);
+			handleSwipe(movie, false, swipedIndex);
 		},
-		[queueSwipe],
+		[handleSwipe],
 	);
 
 	const swipeRight = useCallback(
 		(movie: RecommendationMovie, swipedIndex: number) => {
-			queueSwipe(movie, true, swipedIndex);
+			handleSwipe(movie, true, swipedIndex);
 		},
-		[queueSwipe],
+		[handleSwipe],
 	);
 
 	useEffect(() => {
@@ -181,11 +276,7 @@ export function useSwipeDeck() {
 		}
 
 		if (!claims?.sub) {
-			clearFlushTimeout();
-			pendingSwipesRef.current = [];
-			setDeck([]);
-			setHasInitialized(false);
-			setIsLoading(false);
+			resetDeck();
 			clearMedia();
 			return;
 		}
@@ -195,18 +286,18 @@ export function useSwipeDeck() {
 		}
 
 		if (!hasInitialized) {
-			void initializeDeck();
+			void loadInitialSegment();
 		}
 	}, [
 		claims?.sub,
-		clearFlushTimeout,
 		clearMedia,
 		hasInitialized,
 		initializationError,
-		initializeDeck,
 		isAuthLoading,
 		isInitializingUser,
 		isUserInitialized,
+		loadInitialSegment,
+		resetDeck,
 	]);
 
 	useEffect(() => {
@@ -220,8 +311,9 @@ export function useSwipeDeck() {
 	}, [clearFlushTimeout]);
 
 	return {
-		deck,
-		isLoading,
+		currentSegment,
+		segmentVersion,
+		isLoading: isLoading || isMediaLoading,
 		error,
 		swipeLeft,
 		swipeRight,

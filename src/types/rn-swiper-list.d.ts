@@ -17,6 +17,7 @@ declare module 'rn-swiper-list' {
     ref?: Ref<SwiperCardRefType>;
     data: T[];
     renderCard: (item: T) => ReactNode;
+    prerenderItems?: number;
     cardStyle?: object;
     onSwipeRight?: (index: number) => void;
     onSwipeLeft?: (index: number) => void;
