@@ -37,47 +37,37 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, []);
 
 	const DEBUGLogMovies = () => {
-		// if (recommendations[3]) {
-		// 	console.log(`[3] KEYWORDIDS: ${recommendations[3].keywordIds}`);
-		// }
-
-		// if (recommendations[1]) {
-		// 	console.log(`keywordlength of ${recommendations[1].title}: ${recommendations[1].keywordIds.length}`);
-		// 	// console.log(`runtime: ${recommendations[3].runtime}`);
-		// }
-
-		let out = "";
+		let out = '';
 		for (let i = 0; i < 8; i++) {
 			const element = recommendations[i];
 			if (element) {
-				out += `[${i}] ${element.title}, `;
+				out += `(${i}) ${element.title}, `;
 			} else {
-				out += `[${i}] UNDEFINED, `;
+				out += `(${i}) UNDEFINED, `;
 			}
 		}
 
 		console.log(`(${recommendations.length}) [${out}...]`);
-	}
+	};
 
 	const applyPendingBatch = useCallback((nextBatch: RecommendationMovie[]) => {
-
-		setRecommendations(remainingMovies => {
+		setRecommendations((remainingMovies) => {
 			const nextCurrentMovies = remainingMovies.slice(1, genericMoviesBuffer + 1);
 			const newMovies = [...nextCurrentMovies, ...nextBatch];
 
-			let out = "";
+			let out = '';
 			for (let i = 0; i < 10; i++) {
 				const element = newMovies[i];
 				let title;
 				if (element) {
 					title = element.title;
 				} else {
-					title = "UNDEFINED";
+					title = 'UNDEFINED';
 				}
 
 				out += `(${i}) ${title}, `;
 			}
-			console.log("\n\nmovies after combining nextCurrentMovies and nextBatch:");
+			console.log('\n\nmovies after combining nextCurrentMovies and nextBatch:');
 			console.log(`(${newMovies.length}) [${out}...]`);
 
 			return newMovies;
@@ -105,10 +95,9 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, []);
 
 	const loadRecommendations = useCallback(async () => {
-		console.log("loadRecommendations called");
-		// console.log(claims);
+		console.log('loadRecommendations called');
 		if (!claims?.sub) {
-			console.log("what is happening");
+			console.log('what is happening');
 			clearMedia();
 			return;
 		}
@@ -118,7 +107,6 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 
 		try {
 			const response = await fetchRecommendations();
-			// console.log(response);
 			setRecommendations(response.recommendations);
 			setSwipedInCurrentBatch(0);
 			setIsPrefetching(false);
@@ -136,7 +124,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, [claims?.sub, clearMedia]);
 
 	const refreshRecommendations = useCallback(async () => {
-		console.log("refreshing movies");
+		console.log('refreshing movies');
 		await loadRecommendations();
 	}, [loadRecommendations]);
 
@@ -146,18 +134,17 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			const shouldSwapToPendingBatch = pendingBatch != null;
 			const shouldPrefetch = !shouldSwapToPendingBatch && nextSwipeCount >= PREFETCH_TRIGGER && !isPrefetching;
 
-			console.log("\n\n\n\nCURRENT MOVIES:\n");
-			DEBUGLogMovies();;
+			console.log('\n\n\n\nCURRENT MOVIES:\n');
+			DEBUGLogMovies();
 
 			if (shouldSwapToPendingBatch) {
 				applyPendingBatch(pendingBatch);
 			} else {
-				// QUEUE.POP
 				setRecommendations((current) => current.filter((currentMovie) => currentMovie.id !== movie.id));
 				setSwipedInCurrentBatch(nextSwipeCount);
 			}
 
-			if (shouldPrefetch || swipedInCurrentBatch > PREFETCH_TRIGGER * 2) {
+			if (shouldPrefetch) {
 				void prefetchNextBatch();
 			}
 
@@ -179,7 +166,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 	}, [applyPendingBatch, pendingBatch, recommendations.length]);
 
 	useEffect(() => {
-		// console.log("useEffect running");
+		console.log('useEffect running');
 		if (isAuthLoading || isInitializingUser) {
 			return;
 		}
