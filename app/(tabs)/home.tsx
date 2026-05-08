@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
@@ -60,7 +60,8 @@ export default function HomeRoute() {
 
 	return (
 		<View style={[styles.container]}>
-			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
+			<StatusBar barStyle={"light-content"} backgroundColor="transparent" translucent />
+			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}> 
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
 			{isLoading && currentSegment.length === 0 ? (
