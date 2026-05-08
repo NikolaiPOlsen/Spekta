@@ -29,13 +29,13 @@ export function useSwipeDeck() {
 	const {
 		clearMedia,
 		error,
-		isLoading: isMediaLoading,
 		fetchRecommendationsBatch,
 		persistSwipe,
 	} = useMediaContext();
 	const [currentSegment, setCurrentSegment] = useState<RecommendationMovie[]>([]);
 	const [pendingSegment, setPendingSegment] = useState<RecommendationMovie[] | null>(null);
 	const [segmentVersion, setSegmentVersion] = useState(0);
+	const [showPendingPreview, setShowPendingPreview] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasInitialized, setHasInitialized] = useState(false);
 	const pendingSwipesRef = useRef<BufferedSwipe[]>([]);
@@ -125,6 +125,7 @@ export function useSwipeDeck() {
 		setCurrentSegment([]);
 		setPendingSegment(null);
 		setSegmentVersion(0);
+		setShowPendingPreview(false);
 		setHasInitialized(false);
 		setIsLoading(false);
 	}, [clearFlushTimeout]);
@@ -141,6 +142,7 @@ export function useSwipeDeck() {
 			setCurrentSegment(segment);
 			setPendingSegment(null);
 			setSegmentVersion(0);
+			setShowPendingPreview(false);
 		} catch {
 			if (!isMountedRef.current) {
 				return;
@@ -148,6 +150,7 @@ export function useSwipeDeck() {
 
 			setCurrentSegment([]);
 			setPendingSegment(null);
+			setShowPendingPreview(false);
 		} finally {
 			if (isMountedRef.current) {
 				setHasInitialized(true);
@@ -191,6 +194,7 @@ export function useSwipeDeck() {
 		setCurrentSegment(nextSegment);
 		setPendingSegment(null);
 		setSegmentVersion((currentVersion) => currentVersion + 1);
+		setShowPendingPreview(false);
 	}, []);
 
 	const fetchAndActivateNextSegment = useCallback(async () => {
@@ -235,6 +239,7 @@ export function useSwipeDeck() {
 			const prefetchTriggerIndex = Math.min(DETAILED_COUNT - 1, lastSegmentIndex);
 
 			if (swipedIndex === prefetchTriggerIndex) {
+				setShowPendingPreview(true);
 				void prefetchNextSegment();
 			}
 
@@ -269,6 +274,11 @@ export function useSwipeDeck() {
 		},
 		[handleSwipe],
 	);
+
+	const renderSegment =
+		showPendingPreview && pendingSegment
+			? [...currentSegment, ...pendingSegment.slice(0, 2)]
+			: currentSegment;
 
 	useEffect(() => {
 		if (isAuthLoading || isInitializingUser) {
@@ -311,9 +321,10 @@ export function useSwipeDeck() {
 	}, [clearFlushTimeout]);
 
 	return {
+		renderSegment,
 		currentSegment,
 		segmentVersion,
-		isLoading: isLoading || isMediaLoading,
+		isLoading,
 		error,
 		swipeLeft,
 		swipeRight,

@@ -44,28 +44,30 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
+	const { renderSegment, currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
 
-	const cards = currentSegment.map(toRecommendationCard);
+	const cards = renderSegment.map(toRecommendationCard);
 
 	useEffect(() => {
-		const urls = currentSegment.flatMap((movie) =>
+		const urls = renderSegment.flatMap((movie) =>
 			movie.posterPath ? [`https://image.tmdb.org/t/p/w780${movie.posterPath}`] : [],
 		);
 		void Image.prefetch(urls);
-	}, [currentSegment]);
+	}, [renderSegment]);
 
 	return (
 		<View style={[styles.container]}>
 			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}>
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
-			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
+			{isLoading && currentSegment.length === 0 ? (
+				<Text style={{ color: themeColors.text }}>Loading recommendations...</Text>
+			) : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
-			{!isLoading && !error && cards.length === 0 ? (
+			{!isLoading && !error && currentSegment.length === 0 ? (
 				<Text style={{ color: themeColors.text }}>No recommendations available.</Text>
 			) : null}
 			{cards.length > 0 ? (
