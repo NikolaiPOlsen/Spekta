@@ -49,8 +49,8 @@ export default function SignUpScreen() {
                         <InputField name='Displayname' value={displayName} onChange={setDisplayName} />
                         <InputField name='Email' value={email} onChange={setEmail} />
 
-                        <PasswordField name='Passord' value={password} onChange={setPassword} />
-                        <PasswordField name='Confirm passord' value={repassword} onChange={setRePassword} />
+                        <PasswordField name='Password' value={password} onChange={setPassword} />
+                        <PasswordField name='Confirm password' value={repassword} onChange={setRePassword} />
 
                     </View>
                     <AppButton onPress={signUp} label='Sign up' disabled={loading} />
