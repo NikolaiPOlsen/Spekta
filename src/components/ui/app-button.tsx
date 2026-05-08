@@ -51,7 +51,6 @@ export function DeleteButton({ onPress, label, disabled }: Props) {
     )
 }
 
-
 type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 
 export function ProfileButton({ onPress, disabled, icon }: Props & { icon: MaterialIconName }) {
