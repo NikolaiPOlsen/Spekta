@@ -51,8 +51,6 @@ export default function ProfileRoute() {
 		}
 	}
 
-	const hasUsername = username != "";
-
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1, width: '100%' }}
@@ -66,7 +64,7 @@ export default function ProfileRoute() {
 					<Text style={[TextStyles.sectionTitle, { color: themeColors.text }]}>Profile</Text>
 
 					<Text style={[TextStyles.inputLabel, { color: themeColors.text }]}>Displayname</Text>
-					<InputField name={hasUsername ? placeholderDisplayName : "Display name"} value={username} onChange={setUsername} />
+					<InputField name={placeholderDisplayName ?? "Display name"} value={username} onChange={setUsername} />
 
 					<Text style={[TextStyles.inputLabel, { color: themeColors.text }]}>Email</Text>
 					<InputField name={placeholderEmail} value={email} onChange={setEmail} />
