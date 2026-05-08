@@ -37,7 +37,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 				resizeMode="cover"
 			>
 				<View style={styles.overlay}>
-					<View style={{ bottom: height * 0.02 }}>
+					<View style={{ bottom: height * 0.03 }}>
 					<Pressable onPress={() => setModalVisible(true)} style={styles.summaryPressable}>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
