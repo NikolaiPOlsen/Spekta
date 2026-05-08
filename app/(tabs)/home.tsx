@@ -45,7 +45,7 @@ export default function HomeRoute() {
 		refreshRecommendations();
 	}, []);
 
-	const cards = recommendations.slice(0, 3).map(toRecommendationCard);
+	const cards = recommendations.slice(0, 15).map(toRecommendationCard);
 
 	useEffect(() => {
 		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
@@ -66,11 +66,17 @@ export default function HomeRoute() {
 				<Swipe
 					key={recommendations[0]?.id ?? 'recommendations'}
 					data={cards}
+					onSwipeLeft={(item) => {
+						void recordSwipe(item.movie, false);
+					}}
+					onSwipeRight={(item) => {
+						void recordSwipe(item.movie, true);
+					}}
 					renderCard={(item, swipeLeft, swipeRight) => (
 						<MovieCard
 							{...item.card}
-							onSwipeLeft={() => { swipeLeft(); void recordSwipe(item.movie, false); }}
-							onSwipeRight={() => { swipeRight(); void recordSwipe(item.movie, true); }}
+							onSwipeLeft={swipeLeft}
+							onSwipeRight={swipeRight}
 						/>
 					)}
 				/>
