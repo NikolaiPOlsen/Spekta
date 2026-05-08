@@ -147,7 +147,7 @@ export default function MediaProvider({ children }: PropsWithChildren) {
 			const shouldPrefetch = !shouldSwapToPendingBatch && nextSwipeCount >= PREFETCH_TRIGGER && !isPrefetching;
 
 			console.log("\n\n\n\nCURRENT MOVIES:\n");
-			DEBUGLogMovies();
+			DEBUGLogMovies();;
 
 			if (shouldSwapToPendingBatch) {
 				applyPendingBatch(pendingBatch);

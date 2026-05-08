@@ -94,10 +94,12 @@ export default function HomeRoute() {
 		};
 	}, []);
 
-	// useEffect(() => {
-	// 	const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
-	// 	void Image.prefetch(urls);
-	// }, [recommendations]);
+	const cards = recommendations.slice(0, 15).map(toRecommendationCard);
+
+	useEffect(() => {
+		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
+		void Image.prefetch(urls);
+	}, [recommendations]);
 
 	return (
 		<SafeAreaView style={[styles.container]}>
@@ -111,21 +113,23 @@ export default function HomeRoute() {
 				<Text style={{ color: themeColors.text }}>No recommendations available.</Text>
 			) : null}
 			{cards.length > 0 ? (
-				<View style={[styles.deckContainer, { paddingBottom: Math.max(insets.bottom, 16) }]}> 
-					<Swipe
-						key={recommendations[0]?.id ?? 'recommendations'}
-						data={cards}
-						renderCard={(item, swipeLeft, swipeRight) => (
-							<MovieCard
-								{...item.card}
-								onSwipeLeft={swipeLeft}
-								onSwipeRight={swipeRight}
-							/>
-						)}
-						onSwipeRight={(item) => { queueSwipeRecord(item.movie, true); }}
-						onSwipeLeft={(item) => { queueSwipeRecord(item.movie, false); }}
-					/>
-				</View>
+				<Swipe
+					key={recommendations[0]?.id ?? 'recommendations'}
+					data={cards}
+					onSwipeLeft={(item) => {
+						void recordSwipe(item.movie, false);
+					}}
+					onSwipeRight={(item) => {
+						void recordSwipe(item.movie, true);
+					}}
+					renderCard={(item, swipeLeft, swipeRight) => (
+						<MovieCard
+							{...item.card}
+							onSwipeLeft={swipeLeft}
+							onSwipeRight={swipeRight}
+						/>
+					)}
+				/>
 			) : null}
 		</SafeAreaView>
 	);
