@@ -14,11 +14,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const fetchClaims = async () => {
       setIsLoading(true)
 
-      const { data, error } = await supabase.auth.getClaims()
-
-      if (error) {
-        console.error('Error fetching claims:', error)
-      }
+      const { data } = await supabase.auth.getClaims()
 
       setClaims(data?.claims ?? null)
       setIsLoading(false)
@@ -65,8 +61,6 @@ export default function AuthProvider({ children }: PropsWithChildren) {
           setInitializationError(null)
         }
       } catch (error) {
-        console.error('Error initializing user weights:', error)
-
         if (isActive) {
           setIsUserInitialized(false)
           setInitializationError(
