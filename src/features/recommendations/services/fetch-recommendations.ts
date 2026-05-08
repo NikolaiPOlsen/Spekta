@@ -7,8 +7,6 @@ export async function fetchRecommendations(): Promise<RecommendationResponse> {
 		'get-recommendations',
 	);
 
-  console.log(response);
-
 	if (response.error) {
 		throw new Error(response.error.message || 'Failed to load recommendations');
 	}

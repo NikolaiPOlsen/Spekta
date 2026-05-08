@@ -3,13 +3,10 @@ import { createContext, useContext } from 'react';
 import type { RecommendationMovie } from '@/features/recommendations/types';
 
 export type MediaContextData = {
-  recommendations: RecommendationMovie[];
   isLoading: boolean;
   error: string | null;
-  hasLoaded: boolean;
-  loadRecommendations: () => Promise<void>;
-  refreshRecommendations: () => Promise<void>;
-  recordSwipe: (movie: RecommendationMovie, liked: boolean) => Promise<void>;
+  fetchRecommendationsBatch: () => Promise<RecommendationMovie[]>;
+  persistSwipe: (movie: RecommendationMovie, liked: boolean) => Promise<void>;
   clearMedia: () => void;
 };
 

@@ -5,12 +5,19 @@ import { useWindowDimensions } from 'react-native';
 
 type SwipeProps<T> = {
 	data: T[];
+	prerenderItems?: number;
 	renderCard: (item: T, swipeLeft: () => void, swipeRight: () => void) => React.ReactNode;
 	onSwipeRight?: (item: T, index: number) => void;
 	onSwipeLeft?: (item: T, index: number) => void;
 };
 
-export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeProps<T>) {
+export function Swipe<T>({
+	data,
+	prerenderItems,
+	renderCard,
+	onSwipeLeft,
+	onSwipeRight,
+}: SwipeProps<T>) {
 	const ref = useRef<SwiperCardRefType | null>(null);
 
 	const { width, height } = useWindowDimensions();
@@ -25,6 +32,7 @@ export function Swipe<T>({ data, renderCard, onSwipeLeft, onSwipeRight }: SwipeP
 			<Swiper
 				ref={ref}
 				data={data}
+				prerenderItems={prerenderItems}
 				renderCard={(item) => renderCard(item, swipeLeft, swipeRight)}
 				cardStyle={{ width: cardWidth, height: cardHeight }}
 				onSwipeRight={(index: number) => onSwipeRight?.(data[index], index)}

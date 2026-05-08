@@ -2,13 +2,13 @@ import { StatusBar, StyleSheet, Text, View, useColorScheme, useWindowDimensions 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Swipe } from '@/features/swipe/components/swipe';
 import { MovieCard, type MovieCardProps } from '@/features/swipe/components/movie-card';
-import { useMediaContext } from '@/hooks/use-media-context';
 import type { RecommendationMovie } from '@/features/recommendations/types';
 import { Colors } from '@/themes/colors';
 import { useEffect } from 'react';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { ProfileButton } from '@/components/ui/app-button';
+import { useSwipeDeck } from '@/features/swipe/hooks/use-swipe-deck';
 
 type RecommendationCard = {
 	movie: RecommendationMovie;
@@ -44,23 +44,19 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { recommendations, isLoading, error, recordSwipe, refreshRecommendations } = useMediaContext();
+	const { currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
-	const { width } = useWindowDimensions();
-	const iconSize = Math.min(Math.round(width * 0.09), 56);
+
+	const cards = currentSegment.map(toRecommendationCard);
 
 	useEffect(() => {
-		refreshRecommendations();
-	}, []);
-
-	const cards = recommendations.slice(0, 10).map(toRecommendationCard);
-
-	useEffect(() => {
-		const urls = cards.flatMap((c) => (c.card.poster ? [c.card.poster] : []));
+		const urls = currentSegment.flatMap((movie) =>
+			movie.posterPath ? [`https://image.tmdb.org/t/p/w780${movie.posterPath}`] : [],
+		);
 		void Image.prefetch(urls);
-	}, [recommendations]);
+	}, [currentSegment]);
 
 	return (
 		<View style={[styles.container]}>
@@ -68,20 +64,23 @@ export default function HomeRoute() {
 			<View style={[styles.profileButton, { top: insets.top + 16, right: insets.right + 16 }]}> 
 				<ProfileButton onPress={() => router.push('/profile')} icon="person" />
 			</View>
-			{isLoading ? <Text style={{ color: themeColors.text }}>Loading recommendations...</Text> : null}
+			{isLoading && currentSegment.length === 0 ? (
+				<Text style={{ color: themeColors.text }}>Loading recommendations...</Text>
+			) : null}
 			{error ? <Text style={{ color: themeColors.text }}>{error}</Text> : null}
-			{!isLoading && !error && cards.length === 0 ? (
+			{!isLoading && !error && currentSegment.length === 0 ? (
 				<Text style={{ color: themeColors.text }}>No recommendations available.</Text>
 			) : null}
 			{cards.length > 0 ? (
 				<Swipe
-					key={recommendations[0]?.id ?? 'recommendations'}
+					key={segmentVersion}
 					data={cards}
-					onSwipeLeft={(item) => {
-						void recordSwipe(item.movie, false);
+					prerenderItems={2}
+					onSwipeLeft={(item, index) => {
+						swipeLeft(item.movie, index);
 					}}
-					onSwipeRight={(item) => {
-						void recordSwipe(item.movie, true);
+					onSwipeRight={(item, index) => {
+						swipeRight(item.movie, index);
 					}}
 					renderCard={(item, swipeLeft, swipeRight) => (
 						<MovieCard
