@@ -2,7 +2,7 @@
  * Renders a simple reusable movie card for movie-related UI.
  */
 
-import { StyleSheet, View, Text, ImageBackground, useColorScheme, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, useColorScheme, Pressable, Dimensions } from 'react-native';
 import { useState } from 'react';
 import { TextStyles } from '@/constants/text-style';
 import { Colors } from '@/themes/colors'
@@ -37,6 +37,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 				resizeMode="cover"
 			>
 				<View style={styles.overlay}>
+					<View style={{ bottom: height * 0.02 }}>
 					<Pressable onPress={() => setModalVisible(true)} style={styles.summaryPressable}>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<Text style={[TextStyles.cardTitle, { color: themeColors.white }]}>{title}</Text>
@@ -59,6 +60,7 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 							<SwipeButton onPress={() => onSwipeRight?.()} icon="thumb-up" />
 						</View>
 					</View>
+					</View>
 				</View>
 			</ImageBackground>
 
@@ -72,6 +74,8 @@ export function MovieCard({ subtitle, title, poster, voteavg, type, durationStri
 		</View>
 	);
 }
+
+const {height} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
 	card: {
