@@ -44,19 +44,19 @@ function toRecommendationCard(movie: RecommendationMovie): RecommendationCard {
 }
 
 export default function HomeRoute() {
-	const { renderSegment, currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
+	const { currentSegment, segmentVersion, isLoading, error, swipeLeft, swipeRight } = useSwipeDeck();
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
 	const insets = useSafeAreaInsets();
 
-	const cards = renderSegment.map(toRecommendationCard);
+	const cards = currentSegment.map(toRecommendationCard);
 
 	useEffect(() => {
-		const urls = renderSegment.flatMap((movie) =>
+		const urls = currentSegment.flatMap((movie) =>
 			movie.posterPath ? [`https://image.tmdb.org/t/p/w780${movie.posterPath}`] : [],
 		);
 		void Image.prefetch(urls);
-	}, [renderSegment]);
+	}, [currentSegment]);
 
 	return (
 		<View style={[styles.container]}>

@@ -18,6 +18,18 @@ function buildSegment(batch: RecommendationMovie[]): RecommendationMovie[] {
 	return batch.slice(0, SEGMENT_SIZE);
 }
 
+function getPrefetchTriggerIndex(startIndex: number, segmentLength: number): number {
+	if (segmentLength <= 0) {
+		return -1;
+	}
+
+	return startIndex + Math.min(DETAILED_COUNT - 1, segmentLength - 1);
+}
+
+function getSegmentEndIndex(startIndex: number, segmentLength: number): number {
+	return segmentLength > 0 ? startIndex + segmentLength - 1 : -1;
+}
+
 export function useSwipeDeck() {
 	const {
 		claims,
@@ -33,18 +45,17 @@ export function useSwipeDeck() {
 		persistSwipe,
 	} = useMediaContext();
 	const [currentSegment, setCurrentSegment] = useState<RecommendationMovie[]>([]);
-	const [pendingSegment, setPendingSegment] = useState<RecommendationMovie[] | null>(null);
 	const [segmentVersion, setSegmentVersion] = useState(0);
-	const [showPendingPreview, setShowPendingPreview] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasInitialized, setHasInitialized] = useState(false);
+	const [activeSegmentLength, setActiveSegmentLength] = useState(SEGMENT_SIZE);
 	const pendingSwipesRef = useRef<BufferedSwipe[]>([]);
 	const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isFlushingRef = useRef(false);
 	const flushPendingSwipesRef = useRef<() => Promise<void>>(async () => {});
 	const isMountedRef = useRef(true);
-	const isFetchingNextSegmentRef = useRef(false);
 	const nextSegmentPromiseRef = useRef<Promise<RecommendationMovie[] | null> | null>(null);
+	const waitingForNextSegmentAtBoundaryRef = useRef(false);
 
 	const clearFlushTimeout = useCallback(() => {
 		if (flushTimeoutRef.current) {
@@ -120,12 +131,11 @@ export function useSwipeDeck() {
 	const resetDeck = useCallback(() => {
 		clearFlushTimeout();
 		pendingSwipesRef.current = [];
-		isFetchingNextSegmentRef.current = false;
 		nextSegmentPromiseRef.current = null;
+		waitingForNextSegmentAtBoundaryRef.current = false;
 		setCurrentSegment([]);
-		setPendingSegment(null);
 		setSegmentVersion(0);
-		setShowPendingPreview(false);
+		setActiveSegmentLength(SEGMENT_SIZE);
 		setHasInitialized(false);
 		setIsLoading(false);
 	}, [clearFlushTimeout]);
@@ -140,17 +150,15 @@ export function useSwipeDeck() {
 			}
 
 			setCurrentSegment(segment);
-			setPendingSegment(null);
 			setSegmentVersion(0);
-			setShowPendingPreview(false);
+			setActiveSegmentLength(segment.length);
 		} catch {
 			if (!isMountedRef.current) {
 				return;
 			}
 
 			setCurrentSegment([]);
-			setPendingSegment(null);
-			setShowPendingPreview(false);
+			setActiveSegmentLength(0);
 		} finally {
 			if (isMountedRef.current) {
 				setHasInitialized(true);
@@ -160,105 +168,76 @@ export function useSwipeDeck() {
 	}, [fetchSegment]);
 
 	const requestNextSegment = useCallback(async () => {
-		if (pendingSegment && pendingSegment.length > 0) {
-			return pendingSegment;
-		}
-
 		if (nextSegmentPromiseRef.current) {
 			return nextSegmentPromiseRef.current;
 		}
 
-		isFetchingNextSegmentRef.current = true;
 		nextSegmentPromiseRef.current = fetchSegment()
 			.then((nextSegment) => {
 				const normalizedSegment = nextSegment.length > 0 ? nextSegment : null;
 				if (isMountedRef.current) {
-					setPendingSegment(normalizedSegment);
+					if (normalizedSegment) {
+						if (waitingForNextSegmentAtBoundaryRef.current) {
+							waitingForNextSegmentAtBoundaryRef.current = false;
+							setCurrentSegment(normalizedSegment);
+							setActiveSegmentLength(normalizedSegment.length);
+							setSegmentVersion((currentVersion) => currentVersion + 1);
+							setIsLoading(false);
+						} else {
+							setCurrentSegment((segment) => [...segment, ...normalizedSegment]);
+						}
+					} else if (waitingForNextSegmentAtBoundaryRef.current) {
+						waitingForNextSegmentAtBoundaryRef.current = false;
+						setCurrentSegment([]);
+						setActiveSegmentLength(0);
+						setIsLoading(false);
+					}
 				}
 				return normalizedSegment;
 			})
 			.catch(() => null)
 			.finally(() => {
-				isFetchingNextSegmentRef.current = false;
 				nextSegmentPromiseRef.current = null;
 			});
 
 		return nextSegmentPromiseRef.current;
-	}, [fetchSegment, pendingSegment]);
+	}, [fetchSegment]);
 
 	const prefetchNextSegment = useCallback(async () => {
 		void requestNextSegment();
 	}, [requestNextSegment]);
 
-	const activateSegment = useCallback((nextSegment: RecommendationMovie[]) => {
-		setCurrentSegment(nextSegment);
-		setPendingSegment(null);
+	const compactToAppendedSegment = useCallback(() => {
+		setCurrentSegment((segment) => {
+			const nextSegment = segment.slice(activeSegmentLength);
+			setActiveSegmentLength(nextSegment.length);
+			return nextSegment;
+		});
 		setSegmentVersion((currentVersion) => currentVersion + 1);
-		setShowPendingPreview(false);
-	}, []);
-
-	const fetchAndActivateNextSegment = useCallback(async () => {
-		if (pendingSegment && pendingSegment.length > 0) {
-			activateSegment(pendingSegment);
-			return;
-		}
-
-		setIsLoading(true);
-
-		try {
-			const nextSegment = await requestNextSegment();
-			if (!isMountedRef.current) {
-				return;
-			}
-
-			if (nextSegment && nextSegment.length > 0) {
-				activateSegment(nextSegment);
-			} else {
-				setCurrentSegment([]);
-				setPendingSegment(null);
-			}
-		} catch {
-			if (!isMountedRef.current) {
-				return;
-			}
-
-			setCurrentSegment([]);
-			setPendingSegment(null);
-		} finally {
-			if (isMountedRef.current) {
-				setIsLoading(false);
-			}
-		}
-	}, [activateSegment, pendingSegment, requestNextSegment]);
+	}, [activeSegmentLength]);
 
 	const handleSwipe = useCallback(
 		(movie: RecommendationMovie, liked: boolean, swipedIndex: number) => {
 			queueBufferedSwipe(movie, liked);
 
-			const lastSegmentIndex = currentSegment.length - 1;
-			const prefetchTriggerIndex = Math.min(DETAILED_COUNT - 1, lastSegmentIndex);
+			const prefetchTriggerIndex = getPrefetchTriggerIndex(0, activeSegmentLength);
+			const segmentEndIndex = getSegmentEndIndex(0, activeSegmentLength);
 
 			if (swipedIndex === prefetchTriggerIndex) {
-				setShowPendingPreview(true);
 				void prefetchNextSegment();
 			}
 
-			if (swipedIndex === lastSegmentIndex) {
-				if (pendingSegment && pendingSegment.length > 0) {
-					activateSegment(pendingSegment);
+			if (swipedIndex === segmentEndIndex) {
+				if (currentSegment.length > activeSegmentLength) {
+					compactToAppendedSegment();
 				} else {
-					void fetchAndActivateNextSegment();
+					waitingForNextSegmentAtBoundaryRef.current = true;
+					setIsLoading(true);
+					void requestNextSegment();
 				}
 			}
 		},
-		[
-			activateSegment,
-			currentSegment.length,
-			fetchAndActivateNextSegment,
-			pendingSegment,
-			prefetchNextSegment,
-			queueBufferedSwipe,
-		],
+		[activeSegmentLength, compactToAppendedSegment, currentSegment.length, prefetchNextSegment, queueBufferedSwipe, requestNextSegment],
 	);
 
 	const swipeLeft = useCallback(
@@ -274,11 +253,6 @@ export function useSwipeDeck() {
 		},
 		[handleSwipe],
 	);
-
-	const renderSegment =
-		showPendingPreview && pendingSegment
-			? [...currentSegment, ...pendingSegment.slice(0, 2)]
-			: currentSegment;
 
 	useEffect(() => {
 		if (isAuthLoading || isInitializingUser) {
@@ -321,7 +295,6 @@ export function useSwipeDeck() {
 	}, [clearFlushTimeout]);
 
 	return {
-		renderSegment,
 		currentSegment,
 		segmentVersion,
 		isLoading,
