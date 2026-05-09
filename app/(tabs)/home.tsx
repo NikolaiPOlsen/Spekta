@@ -99,7 +99,8 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: 'center',
-		alignItems: 'center'
+		alignItems: 'center',
+		backgroundColor: "#181920"
 	},
 	profileButton: {
 		position: 'absolute',
