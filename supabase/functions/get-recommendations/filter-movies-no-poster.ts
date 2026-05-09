@@ -6,7 +6,7 @@ const filterMoviesWithoutPosterPath = (genericMovies: GenericMovie[]) => {
 
     genericMovies.forEach(movie => {
         // posterPath is either a string or null
-        if (movie.posterPath) {
+        if (movie.posterPath && !movie.adult && movie.adult === false) {
             genericMoviesWithPosterPath.push(movie);
         }
         // console.log(`title: ${movie.title} | poster: ${movie.posterPath}`);

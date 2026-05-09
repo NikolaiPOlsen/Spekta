@@ -108,11 +108,11 @@ Deno.test("getDiscoverApiRequestUrlParametersFromWeights correctly finds and for
 		randomizeURLParameters: false
 	};
 
-	console.log("BEFORE FUNCTION CALL");
+	// console.log("BEFORE FUNCTION CALL");
 
 	const discoverUrlParameters: ApiRequestTypeParameter[] = getDiscoverApiRequestUrlParametersFromWeights(getUrlParametersOptions);
 
-	console.log("AFTER FUNCTION CALL");
+	// console.log("AFTER FUNCTION CALL");
 
 	// discoverUrlParameters.forEach(urlParam => {
 	// 	let paramString = "";
@@ -122,6 +122,8 @@ Deno.test("getDiscoverApiRequestUrlParametersFromWeights correctly finds and for
 
 	// 	console.log(`type: ${urlParam.type} | positive: ${urlParam.positive} | parameters: [${paramString}]`);
 	// });
+
+	// console.log(discoverUrlParameters);
 
 	assertEquals(discoverUrlParameters, expectedResult);
 
