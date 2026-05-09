@@ -1,7 +1,5 @@
 import { AppButton } from '@/components/ui/app-button';
-import { supabase } from '@/lib/supabase';
 import { Colors } from '@/themes/colors';
-import { FunctionsHttpError } from '@supabase/supabase-js';
 import { router } from 'expo-router';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,27 +7,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function StartScreen() {
 	const colorScheme = useColorScheme();
 	const themeColors = Colors[colorScheme ?? 'light'];
-
-	const testEdgeFunc = async () => {
-		console.log("testing function");
-
-		try {
-			const { data, error } = await supabase.functions.invoke("get-recommendations");
-			console.log("got something");
-			if (error) throw error;
-
-			console.log(JSON.stringify(data, null, 2));
-
-		} catch (error) {
-			console.log("error");
-			if (error instanceof FunctionsHttpError) {
-				const errorMessage = await error.context.json();
-				console.error("Function returned error body:", errorMessage);
-			} else {
-				console.error("Unexpected error:", error);
-			}
-		}
-	}
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>

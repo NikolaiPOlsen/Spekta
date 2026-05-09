@@ -87,11 +87,6 @@ function buildSwipeParameters(movie: RecommendationMovie): SwipeParameter[] {
 export async function recordSwipe(movie: RecommendationMovie, liked: boolean): Promise<void> {
 	const swipeParameters = buildSwipeParameters(movie);
 
-	// console.log(`just liked these parameters:`);
-	// swipeParameters.forEach(param => {
-	// 	console.log(param);
-	// });
-
 	const payload: RecordSwipePayload = {
 		tmdb_id: String(movie.id),
 		liked,
