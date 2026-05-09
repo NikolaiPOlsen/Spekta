@@ -14,10 +14,22 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const fetchClaims = async () => {
       setIsLoading(true)
 
-      const { data } = await supabase.auth.getClaims()
+      try {
+        const { data, error } = await supabase.auth.getClaims()
 
-      setClaims(data?.claims ?? null)
-      setIsLoading(false)
+        if (error) {
+          await supabase.auth.signOut({ scope: 'local' })
+          setClaims(null)
+          return
+        }
+
+        setClaims(data?.claims ?? null)
+      } catch {
+        await supabase.auth.signOut({ scope: 'local' })
+        setClaims(null)
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     fetchClaims()
