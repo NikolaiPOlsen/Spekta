@@ -26,7 +26,7 @@ export const APIRequestRandomPageMin = 1;
  * @constant {number} APIRequestRandomPageMax
  * @default 1
  */
-export const APIRequestRandomPageMax = 100;
+export const APIRequestRandomPageMax = 250;
 
 /**
  * Default sorting. Results in the most popular results on page 1.
@@ -50,4 +50,4 @@ export const ApiDetailsMovieAmount = 5;
  * @constant {number} ApiDetailsVoteCountMinimum
  * @default 10
  */
-export const ApiDetailsVoteCountMinimum = 10;
+export const ApiDetailsVoteCountMinimum = 20;
